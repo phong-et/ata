@@ -1,4 +1,4 @@
-# ata
+# Attendance Tracking App
 
 A new Flutter project.
 
