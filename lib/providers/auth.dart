@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:ata/util.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 enum AuthType { SignUp, SignIn }
@@ -28,41 +28,40 @@ class Auth with ChangeNotifier {
 
   Future<String> authenticate(String email, String password, AuthType authType) async {
     // Requesting to Firebase
-    final response = await http.post(
-      _getUrl(authType),
-      body: json.encode(
-        {
-          'email': email,
-          'password': password,
-          'returnSecureToken': true,
-        },
-      ),
-    );
-    final responseData = json.decode(response.body);
-    if (responseData['error'] != null) return responseData['error']['message'];
+    try {
+      var reponseText = await Util.fetch(FetchType.POST, _getUrl(authType), {
+        'email': email,
+        'password': password,
+        'returnSecureToken': true,
+      });
 
-    // Setting login data
-    _token = responseData['idToken'];
-    _userId = responseData['localId'];
-    _expiryDate = DateTime.now().add(
-      Duration(
-        seconds: int.parse(responseData['expiresIn']),
-      ),
-    );
+      final responseData = json.decode(reponseText);
+      if (responseData['error'] != null) return responseData['error']['message'];
 
-    // Saving to shared prefs
-    final prefs = await SharedPreferences.getInstance();
-    final loginDataJson = json.encode({
-      'token': _token,
-      'userId': _userId,
-      'expiryDate': _expiryDate.toIso8601String(),
-    });
-    prefs.setString('loginData', loginDataJson);
+      // Setting login data
+      _token = responseData['idToken'];
+      _userId = responseData['localId'];
+      _expiryDate = DateTime.now().add(
+        Duration(
+          seconds: int.parse(responseData['expiresIn']),
+        ),
+      );
 
-    // Updating UI
-    notifyListeners();
+      // Saving to shared prefs
+      final prefs = await SharedPreferences.getInstance();
+      final loginDataJson = json.encode({
+        'token': _token,
+        'userId': _userId,
+        'expiryDate': _expiryDate.toIso8601String(),
+      });
+      prefs.setString('loginData', loginDataJson);
 
-    return null;
+      // Updating UI
+      notifyListeners();
+      return null;
+    } catch (error) {
+      return error.toString();
+    }
   }
 
   bool get isAuth {
