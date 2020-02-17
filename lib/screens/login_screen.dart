@@ -1,5 +1,7 @@
+import 'package:ata/providers/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_login/flutter_login.dart';
+import 'package:provider/provider.dart';
 
 class LoginScreen extends StatelessWidget {
   static const routeName = '/login-screen';
@@ -7,13 +9,16 @@ class LoginScreen extends StatelessWidget {
     bottom: Radius.circular(10.0),
     top: Radius.circular(20.0),
   );
+
   @override
   Widget build(BuildContext context) {
+    var auth = Provider.of<Auth>(context);
+
     return FlutterLogin(
       title: 'Elitetech',
-      onLogin: (_) => Future(null),
+      onLogin: (_) => auth.signIn('username', 'password'),
+      onSignup: (_) => auth.signUp('username', 'password'),
       onRecoverPassword: (_) => Future(null),
-      onSignup: (_) => Future(null),
       theme: LoginTheme(
         primaryColor: Colors.teal,
         accentColor: Colors.yellow,
