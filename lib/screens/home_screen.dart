@@ -1,4 +1,6 @@
+import 'package:ata/providers/auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
   static const routeName = '/home-screen';
@@ -44,7 +46,13 @@ class _HomeScreenState extends State<HomeScreen> {
     return Center(
       child: Scaffold(
         appBar: AppBar(
-          title: Text('Attendance Recording'),
+          title: Text('Attendance Tracking'),
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(Icons.exit_to_app),
+              onPressed: () => Provider.of<Auth>(context, listen: false).signOut(),
+            ),
+          ],
         ),
         body: selectedTab['tab'],
         bottomNavigationBar: BottomNavigationBar(

@@ -19,18 +19,19 @@ class MyApp extends StatelessWidget {
         ),
       ],
       child: Consumer<Auth>(
-        builder: (ctz, auth, _) {
+        builder: (ctx, auth, _) {
           return MaterialApp(
             title: 'Flutter Demo',
             theme: ThemeData(
-              primarySwatch: Colors.deepPurple,
+              primarySwatch: Colors.indigo,
             ),
             home: auth.isAuth
                 ? HomeScreen()
                 : FutureBuilder(
                     future: auth.autoSignIn(),
-                    builder: (ctx, snapshot) =>
-                        snapshot.connectionState == ConnectionState.waiting ? SplashScreen() : LoginScreen(),
+                    builder: (ctx, AsyncSnapshot<bool> snapshot) => snapshot.connectionState == ConnectionState.waiting
+                        ? SplashScreen()
+                        : (snapshot.data ? HomeScreen() : LoginScreen()),
                   ),
             routes: {
               HomeScreen.routeName: (_) => HomeScreen(),

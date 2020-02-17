@@ -3,26 +3,30 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:ata/models/http_exception.dart';
 
 enum AuthType { SignUp, SignIn }
 
 class Auth with ChangeNotifier {
+  final _apiKey = 'AIzaSyDauVEL3nQHSaX7_i93z-a8q2vlgLAi7F0';
   String _token;
   DateTime _expiryDate;
   String _userId;
   // Timer _authTimer;
 
   String _getUrl(AuthType authType) {
+    String firebaseAuthType;
     switch (authType) {
       case AuthType.SignUp:
-        return 'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyDauVEL3nQHSaX7_i93z-a8q2vlgLAi7F0';
+        firebaseAuthType = 'signUp';
+        break;
       case AuthType.SignIn:
-        return 'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyDauVEL3nQHSaX7_i93z-a8q2vlgLAi7F0';
+        firebaseAuthType = 'signInWithPassword';
+        break;
     }
+    return 'https://identitytoolkit.googleapis.com/v1/accounts:$firebaseAuthType?key=$_apiKey';
   }
 
-  Future<void> _authenticate(String email, String password, AuthType authType) async {
+  Future<String> authenticate(String email, String password, AuthType authType) async {
     // Requesting to Firebase
     final response = await http.post(
       _getUrl(authType),
@@ -35,7 +39,7 @@ class Auth with ChangeNotifier {
       ),
     );
     final responseData = json.decode(response.body);
-    if (responseData['error'] != null) throw HttpException(responseData['error']['message']);
+    if (responseData['error'] != null) return responseData['error']['message'];
 
     // Setting login data
     _token = responseData['idToken'];
@@ -57,18 +61,12 @@ class Auth with ChangeNotifier {
 
     // Updating UI
     notifyListeners();
+
+    return null;
   }
 
   bool get isAuth {
     return _token != null;
-  }
-
-  Future<void> signIn(String email, String password) {
-    return _authenticate(email, password, AuthType.SignIn);
-  }
-
-  Future<void> signUp(String email, String password) {
-    return _authenticate(email, password, AuthType.SignUp);
   }
 
   Future<void> signOut() async {
@@ -82,7 +80,7 @@ class Auth with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> autoSignIn() async {
+  Future<bool> autoSignIn() async {
     final prefs = await SharedPreferences.getInstance();
     if (!prefs.containsKey('loginData')) return false;
 
@@ -93,7 +91,6 @@ class Auth with ChangeNotifier {
     _token = loginData['token'];
     _userId = loginData['userId'];
     _expiryDate = expiryDate;
-    notifyListeners();
     return true;
   }
 }
