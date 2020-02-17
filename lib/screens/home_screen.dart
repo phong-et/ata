@@ -1,3 +1,5 @@
+import 'package:ata/screens/report_screen.dart';
+import 'package:ata/screens/settings_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:ata/providers/auth.dart';
@@ -23,12 +25,12 @@ class _HomeScreenState extends State<HomeScreen> {
         'icon': Icon(Icons.playlist_add_check),
       },
       {
-        'tab': Center(child: Text('Reports')),
+        'tab': ReportScreen(),
         'title': Text('Reports'),
         'icon': Icon(Icons.chrome_reader_mode),
       },
       {
-        'tab': Center(child: Text('Settings')),
+        'tab': SettingsScreen(),
         'title': Text('Settings'),
         'icon': Icon(Icons.settings),
       },
