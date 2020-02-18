@@ -6,7 +6,7 @@ import 'package:ata/screens/splash-screen.dart';
 class CheckInScreen extends StatelessWidget {
   Future<Map<String, dynamic>> getDeviceIP() async {
     try {
-      var responseText = await Util.fetch(FetchType.GET, 'http://ip-api.com/json', {});
+      var responseText = await Util.fetch(FetchType.GET, 'http://ip-api.com/json');
       final responseData = json.decode(responseText) as Map<String, dynamic>;
       return responseData;
     } catch (error) {
