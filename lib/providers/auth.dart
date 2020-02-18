@@ -93,6 +93,8 @@ class Auth with ChangeNotifier {
     return true;
   }
 
+  // Admin features
+
   Future<void> updateOfficeSettings(String ipAddress, String longs, String lats) async {
     final officeUrl = 'https://atapp-7720c.firebaseio.com/office.json?auth=$_idToken';
 
