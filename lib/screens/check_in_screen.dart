@@ -1,7 +1,7 @@
 import 'dart:convert';
-import 'package:ata/util.dart';
 import 'package:flutter/material.dart';
-import 'package:ata/screens/splash-screen.dart';
+import 'package:ata/util.dart';
+import 'package:ata/screens/loading-screen.dart';
 
 class CheckInScreen extends StatelessWidget {
   Future<Map<String, dynamic>> getDeviceIP() async {
@@ -19,7 +19,7 @@ class CheckInScreen extends StatelessWidget {
     return FutureBuilder(
       future: getDeviceIP(),
       builder: (ctx, AsyncSnapshot<Map<String, dynamic>> snapshot) => snapshot.connectionState == ConnectionState.waiting
-          ? SplashScreen()
+          ? LoadingScreen()
           : Center(
               child: snapshot.data['error'] != null
                   ? Text(snapshot.data['error'].toString())
