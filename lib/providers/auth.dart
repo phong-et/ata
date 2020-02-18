@@ -81,7 +81,7 @@ class Auth with ChangeNotifier {
 
   Future<bool> autoSignIn() async {
     final prefs = await SharedPreferences.getInstance();
-    await Future.delayed(const Duration(seconds: 2), null);
+    await Future.delayed(const Duration(milliseconds: 1), null);
     if (!prefs.containsKey('loginData')) return false;
 
     final loginData = json.decode(prefs.getString('loginData')) as Map<String, Object>;
