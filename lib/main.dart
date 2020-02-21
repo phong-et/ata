@@ -1,10 +1,10 @@
-import 'package:ata/providers/ipInfoChangeNotifier.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:ata/providers/auth.dart';
 import 'package:ata/screens/login_screen.dart';
 import 'package:ata/screens/home_screen.dart';
 import 'package:ata/screens/loading-screen.dart';
+import 'package:ata/providers/ip_info_notifier.dart';
 
 void main() => runApp(MyApp());
 
@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
           value: Auth(),
         ),
         ChangeNotifierProvider.value(
-          value: IpInfoChangeNotifier(),
+          value: IpInfoNotifier(),
         )
       ],
       child: Consumer<Auth>(
@@ -33,8 +33,7 @@ class MyApp extends StatelessWidget {
                 ? HomeScreen()
                 : FutureBuilder(
                     future: auth.autoSignIn(),
-                    builder: (ctx, AsyncSnapshot<bool> snapshot) =>
-                        snapshot.connectionState == ConnectionState.waiting ? LoadingScreen() : (snapshot.data ? HomeScreen() : LoginScreen()),
+                    builder: (ctx, AsyncSnapshot<bool> snapshot) => snapshot.connectionState == ConnectionState.waiting ? LoadingScreen() : (snapshot.data ? HomeScreen() : LoginScreen()),
                   ),
             routes: {
               HomeScreen.routeName: (_) => HomeScreen(),

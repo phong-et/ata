@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
+import 'package:ata/models/json_object.dart';
 
-class IpInfo {
+class IpInfo implements JsonObject {
   final String ipAddress;
   final double ipLat;
   final double ipLon;
@@ -19,6 +20,7 @@ class IpInfo {
     @required this.timezone,
   });
 
+  @override
   factory IpInfo.fromJson(Map<String, dynamic> parsedJson) {
     return IpInfo(
       city: parsedJson['city'],

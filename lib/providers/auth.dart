@@ -32,7 +32,7 @@ class Auth with ChangeNotifier {
   Future<String> authenticate(String email, String password, AuthType authType) async {
     // Requesting to Firebase
     try {
-      var responseData = await Util.fetch(FetchType.POST, _getUrl(authType), {
+      var responseData = await Util.request(RequestType.POST, _getUrl(authType), {
         'email': email,
         'password': password,
         'returnSecureToken': true,
@@ -97,7 +97,7 @@ class Auth with ChangeNotifier {
   Future<void> updateOfficeSettings(String ipAddress, String longs, String lats) async {
     final officeUrl = 'https://atapp-7720c.firebaseio.com/office.json?auth=$_idToken';
 
-    await Util.fetch(FetchType.PUT, officeUrl, {
+    await Util.request(RequestType.PUT, officeUrl, {
       'ip': ipAddress,
       'location': {
         'longs': longs,
@@ -108,6 +108,6 @@ class Auth with ChangeNotifier {
 
   Future<dynamic> fetchOfficeSettings() async {
     final officeUrl = 'https://atapp-7720c.firebaseio.com/office.json?auth=$_idToken';
-    return await Util.fetch(FetchType.GET, officeUrl);
+    return await Util.request(RequestType.GET, officeUrl);
   }
 }

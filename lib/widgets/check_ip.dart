@@ -1,4 +1,4 @@
-import 'package:ata/providers/ipInfoChangeNotifier.dart';
+import 'package:ata/providers/ip_info_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -8,7 +8,7 @@ class CheckIP extends StatelessWidget {
     return Center(
       child: Column(
         children: <Widget>[
-          Consumer<IpInfoChangeNotifier>(
+          Consumer<IpInfoNotifier>(
             builder: (_, notifier, __) {
               if (notifier.state == NotifierState.init)
                 return Text('Read to load device IP');
@@ -25,7 +25,7 @@ class CheckIP extends StatelessWidget {
           RaisedButton.icon(
             label: Text('Get IP Address'),
             icon: Icon(Icons.refresh),
-            onPressed: () => Provider.of<IpInfoChangeNotifier>(
+            onPressed: () => Provider.of<IpInfoNotifier>(
               context,
               listen: false,
             ).fetchDeviceIpInfo(),
