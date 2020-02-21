@@ -7,7 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 enum AuthType { SignUp, SignIn }
 
 class Auth with ChangeNotifier {
-  final _apiKey = 'AIzaSyCfrk-pANuYEeE3Npr87FEyyk8TwH6jJ5s';
+  final _apiKey = 'AIzaSyAP-e1B-iwRYn82wlooyOrXa20pXh8j-nY';
   String _idToken; // Firebase ID token of the account.
   String _localId; // The uid of the current user.
   DateTime _expiryDate;
