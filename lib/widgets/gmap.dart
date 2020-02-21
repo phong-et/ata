@@ -16,9 +16,10 @@ class GMapState extends State<GMap> {
   );
   static double currentLat;
   static double currentLng;
+  static double currentMarkedLat;
+  static double currentMarkedLng;
 
   Set<Marker> _markers = Set();
-  //final ArgumentCallback<LatLng> onTap;
   Completer<GoogleMapController> _controller = Completer();
 
   @override
@@ -32,7 +33,6 @@ class GMapState extends State<GMap> {
           },
           myLocationEnabled: true,
           markers: _markers,
-          //myLocationButtonEnabled: true,
           onLongPress: _handleTap),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _goToCurrentLocation,
@@ -88,11 +88,14 @@ class GMapState extends State<GMap> {
           onDragEnd: ((newPoint) {
             _markers.clear();
             _addMarker(newPoint);
+            currentMarkedLat = newPoint.latitude;
+            currentMarkedLng = newPoint.longitude;
           })));
     });
   }
 
   void _handleTap(LatLng point) {
+    _markers.clear();
     _addMarker(point);
   }
 }
