@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:ata/models/json_object.dart';
+import 'package:ata/factories.dart';
 import 'package:dartz/dartz.dart';
 import 'package:http/http.dart' as http;
 
@@ -64,7 +64,7 @@ class Util {
     }
   }
 
-  static Future<Either<Failure, T>> fetchDeviceIpInfo<T extends JsonObject>() async {
+  static Future<Either<Failure, T>> fetchDeviceIpInfo<T>() async {
     return await Task(() async {
       final parsedJson = await Util.request(RequestType.GET, 'http://ip-api.com/json');
       return make<T>(parsedJson);
