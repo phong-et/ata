@@ -1,11 +1,14 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:http/http.dart' as http;
-import 'package:ata/models/http_exception.dart';
+
+import 'models/failure.dart';
 
 enum FetchType { POST, GET, PUT, PATCH, DELETE }
 
 class Util {
-  static Future<String> fetch(FetchType type, String url, [Map<String, dynamic> requestPayload = const {}]) async {
+  static Future<dynamic> fetch(FetchType type, String url,
+      [Map<String, dynamic> requestPayload = const {}]) async {
     try {
       http.Response response;
       switch (type) {
@@ -38,9 +41,25 @@ class Util {
           );
           break;
       }
-      return response.body;
-    } catch (error) {
-      throw HttpException('Network Error!');
+      //! No Internet Connection
+      // throw SocketException('No Internet');
+
+      //! 404
+      // throw HttpException('404');
+
+      //! Invalid JSON response
+      // return 'yxz';
+
+      //! Deadly Unexpected exception
+      //throw FileSystemException();
+
+      return json.decode(response.body);
+    } on SocketException {
+      throw Failure('No Internet connection 😑');
+    } on HttpException {
+      throw Failure("Couldn't find the resource 😱");
+    } on FormatException {
+      throw Failure("Bad response format 👎");
     }
   }
 }

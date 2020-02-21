@@ -1,3 +1,4 @@
+import 'package:ata/providers/ipInfoChangeNotifier.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:ata/providers/auth.dart';
@@ -17,6 +18,9 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider.value(
           value: Auth(),
         ),
+        ChangeNotifierProvider.value(
+          value: IpInfoChangeNotifier(),
+        )
       ],
       child: Consumer<Auth>(
         builder: (ctx, auth, _) {
