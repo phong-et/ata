@@ -32,9 +32,7 @@ class GMapState extends State<GMap> {
           },
           myLocationEnabled: true,
           markers: _markers,
-          myLocationButtonEnabled: true,
-          //markers: _currentLocationMarkers,
-          //onTap: _handleTap
+          //myLocationButtonEnabled: true,
           onLongPress: _handleTap),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _goToCurrentLocation,
@@ -45,41 +43,37 @@ class GMapState extends State<GMap> {
   }
 
   Future<void> _goToCurrentLocation() async {
-    try {
-      var currentLocation = await Geolocator()
-          .getCurrentPosition(desiredAccuracy: LocationAccuracy.best);
-      print(currentLocation);
-      setState(() async {
-        final marker = Marker(
-          markerId: MarkerId("curr_loc"),
-          position: LatLng(currentLocation.latitude, currentLocation.longitude),
-          infoWindow: InfoWindow(title: 'Your Location'),
-        );
+    //setState(() async {
+      try {
+        var currentLocation = await Geolocator()
+            .getCurrentPosition(desiredAccuracy: LocationAccuracy.best);
+        print(currentLocation);
+
         final GoogleMapController controller = await _controller.future;
         controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
             //bearing: 192.8334901395799,
-            target: marker.position,
+            target: LatLng(currentLocation.latitude, currentLocation.longitude),
             //tilt: 59.440717697143555,
             zoom: 19.151926040649414)));
-        currentLat = marker.position.latitude;
-        currentLng = marker.position.longitude;
-        //_markers.add(marker);
-      });
-    } on PlatformException catch (e) {
-      if (e.code == 'PERMISSION_DENIED') {
-        showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                  title: Text("PERMISSION_DENIED"),
-                  content: Text('Please turn on location device'));
-            });
+        currentLat = currentLocation.latitude;
+        currentLng = currentLocation.longitude;
+      } on PlatformException catch (e) {
+        if (e.code == 'PERMISSION_DENIED') {
+          showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                    title: Text("PERMISSION_DENIED"),
+                    content: Text('Please turn on location device'));
+              });
+        }
       }
-    }
+    //});
   }
-  void _addMarker(LatLng point){
+
+  void _addMarker(LatLng point) {
     setState(() {
-    _markers.add(Marker(
+      _markers.add(Marker(
           markerId: MarkerId(point.toString()),
           position: point,
           infoWindow: InfoWindow(
@@ -97,30 +91,8 @@ class GMapState extends State<GMap> {
           })));
     });
   }
+
   void _handleTap(LatLng point) {
-    // setState(() {
-    //   // _markers.clear();
-    //   // _markers.add(Marker(
-    //   //     markerId: MarkerId(point.toString()),
-    //   //     position: point,
-    //   //     infoWindow: InfoWindow(
-    //   //       title: 'Lat: ${point.latitude}, lng:${point.longitude}',
-    //   //     ),
-    //   //     icon: BitmapDescriptor.defaultMarkerWithHue(
-    //   //         BitmapDescriptor.hueMagenta),
-    //   //     onTap: () {
-    //   //       print('Tapped');
-    //   //     },
-    //   //     draggable: true,
-    //   //     onDragEnd: ((value) {
-    //   //       print(value.latitude);
-    //   //       print(value.longitude);
-    //   //       print('---');
-    //   //       print(point.latitude);
-    //   //       print(point.longitude);
-    //   //     })));
-    //   _addMarker(point);
-    // });
-     _addMarker(point);
+    _addMarker(point);
   }
 }
