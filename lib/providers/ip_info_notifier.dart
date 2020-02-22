@@ -15,6 +15,7 @@ class IpInfoNotifier with ChangeNotifier {
     notifyListeners();
   }
 
+  //* Model reference
   Either<Failure, IpInfo> _ipInfo;
   Either<Failure, IpInfo> get ipInfo => _ipInfo;
   void _setIpInfo(Either<Failure, IpInfo> ipInfo) {
@@ -25,7 +26,7 @@ class IpInfoNotifier with ChangeNotifier {
   void fetchDeviceIpInfo() async {
     _setNotifierState(NotifierState.loading);
 
-    await Util.fetchDeviceIpInfo<IpInfo>().then((value) => _setIpInfo(value));
+    await Util.request<IpInfo>(RequestType.GET, 'http://ip-api.com/json').then((value) => _setIpInfo(value));
 
     _setNotifierState(NotifierState.loaded);
   }

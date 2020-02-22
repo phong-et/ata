@@ -1,15 +1,15 @@
-import 'dart:convert';
 import 'dart:io';
-import 'package:ata/factories.dart';
+import 'dart:convert';
 import 'package:dartz/dartz.dart';
 import 'package:http/http.dart' as http;
+import 'package:ata/factories.dart';
 
 import 'models/failure.dart';
 
 enum RequestType { POST, GET, PUT, PATCH, DELETE }
 
 class Util {
-  static Future<dynamic> request(RequestType type, String url, [Map<String, dynamic> requestPayload = const {}]) async {
+  static Future<dynamic> _request(RequestType type, String url, [Map<String, dynamic> requestPayload = const {}]) async {
     try {
       http.Response response;
       switch (type) {
@@ -64,9 +64,9 @@ class Util {
     }
   }
 
-  static Future<Either<Failure, T>> fetchDeviceIpInfo<T>() async {
+  static Future<Either<Failure, T>> request<T>(RequestType type, String url, [Map<String, dynamic> requestPayload = const {}]) async {
     return await Task(() async {
-      final parsedJson = await Util.request(RequestType.GET, 'http://ip-api.com/json');
+      final parsedJson = await _request(type, url, requestPayload);
       return make<T>(parsedJson);
     }).attempt().mapLeftToFailure().run();
   }

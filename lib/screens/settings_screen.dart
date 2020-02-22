@@ -1,8 +1,8 @@
-import 'package:ata/providers/auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:ata/providers/authNotifier.dart';
 import 'package:ata/widgets/ata_text_field.dart';
 import 'package:ata/widgets/ata_button.dart';
-import 'package:provider/provider.dart';
 
 class SettingsScreen extends StatelessWidget {
   final ipController = TextEditingController();
@@ -19,7 +19,7 @@ class SettingsScreen extends StatelessWidget {
         padding: EdgeInsets.all(16.0),
         child: Form(
           child: FutureBuilder(
-            future: Provider.of<Auth>(context, listen: false).fetchOfficeSettings(),
+            future: Provider.of<AuthNotifier>(context, listen: false).fetchOfficeSettings(),
             builder: (ctx, AsyncSnapshot<dynamic> snapshot) {
               if (snapshot.hasData) {
                 ipController.text = snapshot.data['ip'];
@@ -53,7 +53,7 @@ class SettingsScreen extends StatelessWidget {
                         AtaButton(
                           label: 'Update',
                           handler: () async {
-                            await Provider.of<Auth>(context, listen: false).updateOfficeSettings(
+                            await Provider.of<AuthNotifier>(context, listen: false).updateOfficeSettings(
                               ipController.text,
                               longsController.text,
                               latsController.text,
