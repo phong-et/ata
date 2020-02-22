@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter/services.dart';
+import 'package:maps_toolkit/maps_toolkit.dart' as mapsToolkit;
 
+//import 'package:maps_toolkit/maps_toolkit.dart' as mapToolkit;
 class ATAMap extends StatefulWidget {
   @override
   State<ATAMap> createState() => ATAMapState();
@@ -110,13 +112,21 @@ class ATAMapState extends State<ATAMap> {
         center: point,
         radius: 1000,
         strokeWidth: 1,
-        strokeColor:Colors.blue.withOpacity(0.3),
+        strokeColor: Colors.blue.withOpacity(0.3),
         fillColor: Colors.blue.withOpacity(0.2)));
+    _calcDistance(mapsToolkit.LatLng(currentMarkedLat, currentMarkedLng),
+        mapsToolkit.LatLng(currentLat, currentLng));
   }
 
   void _handleLongPress(LatLng point) {
     _markers.clear();
     _circles.clear();
     _addMarker(point);
+  }
+
+  void _calcDistance(mapsToolkit.LatLng point1, mapsToolkit.LatLng point2) {
+    final distance =
+        mapsToolkit.SphericalUtil.computeDistanceBetween(point1, point2) / 1000;
+    print('Distance is $distance km.');
   }
 }
