@@ -21,6 +21,7 @@ class ATAMapState extends State<ATAMap> {
 
   BitmapDescriptor pinLocationIcon;
   Set<Marker> _markers = Set();
+  Set<Circle> _circles = Set();
   Completer<GoogleMapController> _controller = Completer();
 
   @override
@@ -28,10 +29,11 @@ class ATAMapState extends State<ATAMap> {
     super.initState();
     setCustomMapPin();
   }
+
   void setCustomMapPin() async {
     pinLocationIcon = await BitmapDescriptor.fromAssetImage(
-    ImageConfiguration(size: Size(128, 128)),
-    'assets/images/current-location-marker.png');
+        ImageConfiguration(size: Size(128, 128)),
+        'assets/images/current-location-marker.png');
   }
 
   @override
@@ -45,6 +47,7 @@ class ATAMapState extends State<ATAMap> {
           },
           myLocationEnabled: true,
           markers: _markers,
+          circles: _circles,
           onLongPress: _handleLongPress),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _goToCurrentLocation,
@@ -57,10 +60,8 @@ class ATAMapState extends State<ATAMap> {
   Future<void> _goToCurrentLocation() async {
     setState(() async {
       try {
-        var currentLocation = await Geolocator()
-            .getCurrentPosition(desiredAccuracy: LocationAccuracy.best);
-        print(currentLocation);
-
+        var currentLocation = await Geolocator().getCurrentPosition();
+        //print(currentLocation);
         final GoogleMapController controller = await _controller.future;
         controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
             //bearing: 192.8334901395799,
@@ -76,7 +77,7 @@ class ATAMapState extends State<ATAMap> {
               builder: (BuildContext context) {
                 return AlertDialog(
                     title: Text("PERMISSION_DENIED"),
-                    content: Text('Please turn on location device'));
+                    content: Text('GPS device is OFF'));
               });
         }
       }
@@ -98,15 +99,24 @@ class ATAMapState extends State<ATAMap> {
           draggable: true,
           onDragEnd: ((newPoint) {
             _markers.clear();
+            _circles.clear();
             _addMarker(newPoint);
             currentMarkedLat = newPoint.latitude;
             currentMarkedLng = newPoint.longitude;
           })));
     });
+    _circles.add(Circle(
+        circleId: CircleId(point.toString()),
+        center: point,
+        radius: 1000,
+        strokeWidth: 1,
+        strokeColor:Colors.blue.withOpacity(0.3),
+        fillColor: Colors.blue.withOpacity(0.2)));
   }
 
   void _handleLongPress(LatLng point) {
     _markers.clear();
+    _circles.clear();
     _addMarker(point);
   }
 }
