@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:ata/widgets/gmap.dart';
+import 'package:ata/widgets/ata_map.dart';
 import 'package:flutter/material.dart';
 import 'package:ata/util.dart';
 //import 'package:ata/screens/loading-screen.dart';
@@ -20,7 +20,7 @@ class CheckInScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Google Maps Demo',
-      home: GMap(),
+      home: ATAMap(),
     );
     //   return FutureBuilder(
     //     future: getDeviceIP(),

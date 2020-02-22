@@ -4,12 +4,12 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter/services.dart';
 
-class GMap extends StatefulWidget {
+class ATAMap extends StatefulWidget {
   @override
-  State<GMap> createState() => GMapState();
+  State<ATAMap> createState() => ATAMapState();
 }
 
-class GMapState extends State<GMap> {
+class ATAMapState extends State<ATAMap> {
   static const CameraPosition DEFAULT_VIEW = CameraPosition(
     target: LatLng(37.42796133580664, -122.085749655962),
     zoom: 14.4746,
@@ -19,8 +19,20 @@ class GMapState extends State<GMap> {
   static double currentMarkedLat;
   static double currentMarkedLng;
 
+  BitmapDescriptor pinLocationIcon;
   Set<Marker> _markers = Set();
   Completer<GoogleMapController> _controller = Completer();
+
+  @override
+  void initState() {
+    super.initState();
+    setCustomMapPin();
+  }
+  void setCustomMapPin() async {
+    pinLocationIcon = await BitmapDescriptor.fromAssetImage(
+    ImageConfiguration(size: Size(128, 128)),
+    'assets/images/current-location-marker.png');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +45,7 @@ class GMapState extends State<GMap> {
           },
           myLocationEnabled: true,
           markers: _markers,
-          onLongPress: _handleTap),
+          onLongPress: _handleLongPress),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _goToCurrentLocation,
         label: Text('To current location'),
@@ -43,7 +55,7 @@ class GMapState extends State<GMap> {
   }
 
   Future<void> _goToCurrentLocation() async {
-    //setState(() async {
+    setState(() async {
       try {
         var currentLocation = await Geolocator()
             .getCurrentPosition(desiredAccuracy: LocationAccuracy.best);
@@ -68,7 +80,7 @@ class GMapState extends State<GMap> {
               });
         }
       }
-    //});
+    });
   }
 
   void _addMarker(LatLng point) {
@@ -79,8 +91,7 @@ class GMapState extends State<GMap> {
           infoWindow: InfoWindow(
             title: 'Lat: ${point.latitude}, lng:${point.longitude}',
           ),
-          icon: BitmapDescriptor.defaultMarkerWithHue(
-              BitmapDescriptor.hueMagenta),
+          icon: pinLocationIcon,
           onTap: () {
             print('Tapped');
           },
@@ -94,7 +105,7 @@ class GMapState extends State<GMap> {
     });
   }
 
-  void _handleTap(LatLng point) {
+  void _handleLongPress(LatLng point) {
     _markers.clear();
     _addMarker(point);
   }
