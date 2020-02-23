@@ -2,7 +2,7 @@ import 'package:ata/screens/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:ata/screens/check_in_screen.dart';
-import 'package:ata/providers/authNotifier.dart';
+import 'package:ata/providers/auth_notifier.dart';
 import 'package:ata/screens/report_screen.dart';
 import 'package:ata/screens/settings_screen.dart';
 

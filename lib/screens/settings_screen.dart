@@ -1,13 +1,99 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:ata/providers/authNotifier.dart';
 import 'package:ata/widgets/ata_text_field.dart';
 import 'package:ata/widgets/ata_button.dart';
+import 'package:ata/providers/office_notifier.dart';
+import 'package:ata/util.dart';
 
-class SettingsScreen extends StatelessWidget {
-  final ipController = TextEditingController();
-  final longsController = TextEditingController();
-  final latsController = TextEditingController();
+class SettingsScreen extends StatefulWidget {
+  @override
+  _SettingsScreenState createState() => _SettingsScreenState();
+}
+
+class _SettingsScreenState extends State<SettingsScreen> {
+  OfficeNotifier _officeNotifier;
+
+  final ipAddressController = TextEditingController();
+  final lonController = TextEditingController();
+  final latController = TextEditingController();
+  final authRangeController = TextEditingController();
+
+  @override
+  void dispose() {
+    super.dispose();
+    ipAddressController.dispose();
+    lonController.dispose();
+    latController.dispose();
+    authRangeController.dispose();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _officeNotifier = Provider.of<OfficeNotifier>(context);
+  }
+
+  Widget buildOfficeSettingsForm() {
+    final state = _officeNotifier.state;
+    final office = _officeNotifier.office;
+    switch (state) {
+      case NotifierState.LOADING:
+        return Center(child: CircularProgressIndicator());
+      case NotifierState.LOADED:
+        return office.fold(
+          (failure) => null,
+          (office) {
+            ipAddressController.text = office.ipAddress;
+            lonController.text = office.lon.toString();
+            latController.text = office.lat.toString();
+            authRangeController.text = office.authRange.toString();
+            return Column(
+              children: <Widget>[
+                AtaTextField(
+                  label: 'Office IP Address',
+                  type: TextInputType.number,
+                  controller: ipAddressController,
+                ),
+                AtaTextField(
+                  label: 'Office Location\'s Longitude',
+                  type: TextInputType.number,
+                  controller: lonController,
+                ),
+                AtaTextField(
+                  label: 'Office Location\'s Lattitude',
+                  type: TextInputType.number,
+                  controller: latController,
+                ),
+                AtaTextField(
+                  label: 'Authentication Range',
+                  type: TextInputType.number,
+                  controller: authRangeController,
+                ),
+                SizedBox(
+                  height: 30,
+                ),
+                AtaButton(
+                  label: 'Update',
+                  handler: () async {
+                    await _officeNotifier.updateOfficeSettings(
+                      ipAddressController.text,
+                      lonController.text,
+                      latController.text,
+                      authRangeController.text,
+                    );
+                  },
+                )
+              ],
+            );
+          },
+        );
+      case NotifierState.ERROR:
+        // TODO: Handle this case.
+        return null;
+      default:
+        return null;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -15,56 +101,10 @@ class SettingsScreen extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
       elevation: 8.0,
       child: Container(
-        height: 320,
+        height: 380,
+        width: double.infinity,
         padding: EdgeInsets.all(16.0),
-        child: Form(
-          child: FutureBuilder(
-            future: Provider.of<AuthNotifier>(context, listen: false).fetchOfficeSettings(),
-            builder: (ctx, AsyncSnapshot<dynamic> snapshot) {
-              if (snapshot.hasData) {
-                ipController.text = snapshot.data['ip'];
-                longsController.text = snapshot.data['location']['longs'];
-                latsController.text = snapshot.data['location']['lats'];
-              }
-              return snapshot.connectionState == ConnectionState.waiting
-                  ? Center(
-                      child: CircularProgressIndicator(),
-                    )
-                  : Column(
-                      children: <Widget>[
-                        AtaTextField(
-                          label: 'Office IP Address',
-                          type: TextInputType.number,
-                          controller: ipController,
-                        ),
-                        AtaTextField(
-                          label: 'Office Location\'s Longitude',
-                          type: TextInputType.number,
-                          controller: longsController,
-                        ),
-                        AtaTextField(
-                          label: 'Office Location\'s Lattitude',
-                          type: TextInputType.number,
-                          controller: latsController,
-                        ),
-                        SizedBox(
-                          height: 30,
-                        ),
-                        AtaButton(
-                          label: 'Update',
-                          handler: () async {
-                            await Provider.of<AuthNotifier>(context, listen: false).updateOfficeSettings(
-                              ipController.text,
-                              longsController.text,
-                              latsController.text,
-                            );
-                          },
-                        )
-                      ],
-                    );
-            },
-          ),
-        ),
+        child: buildOfficeSettingsForm(),
       ),
     );
   }

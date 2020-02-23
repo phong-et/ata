@@ -8,7 +8,6 @@ import 'package:ata/factories.dart';
 import 'package:ata/models/failure.dart';
 import 'package:ata/models/auth.dart';
 
-enum NotifierState { init, loading, loaded }
 enum AuthType { SignUp, SignIn }
 
 class AuthNotifier with ChangeNotifier {
@@ -24,6 +23,7 @@ class AuthNotifier with ChangeNotifier {
   }
 
   String get idToken {
+    if (_auth == null) return null;
     return _auth.fold(
       (failuse) => null,
       (auth) => auth.idToken,
@@ -86,9 +86,9 @@ class AuthNotifier with ChangeNotifier {
 
   Future<void> signOut() async {
     _setAuth(null);
-
     final prefs = await SharedPreferences.getInstance();
     prefs.clear();
+    await Future.delayed(Duration(milliseconds: 500));
   }
 
   Future<bool> autoSignIn() async {
@@ -119,23 +119,5 @@ class AuthNotifier with ChangeNotifier {
     ).attempt().mapLeftToFailure().run());
 
     return true;
-  }
-
-  // Admin features
-  Future<void> updateOfficeSettings(String ipAddress, String longs, String lats) async {
-    final officeUrl = 'https://atapp-7720c.firebaseio.com/office.json?auth=$idToken';
-
-    await Util.request(RequestType.PUT, officeUrl, {
-      'ip': ipAddress,
-      'location': {
-        'longs': longs,
-        'lats': lats,
-      },
-    });
-  }
-
-  Future<dynamic> fetchOfficeSettings() async {
-    final officeUrl = 'https://atapp-7720c.firebaseio.com/office.json?auth=$idToken';
-    return await Util.request(RequestType.GET, officeUrl);
   }
 }

@@ -1,6 +1,7 @@
-import 'package:ata/providers/ip_info_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:ata/util.dart';
+import 'package:ata/providers/ip_info_notifier.dart';
 
 class CheckIP extends StatelessWidget {
   @override
@@ -10,15 +11,20 @@ class CheckIP extends StatelessWidget {
         children: <Widget>[
           Consumer<IpInfoNotifier>(
             builder: (_, notifier, __) {
-              if (notifier.state == NotifierState.init)
-                return Text('Read to load device IP');
-              else if (notifier.state == NotifierState.loading)
-                return CircularProgressIndicator();
-              else {
-                return notifier.ipInfo.fold(
-                  (failure) => Text(failure.toString()),
-                  (ipInfo) => Text(ipInfo.ipAddress),
-                );
+              switch (notifier.state) {
+                case NotifierState.INIT:
+                  return Text('Read to load device IP');
+                case NotifierState.LOADING:
+                  return CircularProgressIndicator();
+                case NotifierState.LOADED:
+                  return notifier.ipInfo.fold(
+                    (failure) => Text(failure.toString()),
+                    (ipInfo) => Text(ipInfo.ipAddress),
+                  );
+                case NotifierState.ERROR:
+                  return Text('Something\'s wrong!');
+                default:
+                  return null;
               }
             },
           ),

@@ -2,7 +2,7 @@ import 'package:ata/screens/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_login/flutter_login.dart';
 import 'package:provider/provider.dart';
-import 'package:ata/providers/authNotifier.dart';
+import 'package:ata/providers/auth_notifier.dart';
 
 class LoginScreen extends StatelessWidget {
   static const routeName = '/login-screen';

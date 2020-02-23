@@ -1,10 +1,11 @@
-import 'package:ata/providers/authNotifier.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:ata/screens/login_screen.dart';
 import 'package:ata/screens/home_screen.dart';
 import 'package:ata/screens/loading-screen.dart';
 import 'package:ata/providers/ip_info_notifier.dart';
+import 'package:ata/providers/auth_notifier.dart';
+import 'package:ata/providers/office_notifier.dart';
 
 void main() => runApp(MyApp());
 
@@ -19,6 +20,10 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider.value(
           value: IpInfoNotifier(),
+        ),
+        ChangeNotifierProxyProvider<AuthNotifier, OfficeNotifier>(
+          create: (_) => null,
+          update: (_, authNotifier, officeNotifier) => OfficeNotifier(authNotifier.idToken),
         )
       ],
       child: Consumer<AuthNotifier>(

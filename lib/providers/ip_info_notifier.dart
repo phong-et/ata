@@ -4,11 +4,9 @@ import 'package:ata/util.dart';
 import 'package:ata/models/failure.dart';
 import 'package:ata/models/ip_info.dart';
 
-enum NotifierState { init, loading, loaded }
-
 class IpInfoNotifier with ChangeNotifier {
   //* Notifier status
-  NotifierState _state = NotifierState.init;
+  NotifierState _state = NotifierState.INIT;
   NotifierState get state => _state;
   void _setNotifierState(NotifierState state) {
     _state = state;
@@ -24,10 +22,10 @@ class IpInfoNotifier with ChangeNotifier {
   }
 
   void fetchDeviceIpInfo() async {
-    _setNotifierState(NotifierState.loading);
+    _setNotifierState(NotifierState.LOADING);
 
     await Util.request<IpInfo>(RequestType.GET, 'http://ip-api.com/json').then((value) => _setIpInfo(value));
 
-    _setNotifierState(NotifierState.loaded);
+    _setNotifierState(NotifierState.LOADED);
   }
 }
