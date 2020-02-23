@@ -22,22 +22,5 @@ class CheckInScreen extends StatelessWidget {
       title: 'Flutter Google Maps Demo',
       home: ATAMap(),
     );
-    //   return FutureBuilder(
-    //     future: getDeviceIP(),
-    //     builder: (ctx, AsyncSnapshot<Map<String, dynamic>> snapshot) => snapshot.connectionState == ConnectionState.waiting
-    //         ? LoadingScreen()
-    //         : Center(
-    //             child: snapshot.data['error'] != null
-    //                 ? Text(snapshot.data['error'].toString())
-    //                 : Column(
-    //                     mainAxisAlignment: MainAxisAlignment.center,
-    //                     children: <Widget>[
-    //                       Text(snapshot.data['city']),
-    //                       Text(snapshot.data['org']),
-    //                       Text(snapshot.data['query']),
-    //                     ],
-    //                   ),
-    //           ),
-    //   );
   }
 }

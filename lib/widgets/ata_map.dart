@@ -9,7 +9,7 @@ import 'package:maps_toolkit/maps_toolkit.dart' as mapsToolkit;
 ///
 /// Have some features
 /// 1. Specify current location of device
-/// 2. Pin any marker on map and move it 
+/// 2. Pin any marker on map and move it
 /// 3. Show circle around pin marker with deviation radius
 /// 4. Calulate distance between current location with pin marker position
 class ATAMap extends StatefulWidget {
@@ -31,7 +31,8 @@ class ATAMapState extends State<ATAMap> {
   static double currentMarkedLat;
   static double currentMarkedLng;
 
-  BitmapDescriptor pinLocationIcon;
+  BitmapDescriptor markedLocationIcon;
+  BitmapDescriptor currentLocationIcon;
   Set<Marker> _markers = Set();
   Set<Circle> _circles = Set();
   Completer<GoogleMapController> _controller = Completer();
@@ -39,41 +40,20 @@ class ATAMapState extends State<ATAMap> {
   @override
   void initState() {
     super.initState();
-    setCustomMapPin();
+    _setCustomMapIcons();
   }
 
-  void setCustomMapPin() async {
-    pinLocationIcon = await BitmapDescriptor.fromAssetImage(
+  void _setCustomMapIcons() async {
+    markedLocationIcon = await BitmapDescriptor.fromAssetImage(
         ImageConfiguration(size: Size(128, 128)),
-        'assets/images/current-location-marker.png');
+        'assets/images/marked-location-icon.png');
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return new Scaffold(
-      body: GoogleMap(
-          mapType: MapType.normal,
-          initialCameraPosition: DEFAULT_VIEW,
-          onMapCreated: (GoogleMapController controller) {
-            _controller.complete(controller);
-          },
-          myLocationEnabled: true,
-          markers: _markers,
-          circles: _circles,
-          onLongPress: _handleLongPress),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: _goToCurrentLocation,
-        label: Text('To current location'),
-        icon: Icon(Icons.location_on),
-      ),
-    );
-  }
-
-  Future<void> _goToCurrentLocation() async {
+  void _goToCurrentLocation() {
     setState(() async {
       try {
         var currentLocation = await Geolocator().getCurrentPosition();
-        //print(currentLocation);
+        print(currentLocation);
         final GoogleMapController controller = await _controller.future;
         controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
             //bearing: 192.8334901395799,
@@ -84,6 +64,8 @@ class ATAMapState extends State<ATAMap> {
         currentLng = currentLocation.longitude;
       } on PlatformException catch (e) {
         if (e.code == 'PERMISSION_DENIED') {
+          print(e);
+          print('PERMISSION_DENIED');
           showDialog(
               context: context,
               builder: (BuildContext context) {
@@ -104,10 +86,10 @@ class ATAMapState extends State<ATAMap> {
           markerId: MarkerId(point.toString()),
           position: point,
           infoWindow: InfoWindow(
-            title: '${point.latitude}, ${point.longitude}',
-            snippet: 'Distance with current location ${_calcDistance(mapsToolkit.LatLng(point.latitude, point.longitude), mapsToolkit.LatLng(currentLat, currentLng))} m'
-          ),
-          icon: pinLocationIcon,
+              title: '${point.latitude}, ${point.longitude}',
+              snippet:
+                  'Distance with current location ${_calcDistance(mapsToolkit.LatLng(point.latitude, point.longitude), mapsToolkit.LatLng(currentLat, currentLng))} m'),
+          icon: markedLocationIcon,
           onTap: () {
             print('Tapped');
           },
@@ -131,7 +113,34 @@ class ATAMapState extends State<ATAMap> {
     _addMarker(point);
   }
 
-  double _calcDistance(mapsToolkit.LatLng point1, mapsToolkit.LatLng point2) {
-    return mapsToolkit.SphericalUtil.computeDistanceBetween(point1, point2);
+  int _calcDistance(mapsToolkit.LatLng point1, mapsToolkit.LatLng point2) {
+    return mapsToolkit.SphericalUtil.computeDistanceBetween(point1, point2).round();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return new Scaffold(
+      body: GoogleMap(
+          mapType: MapType.normal,
+          initialCameraPosition: DEFAULT_VIEW,
+          onMapCreated: (GoogleMapController controller) {
+            _controller.complete(controller);
+          },
+          myLocationEnabled: true,
+          myLocationButtonEnabled: false,
+          mapToolbarEnabled: true,
+          compassEnabled: true,
+          markers: _markers,
+          circles: _circles,
+          onLongPress: _handleLongPress),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _goToCurrentLocation,
+        backgroundColor: Colors.white70,
+        foregroundColor: Colors.black54,
+        child: Icon(Icons.my_location),
+        shape: RoundedRectangleBorder(side: BorderSide(color: Colors.white70, width: 1)),
+        mini: true,
+      ),
+    );
   }
 }
