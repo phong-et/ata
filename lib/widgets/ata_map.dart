@@ -5,16 +5,26 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter/services.dart';
 import 'package:maps_toolkit/maps_toolkit.dart' as mapsToolkit;
 
-//import 'package:maps_toolkit/maps_toolkit.dart' as mapToolkit;
+/// A customize of Flutter Google Map, only use for ATA App.
+///
+/// Have some features
+/// 1. Specify current location of device
+/// 2. Pin any marker on map and move it 
+/// 3. Show circle around pin marker with deviation radius
+/// 4. Calulate distance between current location with pin marker position
 class ATAMap extends StatefulWidget {
   @override
   State<ATAMap> createState() => ATAMapState();
 }
 
 class ATAMapState extends State<ATAMap> {
+  static const double DEFAULT_ZOOM = 14;
+  // unit meter (m)
+  static const double DEVIATION_RADIUS = 100;
+
   static const CameraPosition DEFAULT_VIEW = CameraPosition(
     target: LatLng(37.42796133580664, -122.085749655962),
-    zoom: 14.4746,
+    zoom: DEFAULT_ZOOM,
   );
   static double currentLat;
   static double currentLng;
@@ -69,7 +79,7 @@ class ATAMapState extends State<ATAMap> {
             //bearing: 192.8334901395799,
             target: LatLng(currentLocation.latitude, currentLocation.longitude),
             //tilt: 59.440717697143555,
-            zoom: 19.151926040649414)));
+            zoom: DEFAULT_ZOOM)));
         currentLat = currentLocation.latitude;
         currentLng = currentLocation.longitude;
       } on PlatformException catch (e) {
@@ -88,11 +98,14 @@ class ATAMapState extends State<ATAMap> {
 
   void _addMarker(LatLng point) {
     setState(() {
+      _markers.clear();
+      _circles.clear();
       _markers.add(Marker(
           markerId: MarkerId(point.toString()),
           position: point,
           infoWindow: InfoWindow(
-            title: 'Lat: ${point.latitude}, lng:${point.longitude}',
+            title: '${point.latitude}, ${point.longitude}',
+            snippet: 'Distance with current location ${_calcDistance(mapsToolkit.LatLng(point.latitude, point.longitude), mapsToolkit.LatLng(currentLat, currentLng))} m'
           ),
           icon: pinLocationIcon,
           onTap: () {
@@ -100,33 +113,25 @@ class ATAMapState extends State<ATAMap> {
           },
           draggable: true,
           onDragEnd: ((newPoint) {
-            _markers.clear();
-            _circles.clear();
             _addMarker(newPoint);
             currentMarkedLat = newPoint.latitude;
             currentMarkedLng = newPoint.longitude;
           })));
+      _circles.add(Circle(
+          circleId: CircleId(point.toString()),
+          center: point,
+          radius: DEVIATION_RADIUS,
+          strokeWidth: 1,
+          strokeColor: Colors.blue.withOpacity(0.3),
+          fillColor: Colors.blue.withOpacity(0.2)));
     });
-    _circles.add(Circle(
-        circleId: CircleId(point.toString()),
-        center: point,
-        radius: 1000,
-        strokeWidth: 1,
-        strokeColor: Colors.blue.withOpacity(0.3),
-        fillColor: Colors.blue.withOpacity(0.2)));
-    _calcDistance(mapsToolkit.LatLng(currentMarkedLat, currentMarkedLng),
-        mapsToolkit.LatLng(currentLat, currentLng));
   }
 
   void _handleLongPress(LatLng point) {
-    _markers.clear();
-    _circles.clear();
     _addMarker(point);
   }
 
-  void _calcDistance(mapsToolkit.LatLng point1, mapsToolkit.LatLng point2) {
-    final distance =
-        mapsToolkit.SphericalUtil.computeDistanceBetween(point1, point2) / 1000;
-    print('Distance is $distance km.');
+  double _calcDistance(mapsToolkit.LatLng point1, mapsToolkit.LatLng point2) {
+    return mapsToolkit.SphericalUtil.computeDistanceBetween(point1, point2);
   }
 }
