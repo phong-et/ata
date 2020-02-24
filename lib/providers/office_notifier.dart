@@ -32,7 +32,8 @@ class OfficeNotifier with ChangeNotifier {
   //! Admin features
   Future<void> fetchOfficeSettings() async {
     _setNotifierState(NotifierState.LOADING);
-    final officeUrl = 'https://atapp-7720c.firebaseio.com/office.json?auth=$_idToken';
+    final officeUrl =
+        'https://atapp-7720c.firebaseio.com/office.json?auth=$_idToken';
     _setOffice(
       await Util.request<Office>(
         RequestType.GET,
@@ -45,7 +46,7 @@ class OfficeNotifier with ChangeNotifier {
       },
       (office) {
         if (office.error != null)
-          _setNotifierState(NotifierState.ERROR);
+          _setNotifierState(NotifierState.LOADED_ERROR);
         else
           _setNotifierState(NotifierState.LOADED);
       },
@@ -53,19 +54,27 @@ class OfficeNotifier with ChangeNotifier {
   }
 
   //! Admin features
-  Future<void> updateOfficeSettings(String ipAddress, String lon, String lat, String authRange) async {
-    final officeUrl = 'https://atapp-7720c.firebaseio.com/office.json?auth=$_idToken';
-    _setNotifierState(NotifierState.LOADING);
-    await Util.request(
-      RequestType.PUT,
-      officeUrl,
-      {
-        'ipAddress': ipAddress,
-        'lon': lon,
-        'lat': lat,
-        'authRange': authRange,
-      },
+  Future<void> updateOfficeSettings(
+    String ipAddress,
+    String lon,
+    String lat,
+    String authRange,
+  ) async {
+    final officeUrl =
+        'https://atapp-7720c.firebaseio.com/office.json?auth=$_idToken';
+    // _setNotifierState(NotifierState.LOADING);
+    _setOffice(
+      await Util.request<Office>(
+        RequestType.PUT,
+        officeUrl,
+        {
+          'ipAddress': ipAddress,
+          'lon': double.parse(lon),
+          'lat': double.parse(lat),
+          'authRange': double.parse(authRange),
+        },
+      ),
     );
-    _setNotifierState(NotifierState.LOADED);
+    // _setNotifierState(NotifierState.LOADED);
   }
 }

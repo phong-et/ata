@@ -4,7 +4,7 @@ class Office {
   String ipAddress;
   double lon;
   double lat;
-  int authRange;
+  double authRange;
   String error;
 
   Office({

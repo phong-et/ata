@@ -11,12 +11,13 @@ enum NotifierState {
   INIT,
   LOADING,
   ERROR,
-  LOADEDERROR,
+  LOADED_ERROR,
   LOADED,
 }
 
 class Util {
-  static Future<dynamic> _request(RequestType type, String url, [Map<String, dynamic> requestPayload = const {}]) async {
+  static Future<dynamic> _request(RequestType type, String url,
+      [Map<String, dynamic> requestPayload = const {}]) async {
     try {
       http.Response response;
       switch (type) {
@@ -71,7 +72,8 @@ class Util {
     }
   }
 
-  static Future<Either<Failure, T>> request<T>(RequestType type, String url, [Map<String, dynamic> requestPayload = const {}]) async {
+  static Future<Either<Failure, T>> request<T>(RequestType type, String url,
+      [Map<String, dynamic> requestPayload = const {}]) async {
     return await Task(() async {
       final parsedJson = await _request(type, url, requestPayload);
       return make<T>(parsedJson);
