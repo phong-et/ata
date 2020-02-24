@@ -32,7 +32,6 @@ class ATAMapState extends State<ATAMap> {
   static double currentMarkedLng;
 
   BitmapDescriptor markedLocationIcon;
-  BitmapDescriptor currentLocationIcon;
   Set<Marker> _markers = Set();
   Set<Circle> _circles = Set();
   Completer<GoogleMapController> _controller = Completer();
@@ -52,16 +51,14 @@ class ATAMapState extends State<ATAMap> {
   void _goToCurrentLocation() {
     setState(() async {
       try {
-        var currentLocation = await Geolocator().getCurrentPosition();
-        print(currentLocation);
+        var currentPosition = await Geolocator().getCurrentPosition();
+        print(currentPosition);
         final GoogleMapController controller = await _controller.future;
         controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
-            //bearing: 192.8334901395799,
-            target: LatLng(currentLocation.latitude, currentLocation.longitude),
-            //tilt: 59.440717697143555,
+            target: LatLng(currentPosition.latitude, currentPosition.longitude),
             zoom: DEFAULT_ZOOM)));
-        currentLat = currentLocation.latitude;
-        currentLng = currentLocation.longitude;
+        currentLat = currentPosition.latitude;
+        currentLng = currentPosition.longitude;
       } on PlatformException catch (e) {
         if (e.code == 'PERMISSION_DENIED') {
           print(e);
@@ -128,8 +125,6 @@ class ATAMapState extends State<ATAMap> {
           },
           myLocationEnabled: true,
           myLocationButtonEnabled: false,
-          mapToolbarEnabled: true,
-          compassEnabled: true,
           markers: _markers,
           circles: _circles,
           onLongPress: _handleLongPress),
