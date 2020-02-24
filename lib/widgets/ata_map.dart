@@ -17,7 +17,6 @@ class ATAMap extends StatefulWidget {
   final double centerMapLng;
   final double markedLat;
   final double markedLng;
-  //ATAMap({this.centerMapLat = 37.427961335, this.centerMapLng = -122.08574966},double markedLat, double markedLng){}
   ATAMap(
       {this.markedLat = 10.7440878,
       this.markedLng = 106.7007886,
@@ -35,12 +34,12 @@ class ATAMap extends StatefulWidget {
 class ATAMapState extends State<ATAMap> {
   static const double DEFAULT_ZOOM = 17;
   static const double DEVIATION_RADIUS = 100;
+  static const int TIMEOUT_PIN_MARKER_MAP_LOADED = 3;
   CameraPosition defaultCamera;
-  static double currentLat;
-  static double currentLng;
-  double currentMarkedLat;
-  double currentMarkedLng;
-  static bool ableCheckIn = false;
+  static double currentLocationLat;
+  static double currentLocationLng;
+  
+  static bool isCheckinable = false;
   BitmapDescriptor markedLocationIcon;
   Set<Marker> _markers = Set();
   Set<Circle> _circles = Set();
@@ -48,6 +47,8 @@ class ATAMapState extends State<ATAMap> {
 
   final double centerMapLat;
   final double centerMapLng;
+  double currentMarkedLat;
+  double currentMarkedLng;
   ATAMapState(
       {this.currentMarkedLat,
       this.currentMarkedLng,
@@ -62,7 +63,6 @@ class ATAMapState extends State<ATAMap> {
   void initState() {
     super.initState();
     _setCustomMapIcons();
-    //_addMarker(LatLng(this.currentMarkedLat, this.currentMarkedLng));
   }
 
   void _setCustomMapIcons() async {
@@ -80,8 +80,8 @@ class ATAMapState extends State<ATAMap> {
         controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
             target: LatLng(currentPosition.latitude, currentPosition.longitude),
             zoom: DEFAULT_ZOOM)));
-        currentLat = currentPosition.latitude;
-        currentLng = currentPosition.longitude;
+        currentLocationLat = currentPosition.latitude;
+        currentLocationLng = currentPosition.longitude;
       } on PlatformException catch (e) {
         if (e.code == 'PERMISSION_DENIED') {
           print(e.code);
@@ -103,15 +103,14 @@ class ATAMapState extends State<ATAMap> {
       _circles.clear();
       currentMarkedLat = point.latitude;
       currentMarkedLng = point.longitude;
-      ableCheckIn = isAvailableCheckIn();
-      //_setCustomMapIcons();
+      isCheckinable = isValidCheckin();
       _markers.add(Marker(
           markerId: MarkerId(point.toString()),
           position: point,
           infoWindow: InfoWindow(
               title: '${point.latitude}, ${point.longitude}',
               snippet:
-                  'Distance :${_calcDistance(maps.LatLng(point.latitude, point.longitude), maps.LatLng(currentLat, currentLng))} m -> ableCheckIn:$ableCheckIn'),
+                  'Distance :${_calcDistance(maps.LatLng(point.latitude, point.longitude), maps.LatLng(currentLocationLat, currentLocationLng))} m -> isCheckinable:$isCheckinable'),
           icon: markedLocationIcon,
           draggable: true,
           onDragEnd: ((newPoint) {
@@ -137,15 +136,14 @@ class ATAMapState extends State<ATAMap> {
     return maps.SphericalUtil.computeDistanceBetween(point1, point2).round();
   }
 
-  bool isAvailableCheckIn() {
+  bool isValidCheckin() {
     return _calcDistance(maps.LatLng(currentMarkedLat, currentMarkedLng),
-            maps.LatLng(currentLat, currentLng)) <=
+            maps.LatLng(currentLocationLat, currentLocationLng)) <=
         DEVIATION_RADIUS;
   }
 
   @override
   Widget build(BuildContext context) {
-    //_addMarker(LatLng(this.currentMarkedLat, this.currentMarkedLng));
     return new Scaffold(
       body: GoogleMap(
           mapType: MapType.normal,
@@ -153,7 +151,7 @@ class ATAMapState extends State<ATAMap> {
           onMapCreated: (GoogleMapController controller) {
             _controller.complete(controller);
             Future.delayed(
-                const Duration(seconds: 3),
+                const Duration(seconds: TIMEOUT_PIN_MARKER_MAP_LOADED),
                 () => _addMarker(
                     LatLng(this.currentMarkedLat, this.currentMarkedLng)));
           },
