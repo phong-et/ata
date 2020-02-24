@@ -39,7 +39,17 @@ class OfficeNotifier with ChangeNotifier {
         officeUrl,
       ),
     );
-    _setNotifierState(NotifierState.LOADED);
+    _office.fold(
+      (failure) {
+        _setNotifierState(NotifierState.ERROR);
+      },
+      (office) {
+        if (office.error != null)
+          _setNotifierState(NotifierState.ERROR);
+        else
+          _setNotifierState(NotifierState.LOADED);
+      },
+    );
   }
 
   //! Admin features

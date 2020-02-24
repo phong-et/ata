@@ -7,7 +7,13 @@ import 'package:ata/factories.dart';
 import 'models/failure.dart';
 
 enum RequestType { POST, GET, PUT, PATCH, DELETE }
-enum NotifierState { INIT, LOADING, LOADED, ERROR }
+enum NotifierState {
+  INIT,
+  LOADING,
+  ERROR,
+  LOADEDERROR,
+  LOADED,
+}
 
 class Util {
   static Future<dynamic> _request(RequestType type, String url, [Map<String, dynamic> requestPayload = const {}]) async {
