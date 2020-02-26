@@ -11,34 +11,40 @@ import 'package:maps_toolkit/maps_toolkit.dart' as maps;
 /// 1. Specify current location of device
 /// 2. Pin any marker on map and move it
 /// 3. Show circle around pin marker with deviation radius
-/// 4. Calulate distance between current location with pin marker position
+/// 4. Calulate distance between current location and marker position
 class ATAMap extends StatefulWidget {
   final double centerMapLat;
   final double centerMapLng;
   final double markedLat;
   final double markedLng;
+  final bool isMoveableMarker;
+  final String titleMarker;
   ATAMap(
       {this.markedLat = 10.7440878,
       this.markedLng = 106.7007886,
       this.centerMapLat = 10.7440878,
-      this.centerMapLng = 106.7007886});
+      this.centerMapLng = 106.7007886,
+      this.isMoveableMarker = false,
+      this.titleMarker = "Marked Place"});
 
   @override
   State<ATAMap> createState() => ATAMapState(
       currentMarkedLat: markedLat,
       currentMarkedLng: markedLng,
       centerMapLat: centerMapLat,
-      centerMapLng: centerMapLng);
+      centerMapLng: centerMapLng,
+      isMoveableMarker: isMoveableMarker,
+      titleMarker: titleMarker);
 }
 
 class ATAMapState extends State<ATAMap> {
   static const double DEFAULT_ZOOM = 17;
   static const double DEVIATION_RADIUS = 100;
-  static const int TIMEOUT_PIN_MARKER_MAP_LOADED = 3;
+  static const int TIMEOUT_PIN_MARKER_MAP_LOADED = 4;
   CameraPosition defaultCamera;
   static double currentLocationLat;
   static double currentLocationLng;
-  
+
   static bool isCheckinable = false;
   BitmapDescriptor markedLocationIcon;
   Set<Marker> _markers = Set();
@@ -49,11 +55,15 @@ class ATAMapState extends State<ATAMap> {
   final double centerMapLng;
   double currentMarkedLat;
   double currentMarkedLng;
+  final bool isMoveableMarker;
+  final String titleMarker;
   ATAMapState(
       {this.currentMarkedLat,
       this.currentMarkedLng,
       this.centerMapLat,
-      this.centerMapLng}) {
+      this.centerMapLng,
+      this.isMoveableMarker,
+      this.titleMarker}) {
     defaultCamera = CameraPosition(
       target: LatLng(centerMapLat, centerMapLng),
       zoom: DEFAULT_ZOOM,
@@ -82,6 +92,7 @@ class ATAMapState extends State<ATAMap> {
             zoom: DEFAULT_ZOOM)));
         currentLocationLat = currentPosition.latitude;
         currentLocationLng = currentPosition.longitude;
+        _addMarker(LatLng(this.currentMarkedLat, this.currentMarkedLng));
       } on PlatformException catch (e) {
         if (e.code == 'PERMISSION_DENIED') {
           print(e.code);
@@ -108,15 +119,17 @@ class ATAMapState extends State<ATAMap> {
           markerId: MarkerId(point.toString()),
           position: point,
           infoWindow: InfoWindow(
-              title: '${point.latitude}, ${point.longitude}',
+              title: '$titleMarker',
               snippet:
                   'Distance :${_calcDistance(maps.LatLng(point.latitude, point.longitude), maps.LatLng(currentLocationLat, currentLocationLng))} m -> isCheckinable:$isCheckinable'),
           icon: markedLocationIcon,
-          draggable: true,
+          draggable: isMoveableMarker,
           onDragEnd: ((newPoint) {
-            _addMarker(newPoint);
-            currentMarkedLat = newPoint.latitude;
-            currentMarkedLng = newPoint.longitude;
+            if (isMoveableMarker == true) {
+              _addMarker(newPoint);
+              currentMarkedLat = newPoint.latitude;
+              currentMarkedLng = newPoint.longitude;
+            }
           })));
       _circles.add(Circle(
           circleId: CircleId(point.toString()),
@@ -129,7 +142,7 @@ class ATAMapState extends State<ATAMap> {
   }
 
   void _handleLongPress(LatLng point) {
-    _addMarker(point);
+    if (isMoveableMarker == true) _addMarker(point);
   }
 
   int _calcDistance(maps.LatLng point1, maps.LatLng point2) {
@@ -148,9 +161,9 @@ class ATAMapState extends State<ATAMap> {
       body: GoogleMap(
           mapType: MapType.normal,
           initialCameraPosition: defaultCamera,
-          onMapCreated: (GoogleMapController controller) {
+          onMapCreated: (GoogleMapController controller) async {
             _controller.complete(controller);
-            Future.delayed(
+            await Future.delayed(
                 const Duration(seconds: TIMEOUT_PIN_MARKER_MAP_LOADED),
                 () => _addMarker(
                     LatLng(this.currentMarkedLat, this.currentMarkedLng)));

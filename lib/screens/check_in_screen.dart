@@ -20,10 +20,7 @@ class CheckInScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Google Maps Demo',
-      home: ATAMap(
-        centerMapLat: 10.7440878,
-        centerMapLng: 106.7007886,
-      ),
+      home: ATAMap(isMoveableMarker: false, titleMarker: 'Office Position',),
     );
   }
 }
