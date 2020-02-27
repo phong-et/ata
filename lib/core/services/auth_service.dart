@@ -1,16 +1,15 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:dartz/dartz.dart';
-import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ata/util.dart';
 import 'package:ata/factories.dart';
-import 'package:ata/models/failure.dart';
-import 'package:ata/models/auth.dart';
+import 'package:ata/core/models/failure.dart';
+import 'package:ata/core/models/auth.dart';
 
 enum AuthType { SignUp, SignIn }
 
-class AuthNotifier with ChangeNotifier {
+class AuthService {
   //* Model reference
   Either<Failure, Auth> _auth;
   Either<Failure, Auth> get auth => _auth;

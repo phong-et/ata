@@ -1,8 +1,8 @@
-import 'package:ata/screens/home_screen.dart';
+import 'package:ata/ui/screens/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_login/flutter_login.dart';
 import 'package:provider/provider.dart';
-import 'package:ata/providers/auth_notifier.dart';
+import 'package:ata/core/services/auth_service.dart';
 
 class LoginScreen extends StatelessWidget {
   static const routeName = '/login-screen';
@@ -13,12 +13,12 @@ class LoginScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var authNotifier = Provider.of<AuthNotifier>(context);
+    var authService = Provider.of<AuthService>(context);
 
     return FlutterLogin(
       title: 'Elitetech',
-      onLogin: (loginData) => authNotifier.authenticate(loginData.name, loginData.password, AuthType.SignIn),
-      onSignup: (loginData) => authNotifier.authenticate(loginData.name, loginData.password, AuthType.SignUp),
+      onLogin: (loginData) => authService.authenticate(loginData.name, loginData.password, AuthType.SignIn),
+      onSignup: (loginData) => authService.authenticate(loginData.name, loginData.password, AuthType.SignUp),
       onRecoverPassword: (_) => Future(null),
       onSubmitAnimationCompleted: () {
         Navigator.of(context).pushReplacementNamed(HomeScreen.routeName);

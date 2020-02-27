@@ -1,6 +1,6 @@
-import 'package:ata/models/auth.dart';
-import 'package:ata/models/ip_info.dart';
-import 'package:ata/models/office.dart';
+import 'package:ata/core/models/auth.dart';
+import 'package:ata/core/models/ip_info.dart';
+import 'package:ata/core/models/office.dart';
 
 /// Add factory functions for every Type and every constructor you want to make available to `make`
 final factories = <Type, Function>{

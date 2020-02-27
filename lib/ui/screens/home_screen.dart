@@ -1,10 +1,10 @@
-import 'package:ata/screens/login_screen.dart';
+import 'package:ata/ui/screens/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:ata/screens/check_in_screen.dart';
-import 'package:ata/providers/auth_notifier.dart';
-import 'package:ata/screens/report_screen.dart';
-import 'package:ata/screens/settings_screen.dart';
+import 'package:ata/ui/screens/check_in_screen.dart';
+import 'package:ata/core/services/auth_service.dart';
+import 'package:ata/ui/screens/report_screen.dart';
+import 'package:ata/ui/screens/settings_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   static const routeName = '/home-screen';
@@ -55,7 +55,7 @@ class _HomeScreenState extends State<HomeScreen> {
             IconButton(
               icon: Icon(Icons.exit_to_app),
               onPressed: () async {
-                await Provider.of<AuthNotifier>(context, listen: false).signOut();
+                await Provider.of<AuthService>(context, listen: false).signOut();
                 Navigator.of(context).pushReplacementNamed(LoginScreen.routeName);
               },
             ),
