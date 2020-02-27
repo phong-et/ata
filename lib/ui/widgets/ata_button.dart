@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
 class AtaButton extends StatefulWidget {
-  final Function handler;
+  final Function onPressed;
   final String label;
 
-  AtaButton({this.handler, this.label = ''});
+  AtaButton({@required this.onPressed, this.label = ''});
 
   @override
   _AtaButtonState createState() => _AtaButtonState();
@@ -17,10 +17,11 @@ class _AtaButtonState extends State<AtaButton> {
     setState(() {
       _isLoading = true;
     });
-    await widget.handler();
-    setState(() {
-      _isLoading = false;
-    });
+    await widget.onPressed();
+    if (mounted)
+      setState(() {
+        _isLoading = false;
+      });
   }
 
   @override
