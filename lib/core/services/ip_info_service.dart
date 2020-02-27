@@ -11,7 +11,7 @@ class IpInfoService {
     _ipInfo = ipInfo;
   }
 
-  void fetchDeviceIpInfo() async {
+  Future<void> fetchDeviceIpInfo() async {
     await Util.request<IpInfo>(RequestType.GET, 'http://ip-api.com/json').then((value) => _setIpInfo(value));
   }
 }
