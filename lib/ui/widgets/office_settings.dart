@@ -25,18 +25,23 @@ class OfficeSettings extends StatelessWidget {
             TextField(
               decoration: InputDecoration(labelText: 'Office IP Address'),
               controller: ipAddressController,
+              //* TextStyle currently cassing issue, will be fixed soon by Flutter team *//
+              // style: TextStyle(color: notifier.busy ? Colors.grey : Colors.white),
             ),
             TextField(
               decoration: InputDecoration(labelText: 'Office Location\'s Longitude'),
               controller: lonController,
+              // style: TextStyle(color: notifier.busy ? Colors.grey : Colors.white),
             ),
             TextField(
               decoration: InputDecoration(labelText: 'Office Location\'s Lattitude'),
               controller: latController,
+              // style: TextStyle(color: notifier.busy ? Colors.grey : Colors.white),
             ),
             TextField(
               decoration: InputDecoration(labelText: 'Authentication Range'),
               controller: authRangeController,
+              // style: TextStyle(color: notifier.busy ? Colors.grey : Colors.white),
             ),
             SizedBox(
               height: 30,
