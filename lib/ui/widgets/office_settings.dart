@@ -2,6 +2,7 @@ import 'package:ata/core/notifiers/office_settings_notifier.dart';
 import 'package:ata/ui/widgets/ata_button.dart';
 import 'package:ata/ui/widgets/base_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class OfficeSettings extends StatelessWidget {
   final ipAddressController = TextEditingController();
@@ -12,8 +13,13 @@ class OfficeSettings extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BaseWidget<OfficeSettingsNotifier>(
-      notifier: OfficeSettingsNotifier(),
+      notifier: OfficeSettingsNotifier(Provider.of(context)),
+      onNotifierReady: (notifier) => notifier.getOfficeSettings(),
       builder: (context, notifier, child) {
+        ipAddressController.text = notifier.busy ? 'Loading ...' : notifier.ipAddress;
+        lonController.text = notifier.busy ? 'Loading ...' : notifier.officeLon;
+        latController.text = notifier.busy ? 'Loading ...' : notifier.officeLon;
+        authRangeController.text = notifier.busy ? 'Loading ...' : notifier.authRange;
         return Column(
           children: <Widget>[
             TextField(
@@ -36,14 +42,23 @@ class OfficeSettings extends StatelessWidget {
               height: 30,
             ),
             Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 AtaButton(
-                  label: 'Update',
-                  onPressed: () {},
+                  label: 'Refresh',
+                  onPressed: notifier.busy ? null : () => notifier.getOfficeSettings(),
                 ),
+                SizedBox(width: 25.0),
                 AtaButton(
                   label: 'Update',
-                  onPressed: () {},
+                  onPressed: notifier.busy
+                      ? null
+                      : () => notifier.saveOfficeSettings(
+                            ipAddressController.text,
+                            lonController.text,
+                            latController.text,
+                            authRangeController.text,
+                          ),
                 )
               ],
             ),

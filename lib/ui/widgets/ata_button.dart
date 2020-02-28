@@ -13,15 +13,20 @@ class AtaButton extends StatefulWidget {
 class _AtaButtonState extends State<AtaButton> {
   bool _isLoading = false;
 
-  void invokeHandler() async {
-    setState(() {
-      _isLoading = true;
-    });
-    await widget.onPressed();
-    if (mounted)
-      setState(() {
-        _isLoading = false;
-      });
+  Function get invokeHandler {
+    if (widget.onPressed == null)
+      return null;
+    else
+      return () async {
+        setState(() {
+          _isLoading = true;
+        });
+        await widget.onPressed();
+        if (mounted)
+          setState(() {
+            _isLoading = false;
+          });
+      };
   }
 
   @override
