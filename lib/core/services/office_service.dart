@@ -5,15 +5,12 @@ import 'package:ata/core/models/office.dart';
 
 class OfficeService {
   String _idToken;
-  OfficeService(this._idToken) {
-    fetchOfficeSettings();
-  }
 
   //* Model reference
-  Either<Failure, Office> _office;
-  Either<Failure, Office> get office => _office;
-  void _setOffice(Either<Failure, Office> office) {
-    _office = office;
+  Either<Failure, Office> _officeSettings;
+  Either<Failure, Office> get officeSettings => _officeSettings;
+  void _setOffice(Either<Failure, Office> officeSettings) {
+    _officeSettings = officeSettings;
   }
 
   void setAuthToken(String token) {
@@ -23,25 +20,24 @@ class OfficeService {
   //! Admin features
   Future<void> fetchOfficeSettings() async {
     // _setNotifierState(NotifierState.LOADING);
-    final officeUrl = 'https://atapp-7720c.firebaseio.com/office.json?auth=$_idToken';
-    _setOffice(
-      await Util.request<Office>(
-        RequestType.GET,
-        officeUrl,
-      ),
-    );
-    _office.fold(
-      (failure) {
-        // _setNotifierState(NotifierState.ERROR);
-      },
-      (office) {
-        if (office.error != null) {
-        }
-        // _setNotifierState(NotifierState.LOADED_ERROR);
-        else {}
-        // _setNotifierState(NotifierState.LOADED);
-      },
-    );
+    final officeUrl =
+        'https://atapp-7720c.firebaseio.com/office.json?auth=$_idToken';
+    await Util.request<Office>(
+      RequestType.GET,
+      officeUrl,
+    ).then((value) => _setOffice(value));
+    // _office.fold(
+    //   (failure) {
+    //     _setNotifierState(NotifierState.ERROR);
+    //   },
+    //   (office) {
+    //     if (office.error != null) {
+    //     }
+    //     _setNotifierState(NotifierState.LOADED_ERROR);
+    //     else {}
+    //     _setNotifierState(NotifierState.LOADED);
+    //   },
+    // );
   }
 
   //! Admin features
@@ -51,7 +47,8 @@ class OfficeService {
     String lat,
     String authRange,
   ) async {
-    final officeUrl = 'https://atapp-7720c.firebaseio.com/office.json?auth=$_idToken';
+    final officeUrl =
+        'https://atapp-7720c.firebaseio.com/office.json?auth=$_idToken';
     // _setNotifierState(NotifierState.LOADING);
     _setOffice(
       await Util.request<Office>(
