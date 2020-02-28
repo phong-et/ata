@@ -31,14 +31,23 @@ class _AtaButtonState extends State<AtaButton> {
 
   @override
   Widget build(BuildContext context) {
-    return RaisedButton(
-      child: _isLoading
+    return FlatButton.icon(
+      disabledColor: Theme.of(context).primaryColor.withOpacity(0.5),
+      disabledTextColor: Colors.white,
+      color: Theme.of(context).accentColor,
+      textColor: Colors.white,
+      icon: _isLoading
           ? SizedBox(
-              child: CircularProgressIndicator(),
-              height: 20.0,
               width: 20.0,
+              height: 20.0,
+              child: CircularProgressIndicator(
+                backgroundColor: Colors.white,
+              ),
             )
-          : Text(widget.label),
+          : Icon(Icons.refresh),
+      label: Text(
+        widget.label,
+      ),
       onPressed: _isLoading ? null : invokeHandler,
     );
   }

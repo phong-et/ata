@@ -13,8 +13,7 @@ class DeviceIp extends StatelessWidget {
       notifier: DeviceIpNotifier(Provider.of(context)),
       onNotifierReady: (notifier) => notifier.getIpAddress(),
       builder: (context, notifier, child) {
-        ipAddressController.text =
-            notifier.busy ? 'Loading ...' : notifier.ipAddress;
+        ipAddressController.text = notifier.busy ? 'Loading ...' : notifier.ipAddress;
         return Row(
           children: <Widget>[
             Expanded(
@@ -25,7 +24,7 @@ class DeviceIp extends StatelessWidget {
               ),
             ),
             AtaButton(
-              onPressed: () => notifier.getIpAddress(),
+              onPressed: notifier.busy ? null : () => notifier.getIpAddress(),
               label: 'Refresh',
             ),
           ],
