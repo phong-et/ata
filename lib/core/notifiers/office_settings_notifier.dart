@@ -23,7 +23,10 @@ class OfficeSettingsNotifier extends BaseNotifier {
 
   Future<void> saveOfficeSettings(String ipAddress, String lon, String lat, String authRange) async {
     setBusy(true);
-    await _officeService.updateOfficeSettings(ipAddress, lon, lat, authRange);
+    await _officeService.updateOfficeSettings(ipAddress, lon, lat, authRange).catchError((error) {
+      //! Implement error handling here ...
+      print(error);
+    });
     setNotifierInfo(_officeService.officeSettings);
     setBusy(false);
   }
@@ -41,7 +44,6 @@ class OfficeSettingsNotifier extends BaseNotifier {
         officeLon = office.error == null ? office.lon.toString() : office.error;
         officeLat = office.error == null ? office.lat.toString() : office.error;
         authRange = office.error == null ? office.authRange.toString() : office.error;
-        print(office.toJson().toString());
       },
     );
   }
