@@ -15,7 +15,7 @@ import 'package:maps_toolkit/maps_toolkit.dart' as maps;
 /// ```dart
 /// ATAMap(
 ///    isMoveableMarker: true,
-///    titleMarker: 'Office Position',
+///    titleMarkedPosition: 'Office Position',
 ///    centerMapLat: 10.762622,
 ///    centerMapLng:  106.660172,
 ///)
@@ -26,14 +26,14 @@ class ATAMap extends StatefulWidget {
   final double markedLat;
   final double markedLng;
   final bool isMoveableMarker;
-  final String titleMarker;
+  final String titleMarkedPosition;
   ATAMap(
       {this.markedLat = 10.7440878,
       this.markedLng = 106.7007886,
       this.centerMapLat = 10.7440878,
       this.centerMapLng = 106.7007886,
       this.isMoveableMarker = false,
-      this.titleMarker = "Marked Place"});
+      this.titleMarkedPosition = "Lat,Lng"});
 
   @override
   State<ATAMap> createState() => ATAMapState(
@@ -42,7 +42,7 @@ class ATAMap extends StatefulWidget {
       centerMapLat: centerMapLat,
       centerMapLng: centerMapLng,
       isMoveableMarker: isMoveableMarker,
-      titleMarker: titleMarker);
+      titleMarkedPosition: titleMarkedPosition);
 }
 
 class ATAMapState extends State<ATAMap> {
@@ -63,9 +63,9 @@ class ATAMapState extends State<ATAMap> {
 
   BitmapDescriptor markedLocationIcon;
   final bool isMoveableMarker;
-  final String titleMarker;
+  final String titleMarkedPosition;
 
-  ATAMapState({this.currentMarkedLat, this.currentMarkedLng, this.centerMapLat, this.centerMapLng, this.isMoveableMarker, this.titleMarker}) {
+  ATAMapState({this.currentMarkedLat, this.currentMarkedLng, this.centerMapLat, this.centerMapLng, this.isMoveableMarker, this.titleMarkedPosition}) {
     defaultCamera = CameraPosition(
       target: LatLng(centerMapLat, centerMapLng),
       zoom: DEFAULT_ZOOM,
@@ -114,7 +114,7 @@ class ATAMapState extends State<ATAMap> {
           markerId: MarkerId(point.toString()),
           position: point,
           infoWindow: InfoWindow(
-              title: '$titleMarker',
+              title: titleMarkedPosition == 'Lat,Lng' ? '$currentMarkedLat, $currentMarkedLng' : '$titleMarkedPosition',
               snippet:
                   'Distance :${_calcDistance(maps.LatLng(point.latitude, point.longitude), maps.LatLng(currentLocationLat, currentLocationLng))} m -> isCheckinable:${isCheckinable()}'),
           icon: markedLocationIcon,
