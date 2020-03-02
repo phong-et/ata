@@ -6,7 +6,7 @@ class Auth {
   String localId; // The uid of the current user.
   String email;
   String refreshToken;
-  String expiresIn;
+  String expiringDate;
   String error;
 
   Auth({
@@ -14,7 +14,7 @@ class Auth {
     @required this.localId,
     @required this.email,
     @required this.refreshToken,
-    @required this.expiresIn,
+    @required this.expiringDate,
     @required this.error,
   });
 
@@ -24,7 +24,17 @@ class Auth {
       localId: parsedJson['localId'],
       email: parsedJson['email'],
       refreshToken: parsedJson['refreshToken'],
-      expiresIn: parsedJson['expiresIn'],
+      expiringDate: parsedJson['expiresIn'] != null
+          //* from FireBase
+          ? DateTime.now()
+              .add(
+                Duration(
+                  seconds: int.parse(parsedJson['expiresIn']),
+                ),
+              )
+              .toIso8601String()
+          //* From Pref
+          : parsedJson['expiringDate'],
       error: parsedJson['error'] == null ? null : (parsedJson['error']['message'] ?? parsedJson['error']),
     );
   }
@@ -34,7 +44,7 @@ class Auth {
         'localId': this.localId,
         'email': this.email,
         'refreshToken': this.refreshToken,
-        'expiresIn': this.expiresIn,
+        'expiringDate': this.expiringDate,
         'error': this.error,
       };
 }

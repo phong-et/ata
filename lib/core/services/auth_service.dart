@@ -59,7 +59,7 @@ class AuthService {
 
   Future<String> authenticate(String email, String password, AuthType authType) async {
     _setAuth(
-      await Util.request<Auth>(
+      await Util.requestEither<Auth>(
         RequestType.POST,
         _getUrl(authType),
         {
@@ -98,17 +98,13 @@ class AuthService {
     }
 
     final loginData = json.decode(prefs.getString('loginData')) as Map<String, Object>;
-    if (loginData['expiresIn'] == null) {
+    if (loginData['expiringDate'] == null) {
       prefs.clear();
       return false;
     }
-    final expiryDate = DateTime.now().add(
-      Duration(
-        seconds: int.parse(loginData['expiresIn']),
-      ),
-    );
+    final expiringDate = DateTime.parse(loginData['expiringDate']);
 
-    if (expiryDate.isBefore(DateTime.now())) {
+    if (expiringDate.isBefore(DateTime.now())) {
       prefs.clear();
       return false;
     }
