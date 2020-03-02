@@ -99,9 +99,7 @@ class ATAMapState extends State<ATAMap> {
             });
       }
     }
-    setState(() {
-      if (_markers.length == 0) _addMarker(LatLng(currentMarkedLat, currentMarkedLng));
-    });
+    if (_markers.length == 0) _addMarker(LatLng(currentMarkedLat, currentMarkedLng));
   }
 
   void _addMarker(LatLng point) {
@@ -119,11 +117,7 @@ class ATAMapState extends State<ATAMap> {
           icon: markedLocationIcon,
           draggable: widget.isMoveableMarker,
           onDragEnd: ((newPoint) {
-            if (widget.isMoveableMarker) {
-              _addMarker(newPoint);
-              currentMarkedLat = newPoint.latitude;
-              currentMarkedLng = newPoint.longitude;
-            }
+            if (widget.isMoveableMarker) _addMarker(newPoint);
           })));
       _circles.add(Circle(
           circleId: CircleId(point.toString()),
@@ -145,10 +139,8 @@ class ATAMapState extends State<ATAMap> {
         .round();
   }
 
-  bool isCheckinable() {
-    return _calcDistance() <= widget.authRange;
-  }
-
+  bool isCheckinable() => _calcDistance() <= widget.authRange;
+  
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
