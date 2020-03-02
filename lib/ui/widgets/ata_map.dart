@@ -74,7 +74,14 @@ class ATAMapState extends State<ATAMap> {
   final bool isMoveableMarker;
   final String titleMarkedPosition;
 
-  ATAMapState({this.currentMarkedLat, this.currentMarkedLng, this.centerMapLat, this.centerMapLng, this.isMoveableMarker, this.deviationRadius, this.titleMarkedPosition}) {
+  ATAMapState(
+      {this.currentMarkedLat,
+      this.currentMarkedLng,
+      this.centerMapLat,
+      this.centerMapLng,
+      this.isMoveableMarker,
+      this.deviationRadius,
+      this.titleMarkedPosition}) {
     defaultCamera = CameraPosition(
       target: LatLng(centerMapLat, centerMapLng),
       zoom: DEFAULT_ZOOM,
@@ -122,13 +129,13 @@ class ATAMapState extends State<ATAMap> {
           markerId: MarkerId(point.toString()),
           position: point,
           infoWindow: InfoWindow(
-              title: isMoveableMarker == true ? '$currentMarkedLat, $currentMarkedLng' : '$titleMarkedPosition',
+              title: isMoveableMarker ? '$currentMarkedLat, $currentMarkedLng' : '$titleMarkedPosition',
               snippet:
                   'Distance :${_calcDistance(maps.LatLng(point.latitude, point.longitude), maps.LatLng(currentLocationLat, currentLocationLng))} m -> isCheckinable:${isCheckinable()}'),
           icon: markedLocationIcon,
           draggable: isMoveableMarker,
           onDragEnd: ((newPoint) {
-            if (isMoveableMarker == true) {
+            if (isMoveableMarker) {
               _addMarker(newPoint);
               currentMarkedLat = newPoint.latitude;
               currentMarkedLng = newPoint.longitude;
@@ -145,7 +152,7 @@ class ATAMapState extends State<ATAMap> {
   }
 
   void _handleLongPress(LatLng point) {
-    if (isMoveableMarker == true) _addMarker(point);
+    if (isMoveableMarker) _addMarker(point);
   }
 
   int _calcDistance(maps.LatLng point1, maps.LatLng point2) {
