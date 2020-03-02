@@ -7,8 +7,7 @@ import 'package:ata/util.dart';
 class CheckInScreen extends StatelessWidget {
   Future<Map<String, dynamic>> getDeviceIP() async {
     try {
-      var responseText =
-          await Util.fetch(FetchType.GET, 'http://ip-api.com/json');
+      var responseText = await Util.fetch(FetchType.GET, 'http://ip-api.com/json');
       final responseData = json.decode(responseText) as Map<String, dynamic>;
       return responseData;
     } catch (error) {
@@ -19,8 +18,18 @@ class CheckInScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Google Maps Demo',
-      home: ATAMap(isMoveableMarker: false, titleMarker: 'Office Position',),
-    );
+        title: 'Flutter Google Maps Demo',
+        home: Column(
+          children: <Widget>[
+            Expanded(
+              child: ATAMap(
+                isMoveableMarker: false,
+                titleMarker: 'Office Position',
+              ),
+            ),
+            Text('Deliver features faster'),
+            Text('Craft beautiful UIs'),
+          ],
+        ));
   }
 }
