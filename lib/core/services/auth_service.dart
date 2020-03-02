@@ -59,7 +59,7 @@ class AuthService {
 
   Future<String> authenticate(String email, String password, AuthType authType) async {
     _setAuth(
-      await Util.request<Auth>(
+      await Util.requestEither<Auth>(
         RequestType.POST,
         _getUrl(authType),
         {

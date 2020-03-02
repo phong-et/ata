@@ -23,10 +23,7 @@ class OfficeSettingsNotifier extends BaseNotifier {
 
   Future<void> saveOfficeSettings(String ipAddress, String lon, String lat, String authRange) async {
     setBusy(true);
-    await _officeService.updateOfficeSettings(ipAddress, lon, lat, authRange).catchError((error) {
-      //! Implement error handling here ...
-      print(error);
-    });
+    await _officeService.updateOfficeSettings(ipAddress, lon, lat, authRange);
     setNotifierInfo(_officeService.officeSettings);
     setBusy(false);
   }

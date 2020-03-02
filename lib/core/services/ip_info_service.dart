@@ -12,7 +12,7 @@ class IpInfoService {
   }
 
   Future<void> fetchDeviceIpInfo() async {
-    await Util.request<IpInfo>(
+    await Util.requestEither<IpInfo>(
       RequestType.GET,
       'http://ip-api.com/json',
     ).then((value) => _setIpInfo(value));

@@ -1,7 +1,10 @@
+import 'package:ata/core/models/auth.dart';
 import 'package:dartz/dartz.dart';
 import 'package:ata/util.dart';
 import 'package:ata/core/models/failure.dart';
 import 'package:ata/core/models/office.dart';
+
+import '../../factories.dart';
 
 class OfficeService {
   String _idToken;
@@ -20,7 +23,7 @@ class OfficeService {
   //! Admin features
   Future<void> fetchOfficeSettings() async {
     final officeUrl = 'https://atapp-7720c.firebaseio.com/office.json?auth=$_idToken';
-    await Util.request<Office>(
+    await Util.requestEither<Office>(
       RequestType.GET,
       officeUrl,
     ).then((value) => _setOffice(value));
@@ -34,15 +37,23 @@ class OfficeService {
     String authRange,
   ) async {
     final officeUrl = 'https://atapp-7720c.firebaseio.com/office.json?auth=$_idToken';
-    await Util.request<Office>(
-      RequestType.PUT,
-      officeUrl,
-      {
-        'ipAddress': ipAddress,
-        'lon': double.parse(lon),
-        'lat': double.parse(lat),
-        'authRange': double.parse(authRange),
-      },
-    ).then((value) => _setOffice(value));
+
+    return await Task<Office>(() async {
+      try {
+        final parsedJson = await Util.request(
+          RequestType.PUT,
+          officeUrl,
+          {
+            'ipAddress': ipAddress,
+            'lon': double.parse(lon),
+            'lat': double.parse(lat),
+            'authRange': double.parse(authRange),
+          },
+        );
+        return make<Office>(parsedJson);
+      } on FormatException {
+        throw Failure("Bad Office Settings inputs 👎");
+      }
+    }).attempt().mapLeftToFailure().run().then((value) => _setOffice(value));
   }
 }
