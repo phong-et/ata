@@ -5,13 +5,21 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter/services.dart';
 import 'package:maps_toolkit/maps_toolkit.dart' as maps;
 
-/// A customize of Flutter Google Map, only use for ATA App.
-///
-/// Have some features
+/// A custom Flutter Google Map.
+/// Have some features:
 /// 1. Specify current location of device
 /// 2. Pin any marker on map and move it
-/// 3. Show circle around pin marker with deviation radius
-/// 4. Calulate distance between current location and marker position
+/// 3. Show circle around marked position with deviation radius
+/// 4. Calulate distance between current location and marked position
+/// Example code :
+/// ```dart
+/// ATAMap(
+///    isMoveableMarker: true,
+///    titleMarker: 'Office Position',
+///    centerMapLat: 10.762622,
+///    centerMapLng:  106.660172,
+///)
+/// ```
 class ATAMap extends StatefulWidget {
   final double centerMapLat;
   final double centerMapLng;
