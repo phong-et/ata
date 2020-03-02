@@ -12,18 +12,18 @@ import 'package:maps_toolkit/maps_toolkit.dart' as maps;
 /// 3. Show circle around marked position with deviation radius
 /// 4. Calulate distance between current location and marked position
 /// Example code :
+/// ==> admin user
 /// ```dart
-/// admin user
 /// ATAMap(
 ///    isMoveableMarker: true,
-///    centerMapLat: 10.762622,
-///    centerMapLng:  106.660172,
 ///)
-/// normal user
-////// ATAMap(
+/// ```
+/// ==> normal user
+/// ```dart
+/// ATAMap(
 ///    titleMarkedPosition: 'Office Position',
-///    centerMapLat: 10.762622,
-///    centerMapLng:  106.660172,
+///    markedLat: 10.762622,
+///    markedLng:  106.660172,
 ///)
 /// ```
 class ATAMap extends StatefulWidget {
