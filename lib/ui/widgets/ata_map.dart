@@ -13,8 +13,14 @@ import 'package:maps_toolkit/maps_toolkit.dart' as maps;
 /// 4. Calulate distance between current location and marked position
 /// Example code :
 /// ```dart
+/// admin user
 /// ATAMap(
 ///    isMoveableMarker: true,
+///    centerMapLat: 10.762622,
+///    centerMapLng:  106.660172,
+///)
+/// normal user
+////// ATAMap(
 ///    titleMarkedPosition: 'Office Position',
 ///    centerMapLat: 10.762622,
 ///    centerMapLng:  106.660172,
@@ -93,7 +99,6 @@ class ATAMapState extends State<ATAMap> {
         _addMarker(LatLng(this.currentMarkedLat, this.currentMarkedLng));
       } on PlatformException catch (e) {
         if (e.code == 'PERMISSION_DENIED') {
-          print(e.code);
           showDialog(
               context: context,
               builder: (BuildContext context) {
