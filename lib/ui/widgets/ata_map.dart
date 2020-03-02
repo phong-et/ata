@@ -32,6 +32,7 @@ class ATAMap extends StatefulWidget {
   final double markedLat;
   final double markedLng;
   final bool isMoveableMarker;
+  final double deviationRadius;
   final String titleMarkedPosition;
   ATAMap(
       {this.markedLat = 10.7440878,
@@ -39,6 +40,7 @@ class ATAMap extends StatefulWidget {
       this.centerMapLat = 10.7440878,
       this.centerMapLng = 106.7007886,
       this.isMoveableMarker = false,
+      this.deviationRadius = 100,
       this.titleMarkedPosition = "Marked Position"});
 
   @override
@@ -48,13 +50,14 @@ class ATAMap extends StatefulWidget {
       centerMapLat: centerMapLat,
       centerMapLng: centerMapLng,
       isMoveableMarker: isMoveableMarker,
+      deviationRadius: deviationRadius,
       titleMarkedPosition: titleMarkedPosition);
 }
 
 class ATAMapState extends State<ATAMap> {
   CameraPosition defaultCamera;
   static const double DEFAULT_ZOOM = 17;
-  static const double DEVIATION_RADIUS = 100;
+  //static const double deviationRadius = 100;
   static const int TIMEOUT_PIN_MARKER_MAP_LOADED = 4;
   Completer<GoogleMapController> _controller = Completer();
 
@@ -66,12 +69,13 @@ class ATAMapState extends State<ATAMap> {
   double currentLocationLng;
   double currentMarkedLat;
   double currentMarkedLng;
+  double deviationRadius;
 
   BitmapDescriptor markedLocationIcon;
   final bool isMoveableMarker;
   final String titleMarkedPosition;
 
-  ATAMapState({this.currentMarkedLat, this.currentMarkedLng, this.centerMapLat, this.centerMapLng, this.isMoveableMarker, this.titleMarkedPosition}) {
+  ATAMapState({this.currentMarkedLat, this.currentMarkedLng, this.centerMapLat, this.centerMapLng, this.isMoveableMarker, this.deviationRadius, this.titleMarkedPosition}) {
     defaultCamera = CameraPosition(
       target: LatLng(centerMapLat, centerMapLng),
       zoom: DEFAULT_ZOOM,
@@ -134,7 +138,7 @@ class ATAMapState extends State<ATAMap> {
       _circles.add(Circle(
           circleId: CircleId(point.toString()),
           center: point,
-          radius: DEVIATION_RADIUS,
+          radius: deviationRadius,
           strokeWidth: 1,
           strokeColor: Colors.blue.withOpacity(0.3),
           fillColor: Colors.blue.withOpacity(0.2)));
@@ -150,7 +154,7 @@ class ATAMapState extends State<ATAMap> {
   }
 
   bool isCheckinable() {
-    return _calcDistance(maps.LatLng(currentMarkedLat, currentMarkedLng), maps.LatLng(currentLocationLat, currentLocationLng)) <= DEVIATION_RADIUS;
+    return _calcDistance(maps.LatLng(currentMarkedLat, currentMarkedLng), maps.LatLng(currentLocationLat, currentLocationLng)) <= deviationRadius;
   }
 
   @override
