@@ -57,7 +57,6 @@ class ATAMap extends StatefulWidget {
 class ATAMapState extends State<ATAMap> {
   CameraPosition defaultCamera;
   static const double DEFAULT_ZOOM = 17;
-  //static const double deviationRadius = 100;
   static const int TIMEOUT_PIN_MARKER_MAP_LOADED = 4;
   Completer<GoogleMapController> _controller = Completer();
 
