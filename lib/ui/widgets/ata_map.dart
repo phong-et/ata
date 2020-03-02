@@ -33,7 +33,7 @@ class ATAMap extends StatefulWidget {
       this.centerMapLat = 10.7440878,
       this.centerMapLng = 106.7007886,
       this.isMoveableMarker = false,
-      this.titleMarkedPosition = "Lat,Lng"});
+      this.titleMarkedPosition = "Marked Position"});
 
   @override
   State<ATAMap> createState() => ATAMapState(
@@ -114,7 +114,7 @@ class ATAMapState extends State<ATAMap> {
           markerId: MarkerId(point.toString()),
           position: point,
           infoWindow: InfoWindow(
-              title: titleMarkedPosition == 'Lat,Lng' ? '$currentMarkedLat, $currentMarkedLng' : '$titleMarkedPosition',
+              title: isMoveableMarker == true ? '$currentMarkedLat, $currentMarkedLng' : '$titleMarkedPosition',
               snippet:
                   'Distance :${_calcDistance(maps.LatLng(point.latitude, point.longitude), maps.LatLng(currentLocationLat, currentLocationLng))} m -> isCheckinable:${isCheckinable()}'),
           icon: markedLocationIcon,
