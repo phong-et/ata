@@ -8,11 +8,16 @@ enum AttendanceType { In, Out }
 enum AttendanceStatus { CheckedIn, CheckedOut, NotCheckIn, NotCheckOut }
 
 class UserService {
-  String _localId;
-  String _idToken;
-  String _urlReports = "https://atapp-7720c.firebaseio.com/reports/";
-  UserService(Either<Failure, Auth> auth) {
-    auth.fold((failure) => failure, (auth) => {_localId = auth.localId, _idToken = auth.idToken});
+  String _urlReports = "https://atapp-7720c.firebaseio.com/reports";
+  Either<Failure, Auth> _auth;
+  UserService(Either<Failure, Auth> auth) : _auth = auth;
+
+  String get _localId {
+    return _auth.fold((failure) => throw (failure.toString()), (auth) => auth.localId);
+  }
+
+  String get _idToken {
+    return _auth.fold((failure) => throw (failure.toString()), (auth) => auth.idToken);
   }
 
   String get currentDateString {
@@ -20,7 +25,7 @@ class UserService {
   }
 
   String get urlRecordAttendance {
-    return "$_urlReports$_localId/$currentDateString.json?auth=$_idToken";
+    return "$_urlReports/$_localId/$currentDateString.json?auth=$_idToken";
   }
 
   Future<Either<Failure, AttendanceStatus>> checkAttendance() async {
@@ -47,38 +52,33 @@ class UserService {
     if (!lstChecked[0]) return 'Wrong IP';
     if (!lstChecked[1]) return 'Wrong Location';
 
-    final Either<Failure, AttendanceStatus> resAttendanceStatus = await checkAttendance();
-    final attendanceStatus = resAttendanceStatus.fold((error) => error, (status) => status);
-    if (attendanceStatus is Failure) return attendanceStatus.toString();
-
-    var responseData;
-    try {
-      switch (attendanceType) {
-        case AttendanceType.In:
-          if (attendanceStatus == AttendanceStatus.NotCheckIn) {
-            responseData = await Util.request(RequestType.PUT, urlRecordAttendance, {
-              'in': DateTime.now().toString(),
-            });
-          } else
-            return "Checked In Before !!!";
-          break;
-        case AttendanceType.Out:
-          if (attendanceStatus == AttendanceStatus.NotCheckOut) {
-            responseData = await Util.request(RequestType.PATCH, urlRecordAttendance, {
-              'out': DateTime.now().toString(),
-            });
-          } else if (attendanceStatus == AttendanceStatus.CheckedOut)
-            return "Checked Out Before !!!!";
-          else
-            return "Not Check In !!!";
-          break;
+    return (await checkAttendance()).fold((failure) => failure.toString(), (attendanceStatus) async {
+      try {
+        var responseData;
+        switch (attendanceType) {
+          case AttendanceType.In:
+            if (attendanceStatus == AttendanceStatus.NotCheckIn) {
+              responseData = await Util.request(RequestType.PUT, urlRecordAttendance, {
+                'in': DateTime.now().toString(),
+              });
+            } else
+              return "Checked In Before !!!";
+            break;
+          case AttendanceType.Out:
+            if (attendanceStatus == AttendanceStatus.NotCheckOut) {
+              responseData = await Util.request(RequestType.PATCH, urlRecordAttendance, {
+                'out': DateTime.now().toString(),
+              });
+            } else if (attendanceStatus == AttendanceStatus.CheckedOut)
+              return "Checked Out Before !!!!";
+            else
+              return "Not Check In !!!";
+            break;
+        }
+        return responseData['error'] != null ? responseData['error'] : null;
+      } catch (error) {
+        return error.toString();
       }
-
-      if (responseData['error'] != null) return responseData['error'];
-
-      return null;
-    } catch (error) {
-      return error.toString();
-    }
+    });
   }
 }
