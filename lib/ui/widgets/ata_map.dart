@@ -12,13 +12,14 @@ import 'package:maps_toolkit/maps_toolkit.dart' as maps;
 /// 3. Show circle around marked position with deviation radius
 /// 4. Calulate distance between current location and marked position
 /// Example code :
-/// ==> admin user
+///
+/// #admin user
 /// ```dart
 /// ATAMap(
 ///    isMoveableMarker: true,
 ///)
 /// ```
-/// ==> normal user
+/// #normal user
 /// ```dart
 /// ATAMap(
 ///    titleMarkedPosition: 'Office Position',
@@ -32,64 +33,46 @@ class ATAMap extends StatefulWidget {
   final double markedLat;
   final double markedLng;
   final bool isMoveableMarker;
-  final double deviationRadius;
+  final double authRange;
   final String titleMarkedPosition;
+
   ATAMap(
       {this.markedLat = 10.7440878,
       this.markedLng = 106.7007886,
       this.centerMapLat = 10.7440878,
       this.centerMapLng = 106.7007886,
       this.isMoveableMarker = false,
-      this.deviationRadius = 100,
+      this.authRange = 100,
       this.titleMarkedPosition = "Marked Position"});
 
   @override
-  State<ATAMap> createState() => ATAMapState(
-      currentMarkedLat: markedLat,
-      currentMarkedLng: markedLng,
-      centerMapLat: centerMapLat,
-      centerMapLng: centerMapLng,
-      isMoveableMarker: isMoveableMarker,
-      deviationRadius: deviationRadius,
-      titleMarkedPosition: titleMarkedPosition);
+  State<ATAMap> createState() => ATAMapState();
 }
 
 class ATAMapState extends State<ATAMap> {
-  CameraPosition defaultCamera;
-  static const double DEFAULT_ZOOM = 17;
-  static const int TIMEOUT_PIN_MARKER_MAP_LOADED = 4;
-  Completer<GoogleMapController> _controller = Completer();
-
-  Set<Marker> _markers = Set();
-  Set<Circle> _circles = Set();
-  final double centerMapLat;
-  final double centerMapLng;
-  double currentLocationLat;
-  double currentLocationLng;
   double currentMarkedLat;
   double currentMarkedLng;
-  double deviationRadius;
-
-  BitmapDescriptor markedLocationIcon;
-  final bool isMoveableMarker;
-  final String titleMarkedPosition;
-
-  ATAMapState(
-      {this.currentMarkedLat,
-      this.currentMarkedLng,
-      this.centerMapLat,
-      this.centerMapLng,
-      this.isMoveableMarker,
-      this.deviationRadius,
-      this.titleMarkedPosition}) {
-    defaultCamera = CameraPosition(
-      target: LatLng(centerMapLat, centerMapLng),
+  double currentLocationLat;
+  double currentLocationLng;
+  bool isMapReady = false;
+  static const int TIMEOUT_PIN_MARKER_MAP_LOADED = 2;
+  static const double DEFAULT_ZOOM = 17;
+  CameraPosition get defaultCamera {
+    return CameraPosition(
+      target: LatLng(widget.centerMapLat, widget.centerMapLng),
       zoom: DEFAULT_ZOOM,
     );
   }
+
+  Completer<GoogleMapController> _controller = Completer();
+  Set<Marker> _markers = Set();
+  Set<Circle> _circles = Set();
+  BitmapDescriptor markedLocationIcon;
   @override
   void initState() {
     super.initState();
+    currentMarkedLat = widget.markedLat;
+    currentMarkedLng = widget.markedLng;
     _setCustomMapIcons();
   }
 
@@ -97,25 +80,27 @@ class ATAMapState extends State<ATAMap> {
     markedLocationIcon = await BitmapDescriptor.fromAssetImage(ImageConfiguration(size: Size(128, 128)), 'assets/images/marked-location-icon.png');
   }
 
-  void _goToCurrentLocation() {
-    setState(() async {
-      try {
-        var currentPosition = await Geolocator().getCurrentPosition();
-        final GoogleMapController controller = await _controller.future;
-        controller.animateCamera(
-            CameraUpdate.newCameraPosition(CameraPosition(target: LatLng(currentPosition.latitude, currentPosition.longitude), zoom: DEFAULT_ZOOM)));
-        currentLocationLat = currentPosition.latitude;
-        currentLocationLng = currentPosition.longitude;
-        _addMarker(LatLng(this.currentMarkedLat, this.currentMarkedLng));
-      } on PlatformException catch (e) {
-        if (e.code == 'PERMISSION_DENIED') {
-          showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return AlertDialog(title: Text("PERMISSION_DENIED"), content: Text('GPS device is OFF, please turn ON !'));
-              });
-        }
+  Future<Position> getCurrentLocation() async => await Geolocator().getCurrentPosition();
+
+  void _goToCurrentLocation() async {
+    try {
+      Position currentPosition = await getCurrentLocation();
+      final GoogleMapController controller = await _controller.future;
+      controller.animateCamera(
+          CameraUpdate.newCameraPosition(CameraPosition(target: LatLng(currentPosition.latitude, currentPosition.longitude), zoom: DEFAULT_ZOOM)));
+      currentLocationLat = currentPosition.latitude;
+      currentLocationLng = currentPosition.longitude;
+    } on PlatformException catch (e) {
+      if (e.code == 'PERMISSION_DENIED') {
+        showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(title: Text("PERMISSION_DENIED"), content: Text('GPS device is OFF, please turn ON !'));
+            });
       }
+    }
+    setState(() {
+      if (_markers.length == 0) _addMarker(LatLng(currentMarkedLat, currentMarkedLng));
     });
   }
 
@@ -129,13 +114,12 @@ class ATAMapState extends State<ATAMap> {
           markerId: MarkerId(point.toString()),
           position: point,
           infoWindow: InfoWindow(
-              title: isMoveableMarker ? '$currentMarkedLat, $currentMarkedLng' : '$titleMarkedPosition',
-              snippet:
-                  'Distance :${_calcDistance(maps.LatLng(point.latitude, point.longitude), maps.LatLng(currentLocationLat, currentLocationLng))} m -> isCheckinable:${isCheckinable()}'),
+              title: widget.isMoveableMarker ? '$currentMarkedLat, $currentMarkedLng' : '${widget.titleMarkedPosition}',
+              snippet: 'Distance :${_calcDistance()} m -> isCheckinable:${isCheckinable()}'),
           icon: markedLocationIcon,
-          draggable: isMoveableMarker,
+          draggable: widget.isMoveableMarker,
           onDragEnd: ((newPoint) {
-            if (isMoveableMarker) {
+            if (widget.isMoveableMarker) {
               _addMarker(newPoint);
               currentMarkedLat = newPoint.latitude;
               currentMarkedLng = newPoint.longitude;
@@ -144,7 +128,7 @@ class ATAMapState extends State<ATAMap> {
       _circles.add(Circle(
           circleId: CircleId(point.toString()),
           center: point,
-          radius: deviationRadius,
+          radius: widget.authRange,
           strokeWidth: 1,
           strokeColor: Colors.blue.withOpacity(0.3),
           fillColor: Colors.blue.withOpacity(0.2)));
@@ -152,27 +136,33 @@ class ATAMapState extends State<ATAMap> {
   }
 
   void _handleLongPress(LatLng point) {
-    if (isMoveableMarker) _addMarker(point);
+    if (widget.isMoveableMarker && isMapReady) _addMarker(point);
   }
 
-  int _calcDistance(maps.LatLng point1, maps.LatLng point2) {
-    return maps.SphericalUtil.computeDistanceBetween(point1, point2).round();
+  int _calcDistance() {
+    return maps.SphericalUtil.computeDistanceBetween(
+            maps.LatLng(currentMarkedLat, currentMarkedLng), maps.LatLng(currentLocationLat, currentLocationLng))
+        .round();
   }
 
   bool isCheckinable() {
-    return _calcDistance(maps.LatLng(currentMarkedLat, currentMarkedLng), maps.LatLng(currentLocationLat, currentLocationLng)) <= deviationRadius;
+    return _calcDistance() <= widget.authRange;
   }
 
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
+      appBar: AppBar(title: Text(currentMarkedLng.toString())),
       body: GoogleMap(
           mapType: MapType.normal,
           initialCameraPosition: defaultCamera,
           onMapCreated: (GoogleMapController controller) async {
             _controller.complete(controller);
-            await Future.delayed(
-                const Duration(seconds: TIMEOUT_PIN_MARKER_MAP_LOADED), () => _addMarker(LatLng(this.currentMarkedLat, this.currentMarkedLng)));
+            Position currentLocation = await getCurrentLocation();
+            currentLocationLat = currentLocation.latitude;
+            currentLocationLng = currentLocation.longitude;
+            _addMarker(LatLng(widget.markedLat, widget.markedLng));
+            isMapReady = true;
           },
           myLocationEnabled: true,
           myLocationButtonEnabled: false,
