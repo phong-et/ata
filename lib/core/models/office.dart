@@ -24,4 +24,13 @@ class Office {
       error: parsedJson['error'] == null ? null : parsedJson['error'],
     );
   }
+  Map<String, dynamic> toJson() {
+    return {
+      'ipAddress': this.ipAddress,
+      'lon': this.lon,
+      'lat': this.lat,
+      'authRange': this.authRange,
+      'error': this.error,
+    };
+  }
 }
