@@ -152,7 +152,6 @@ class ATAMapState extends State<ATAMap> {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      appBar: AppBar(title: Text(currentMarkedLng.toString())),
       body: GoogleMap(
           mapType: MapType.normal,
           initialCameraPosition: defaultCamera,
