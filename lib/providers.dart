@@ -1,4 +1,5 @@
 import 'package:ata/core/services/office_service.dart';
+import 'package:ata/core/services/user_service.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 import 'package:ata/core/services/auth_service.dart';
@@ -20,8 +21,12 @@ List<SingleChildWidget> uIservices = [
 
 List<SingleChildWidget> proxyServices = [
   ProxyProvider<AuthService, OfficeService>(
-    update: (_, authService, __) => OfficeService(authService.idToken),
+    update: (_, authService, __) =>
+        OfficeService()..setAuthToken(authService.idToken),
   ),
+  ProxyProvider<AuthService, UserService>(
+    update: (_, authService, __) => UserService(authService.auth),
+  )
 ];
 
 List<SingleChildWidget> proxyUiServices = [];
