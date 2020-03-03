@@ -4,8 +4,7 @@ import 'package:ata/util.dart';
 import 'package:dartz/dartz.dart';
 import 'package:intl/intl.dart';
 
-enum AttendanceType { In, Out }
-enum AttendanceStatus { CheckedIn, CheckedOut, NotCheckIn, NotCheckOut }
+enum AttendanceStatus { CheckedIn, CheckedOut, NotYetCheckedIn, NotYetCheckedOut }
 
 class UserService {
   String _urlReports = "https://atapp-7720c.firebaseio.com/reports";
@@ -33,49 +32,67 @@ class UserService {
     var responseData;
     try {
       responseData = await Util.request(RequestType.GET, urlRecordAttendance);
-    } catch (error) {
-      return Left(Failure(error.toString()));
+    } catch (failure) {
+      return Left(failure);
     }
 
     if (responseData != null) {
       if (responseData['error'] != null) return Left(Failure(responseData['error']));
       if (responseData['in'] != null) status = AttendanceStatus.CheckedIn;
-      if (responseData['out'] != null) status = AttendanceStatus.CheckedOut;
-      if (responseData['out'] == null) status = AttendanceStatus.NotCheckOut;
+      if (responseData['out'] != null)
+        status = AttendanceStatus.CheckedOut;
+      else
+        status = AttendanceStatus.NotYetCheckedOut;
     } else
-      status = AttendanceStatus.NotCheckIn;
+      status = AttendanceStatus.NotYetCheckedIn;
     return Right(status);
   }
 
-  Future<String> recordAttendance(AttendanceType attendanceType) async {
+  Future<bool> checkLocationIP() async {
     List<bool> lstChecked = await Future.wait([/*checkIP(), checkLocation()*/]);
-    if (!lstChecked[0]) return 'Wrong IP';
-    if (!lstChecked[1]) return 'Wrong Location';
+    return !lstChecked.contains(false);
+  }
+
+  Future<String> checkIn() async {
+    bool isCheckLocationIP = await checkLocationIP();
+    if (!isCheckLocationIP) return 'Wrong IP or Location !!!';
 
     return (await checkAttendance()).fold((failure) => failure.toString(), (attendanceStatus) async {
       try {
         var responseData;
-        switch (attendanceType) {
-          case AttendanceType.In:
-            if (attendanceStatus == AttendanceStatus.NotCheckIn) {
-              responseData = await Util.request(RequestType.PUT, urlRecordAttendance, {
-                'in': DateTime.now().toString(),
-              });
-            } else
-              return "Checked In Before !!!";
-            break;
-          case AttendanceType.Out:
-            if (attendanceStatus == AttendanceStatus.NotCheckOut) {
-              responseData = await Util.request(RequestType.PATCH, urlRecordAttendance, {
-                'out': DateTime.now().toString(),
-              });
-            } else if (attendanceStatus == AttendanceStatus.CheckedOut)
-              return "Checked Out Before !!!!";
-            else
-              return "Not Check In !!!";
-            break;
+        switch (attendanceStatus) {
+          case AttendanceStatus.NotYetCheckedIn:
+            responseData = await Util.request(RequestType.PUT, urlRecordAttendance, {
+              'in': DateTime.now().toIso8601String(),
+            });
+            return responseData['error'] != null ? responseData['error'] : null;
+          default:
+            return "Already Checked In Before !!!";
         }
-        return responseData['error'] != null ? responseData['error'] : null;
+      } catch (error) {
+        return error.toString();
+      }
+    });
+  }
+
+  Future<String> checkOut() async {
+    bool isCheckLocationIP = await checkLocationIP();
+    if (!isCheckLocationIP) return 'Wrong IP or Location';
+
+    return (await checkAttendance()).fold((failure) => failure.toString(), (attendanceStatus) async {
+      try {
+        var responseData;
+        switch (attendanceStatus) {
+          case AttendanceStatus.NotYetCheckedOut:
+            responseData = await Util.request(RequestType.PATCH, urlRecordAttendance, {
+              'out': DateTime.now().toIso8601String(),
+            });
+            return responseData['error'] != null ? responseData['error'] : null;
+          case AttendanceStatus.CheckedOut:
+            return "Already Checked Out Before !!!";
+          default:
+            return "Not Yet Checked In !!!";
+        }
       } catch (error) {
         return error.toString();
       }
