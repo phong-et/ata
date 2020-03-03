@@ -7,7 +7,7 @@ import 'package:intl/intl.dart';
 enum AttendanceStatus { CheckedIn, CheckedOut, NotYetCheckedIn, NotYetCheckedOut }
 
 class UserService {
-  String _urlReports = "https://atapp-7720c.firebaseio.com/reports";
+  String _urlReports = "https://attendance-dcecd.firebaseio.com/reports";
   Either<Failure, Auth> _auth;
   UserService(Either<Failure, Auth> auth) : _auth = auth;
 
@@ -48,54 +48,62 @@ class UserService {
     return Right(status);
   }
 
-  Future<bool> checkLocationIP() async {
+  Future<String> checkLocationIP() async {
     List<bool> lstChecked = await Future.wait([/*checkIP(), checkLocation()*/]);
-    return !lstChecked.contains(false);
+    if (!lstChecked[0]) return 'Wrong IP !!!';
+    if (!lstChecked[1]) return 'Wrong Location !!!';
+    return null;
   }
 
   Future<String> checkIn() async {
-    bool isCheckLocationIP = await checkLocationIP();
-    if (!isCheckLocationIP) return 'Wrong IP or Location !!!';
+    String checkMsg = await checkLocationIP();
+    if (checkMsg != null) return checkMsg;
 
-    return (await checkAttendance()).fold((failure) => failure.toString(), (attendanceStatus) async {
-      try {
-        var responseData;
-        switch (attendanceStatus) {
-          case AttendanceStatus.NotYetCheckedIn:
-            responseData = await Util.request(RequestType.PUT, urlRecordAttendance, {
-              'in': DateTime.now().toIso8601String(),
-            });
-            return responseData['error'] != null ? responseData['error'] : null;
-          default:
-            return "Already Checked In Before !!!";
+    return (await checkAttendance()).fold(
+      (failure) => failure.toString(),
+      (attendanceStatus) async {
+        try {
+          var responseData;
+          switch (attendanceStatus) {
+            case AttendanceStatus.NotYetCheckedIn:
+              responseData = await Util.request(RequestType.PUT, urlRecordAttendance, {
+                'in': DateTime.now().toIso8601String(),
+              });
+              return responseData['error'] != null ? responseData['error'] : null;
+            default:
+              return "Already Checked In Before !!!";
+          }
+        } catch (error) {
+          return error.toString();
         }
-      } catch (error) {
-        return error.toString();
-      }
-    });
+      },
+    );
   }
 
   Future<String> checkOut() async {
-    bool isCheckLocationIP = await checkLocationIP();
-    if (!isCheckLocationIP) return 'Wrong IP or Location';
+    String checkMsg = await checkLocationIP();
+    if (checkMsg != null) return checkMsg;
 
-    return (await checkAttendance()).fold((failure) => failure.toString(), (attendanceStatus) async {
-      try {
-        var responseData;
-        switch (attendanceStatus) {
-          case AttendanceStatus.NotYetCheckedOut:
-            responseData = await Util.request(RequestType.PATCH, urlRecordAttendance, {
-              'out': DateTime.now().toIso8601String(),
-            });
-            return responseData['error'] != null ? responseData['error'] : null;
-          case AttendanceStatus.CheckedOut:
-            return "Already Checked Out Before !!!";
-          default:
-            return "Not Yet Checked In !!!";
+    return (await checkAttendance()).fold(
+      (failure) => failure.toString(),
+      (attendanceStatus) async {
+        try {
+          var responseData;
+          switch (attendanceStatus) {
+            case AttendanceStatus.NotYetCheckedOut:
+              responseData = await Util.request(RequestType.PATCH, urlRecordAttendance, {
+                'out': DateTime.now().toIso8601String(),
+              });
+              return responseData['error'] != null ? responseData['error'] : null;
+            case AttendanceStatus.CheckedOut:
+              return "Already Checked Out Before !!!";
+            default:
+              return "Not Yet Checked In !!!";
+          }
+        } catch (error) {
+          return error.toString();
         }
-      } catch (error) {
-        return error.toString();
-      }
-    });
+      },
+    );
   }
 }
