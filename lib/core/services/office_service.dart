@@ -1,4 +1,3 @@
-import 'package:ata/core/models/auth.dart';
 import 'package:dartz/dartz.dart';
 import 'package:ata/util.dart';
 import 'package:ata/core/models/failure.dart';

@@ -38,6 +38,9 @@ class DeviceIp extends StatelessWidget {
                       ),
                       AtaButton(
                         onPressed: notifier.busy ? null : () => notifier.compareWithOfficeIpAddress(),
+                        color: notifier.busy
+                            ? Colors.yellow
+                            : (notifier.isWithinOfficeNetwork ? Colors.green : Colors.red),
                         label: 'Refresh',
                       ),
                     ],

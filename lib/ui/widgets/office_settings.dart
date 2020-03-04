@@ -60,6 +60,7 @@ class OfficeSettings extends StatelessWidget {
                 SizedBox(width: 25.0),
                 AtaButton(
                   label: 'Update',
+                  icon: Icon(Icons.save),
                   onPressed: notifier.busy
                       ? null
                       : () => notifier.saveOfficeSettings(

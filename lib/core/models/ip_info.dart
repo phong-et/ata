@@ -3,7 +3,7 @@ import 'package:flutter/foundation.dart';
 class IpInfo {
   final String ipAddress;
   final double ipLat;
-  final double ipLon;
+  final double ipLng;
   final String org;
   final String city;
   final String country;
@@ -12,7 +12,7 @@ class IpInfo {
   IpInfo({
     @required this.ipAddress,
     @required this.ipLat,
-    @required this.ipLon,
+    @required this.ipLng,
     @required this.org,
     @required this.city,
     @required this.country,
@@ -25,7 +25,7 @@ class IpInfo {
       country: parsedJson['country'],
       ipAddress: parsedJson['query'],
       ipLat: parsedJson['lat'],
-      ipLon: parsedJson['lng'],
+      ipLng: parsedJson['lng'],
       org: parsedJson['org'],
       timezone: parsedJson['timezone'],
     );
