@@ -29,7 +29,7 @@ class DeviceIp extends StatelessWidget {
                     children: <Widget>[
                       Expanded(
                         child: TextFormField(
-                          decoration: InputDecoration(labelText: 'Current IP Address:'),
+                          decoration: InputDecoration(labelText: 'Device IP Address:'),
                           controller: ipAddressController,
                           enabled: false,
                         ),
