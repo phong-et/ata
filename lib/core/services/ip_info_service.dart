@@ -30,7 +30,8 @@ class IpInfoService {
 
   String getOfficeIp() {
     return _officeService.officeSettings.fold(
-      (failure) => failure.toString(),
+      //* '- ' fix error when No Internet shows green status
+      (failure) => '- ' + failure.toString(),
       (office) => office.ipAddress,
     );
   }
