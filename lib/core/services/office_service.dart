@@ -32,8 +32,8 @@ class OfficeService {
   //! Admin features
   Future<void> updateOfficeSettings(
     String ipAddress,
-    String lon,
     String lat,
+    String lng,
     String authRange,
   ) async {
     final officeUrl = 'https://atapp-7720c.firebaseio.com/office.json?auth=$_idToken';
@@ -45,8 +45,8 @@ class OfficeService {
           officeUrl,
           {
             'ipAddress': ipAddress,
-            'lon': double.parse(lon),
             'lat': double.parse(lat),
+            'lng': double.parse(lng),
             'authRange': double.parse(authRange),
           },
         );

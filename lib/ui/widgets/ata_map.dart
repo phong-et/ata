@@ -15,19 +15,19 @@ import 'package:maps_toolkit/maps_toolkit.dart' as maps;
 ///
 /// #admin user
 /// ```dart
-/// ATAMap(
+/// AtaMap(
 ///    isMoveableMarker: true,
 ///)
 /// ```
 /// #normal user
 /// ```dart
-/// ATAMap(
+/// AtaMap(
 ///    titleMarkedPosition: 'Office Position',
 ///    markedLat: 10.762622,
 ///    markedLng:  106.660172,
 ///)
 /// ```
-class ATAMap extends StatefulWidget {
+class AtaMap extends StatefulWidget {
   final double centerMapLat;
   final double centerMapLng;
   final double markedLat;
@@ -36,7 +36,7 @@ class ATAMap extends StatefulWidget {
   final double authRange;
   final String titleMarkedPosition;
 
-  ATAMap(
+  AtaMap(
       {this.markedLat = 10.7440878,
       this.markedLng = 106.7007886,
       this.centerMapLat = 10.7440878,
@@ -46,10 +46,10 @@ class ATAMap extends StatefulWidget {
       this.titleMarkedPosition = "Office Location"});
 
   @override
-  State<ATAMap> createState() => ATAMapState();
+  State<AtaMap> createState() => AtaMapState();
 }
 
-class ATAMapState extends State<ATAMap> {
+class AtaMapState extends State<AtaMap> {
   double currentMarkedLat;
   double currentMarkedLng;
   double currentLocationLat;
@@ -77,7 +77,8 @@ class ATAMapState extends State<ATAMap> {
   }
 
   void _setCustomMapIcons() async {
-    markedLocationIcon = await BitmapDescriptor.fromAssetImage(ImageConfiguration(size: Size(128, 128)), 'assets/images/marked-location-icon.png');
+    markedLocationIcon = await BitmapDescriptor.fromAssetImage(
+        ImageConfiguration(size: Size(128, 128)), 'assets/images/marked-location-icon.png');
   }
 
   Future<Position> getCurrentLocation() async => await Geolocator().getCurrentPosition();
@@ -86,7 +87,8 @@ class ATAMapState extends State<ATAMap> {
     try {
       Position currentPosition = await getCurrentLocation();
       final GoogleMapController controller = await _controller.future;
-      controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(target: LatLng(currentPosition.latitude, currentPosition.longitude), zoom: DEFAULT_ZOOM)));
+      controller.animateCamera(CameraUpdate.newCameraPosition(
+          CameraPosition(target: LatLng(currentPosition.latitude, currentPosition.longitude), zoom: DEFAULT_ZOOM)));
       currentLocationLat = currentPosition.latitude;
       currentLocationLng = currentPosition.longitude;
     } on PlatformException catch (e) {
@@ -94,7 +96,8 @@ class ATAMapState extends State<ATAMap> {
         showDialog(
             context: context,
             builder: (BuildContext context) {
-              return AlertDialog(title: Text("PERMISSION_DENIED"), content: Text('GPS device is OFF, please turn ON !'));
+              return AlertDialog(
+                  title: Text("PERMISSION_DENIED"), content: Text('GPS device is OFF, please turn ON !'));
             });
       }
     }
@@ -102,22 +105,32 @@ class ATAMapState extends State<ATAMap> {
   }
 
   void _addMarker(LatLng point) {
-    setState(() {
-      _markers.clear();
-      _circles.clear();
-      currentMarkedLat = point.latitude;
-      currentMarkedLng = point.longitude;
-      _markers.add(Marker(
-          markerId: MarkerId(point.toString()),
-          position: point,
-          infoWindow: InfoWindow(title: widget.isMoveableMarker ? '$currentMarkedLat, $currentMarkedLng' : '${widget.titleMarkedPosition}', snippet: 'Distance to Office :${_calcDistance()} m'),
-          icon: markedLocationIcon,
-          draggable: widget.isMoveableMarker,
-          onDragEnd: ((newPoint) {
-            if (widget.isMoveableMarker) _addMarker(newPoint);
-          })));
-      _circles.add(Circle(circleId: CircleId(point.toString()), center: point, radius: widget.authRange, strokeWidth: 1, strokeColor: Colors.blue.withOpacity(0.3), fillColor: Colors.blue.withOpacity(0.2)));
-    });
+    if (mounted)
+      setState(() {
+        _markers.clear();
+        _circles.clear();
+        currentMarkedLat = point.latitude;
+        currentMarkedLng = point.longitude;
+        _markers.add(Marker(
+            markerId: MarkerId(point.toString()),
+            position: point,
+            infoWindow: InfoWindow(
+                title:
+                    widget.isMoveableMarker ? '$currentMarkedLat, $currentMarkedLng' : '${widget.titleMarkedPosition}',
+                snippet: 'Distance to Office :${_calcDistance()} m'),
+            icon: markedLocationIcon,
+            draggable: widget.isMoveableMarker,
+            onDragEnd: ((newPoint) {
+              if (widget.isMoveableMarker) _addMarker(newPoint);
+            })));
+        _circles.add(Circle(
+            circleId: CircleId(point.toString()),
+            center: point,
+            radius: widget.authRange,
+            strokeWidth: 1,
+            strokeColor: Colors.blue.withOpacity(0.3),
+            fillColor: Colors.blue.withOpacity(0.2)));
+      });
   }
 
   void _handleLongPress(LatLng point) {
@@ -125,7 +138,9 @@ class ATAMapState extends State<ATAMap> {
   }
 
   int _calcDistance() {
-    return maps.SphericalUtil.computeDistanceBetween(maps.LatLng(currentMarkedLat, currentMarkedLng), maps.LatLng(currentLocationLat, currentLocationLng)).round();
+    return maps.SphericalUtil.computeDistanceBetween(
+            maps.LatLng(currentMarkedLat, currentMarkedLng), maps.LatLng(currentLocationLat, currentLocationLng))
+        .round();
   }
 
   bool isCheckinable() => _calcDistance() <= widget.authRange;

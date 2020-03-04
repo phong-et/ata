@@ -10,7 +10,7 @@ class OfficeSettingsNotifier extends BaseNotifier {
   OfficeSettingsNotifier(OfficeService officeService) : _officeService = officeService;
 
   String ipAddress;
-  String officeLon;
+  String officeLng;
   String officeLat;
   String authRange;
 
@@ -21,9 +21,19 @@ class OfficeSettingsNotifier extends BaseNotifier {
     setBusy(false);
   }
 
-  Future<void> saveOfficeSettings(String ipAddress, String lon, String lat, String authRange) async {
+  Future<void> saveOfficeSettings(
+    String ipAddress,
+    String lat,
+    String lng,
+    String authRange,
+  ) async {
     setBusy(true);
-    await _officeService.updateOfficeSettings(ipAddress, lon, lat, authRange);
+    await _officeService.updateOfficeSettings(
+      ipAddress,
+      lat,
+      lng,
+      authRange,
+    );
     setNotifierInfo(_officeService.officeSettings);
     setBusy(false);
   }
@@ -32,14 +42,14 @@ class OfficeSettingsNotifier extends BaseNotifier {
     officeSettings.fold(
       (failure) {
         ipAddress = failure.toString();
-        officeLon = failure.toString();
         officeLat = failure.toString();
+        officeLng = failure.toString();
         authRange = failure.toString();
       },
       (office) {
         ipAddress = office.error == null ? office.ipAddress.toString() : office.error;
-        officeLon = office.error == null ? office.lon.toString() : office.error;
         officeLat = office.error == null ? office.lat.toString() : office.error;
+        officeLng = office.error == null ? office.lng.toString() : office.error;
         authRange = office.error == null ? office.authRange.toString() : office.error;
       },
     );

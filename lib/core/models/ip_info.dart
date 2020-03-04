@@ -25,7 +25,7 @@ class IpInfo {
       country: parsedJson['country'],
       ipAddress: parsedJson['query'],
       ipLat: parsedJson['lat'],
-      ipLon: parsedJson['lon'],
+      ipLon: parsedJson['lng'],
       org: parsedJson['org'],
       timezone: parsedJson['timezone'],
     );

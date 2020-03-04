@@ -9,7 +9,7 @@ class CheckInScreen extends StatelessWidget {
       padding: const EdgeInsets.all(10.0),
       child: Column(
         children: <Widget>[
-          ATAMapOffice(),
+          AtaMapOffice(),
           DeviceIp(),
         ],
       ),

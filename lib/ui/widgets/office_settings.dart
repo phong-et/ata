@@ -6,7 +6,7 @@ import 'package:provider/provider.dart';
 
 class OfficeSettings extends StatelessWidget {
   final ipAddressController = TextEditingController();
-  final lonController = TextEditingController();
+  final lngController = TextEditingController();
   final latController = TextEditingController();
   final authRangeController = TextEditingController();
 
@@ -17,8 +17,8 @@ class OfficeSettings extends StatelessWidget {
       onNotifierReady: (notifier) => notifier.getOfficeSettings(),
       builder: (context, notifier, child) {
         ipAddressController.text = notifier.busy ? 'Loading ...' : notifier.ipAddress;
-        lonController.text = notifier.busy ? 'Loading ...' : notifier.officeLon;
         latController.text = notifier.busy ? 'Loading ...' : notifier.officeLat;
+        lngController.text = notifier.busy ? 'Loading ...' : notifier.officeLng;
         authRangeController.text = notifier.busy ? 'Loading ...' : notifier.authRange;
         return Column(
           children: <Widget>[
@@ -38,7 +38,7 @@ class OfficeSettings extends StatelessWidget {
             TextField(
               decoration: InputDecoration(labelText: 'Office Location\'s Longitude'),
               keyboardType: TextInputType.number,
-              controller: lonController,
+              controller: lngController,
               // style: TextStyle(color: notifier.busy ? Colors.grey : Colors.white),
             ),
             TextField(
@@ -64,8 +64,8 @@ class OfficeSettings extends StatelessWidget {
                       ? null
                       : () => notifier.saveOfficeSettings(
                             ipAddressController.text,
-                            lonController.text,
                             latController.text,
+                            lngController.text,
                             authRangeController.text,
                           ),
                 )
