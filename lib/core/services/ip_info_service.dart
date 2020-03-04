@@ -15,32 +15,37 @@ class IpInfoService {
     _ipInfo = ipInfo;
   }
 
-  Future<void> fetchDeviceIpInfo() async {
-    await Util.requestEither<IpInfo>(
-      RequestType.GET,
-      'http://ip-api.com/json',
-    ).then((value) => _setIpInfo(value));
-  }
-
-  Future<bool> checkIpForAttendance() async {
-    var deviceIp = await getDeviceIp();
-    var officeIp = await getOfficeIp();
-    return deviceIp == officeIp;
-  }
-
-  Future<String> getDeviceIp() async {
+  //* all async request here
+  Future<void> refreshService() async {
     await fetchDeviceIpInfo();
+    await _officeService.fetchOfficeSettings();
+  }
+
+  String getDeviceIp() {
     return ipInfo.fold(
       (failure) => failure.toString(),
       (ipInfo) => ipInfo.ipAddress,
     );
   }
 
-  Future<String> getOfficeIp() async {
-    await _officeService.fetchOfficeSettings();
+  String getOfficeIp() {
     return _officeService.officeSettings.fold(
       (failure) => failure.toString(),
       (office) => office.ipAddress,
     );
+  }
+
+  bool checkIpForAttendance() {
+    var deviceIp = getDeviceIp();
+    var officeIp = getOfficeIp();
+    return deviceIp == officeIp;
+  }
+
+  //* Utils
+  Future<void> fetchDeviceIpInfo() async {
+    await Util.requestEither<IpInfo>(
+      RequestType.GET,
+      'http://ip-api.com/json',
+    ).then((value) => _setIpInfo(value));
   }
 }

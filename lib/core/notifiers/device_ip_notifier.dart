@@ -8,10 +8,11 @@ class DeviceIpNotifier extends BaseNotifier {
   String deviceIp = '0.0.0.0';
   bool isWithinOfficeNetwork = false;
 
-  Future<void> updateIpInfoStatus() async {
+  Future<void> refresh() async {
     setBusy(true);
-    deviceIp = await _ipInfoService.getDeviceIp();
-    isWithinOfficeNetwork = await _ipInfoService.checkIpForAttendance();
+    await _ipInfoService.refreshService();
+    deviceIp = _ipInfoService.getDeviceIp();
+    isWithinOfficeNetwork = _ipInfoService.checkIpForAttendance();
     setBusy(false);
   }
 }

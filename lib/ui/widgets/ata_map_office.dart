@@ -9,7 +9,7 @@ class AtaMapOffice extends StatelessWidget {
   Widget build(BuildContext context) {
     return BaseWidget<AtaMapOfficeNotifier>(
         notifier: AtaMapOfficeNotifier(Provider.of(context)),
-        onNotifierReady: (notifier) => notifier.compareWithOfficeAuthRange(),
+        onNotifierReady: (notifier) => notifier.refresh(),
         builder: (context, notifier, child) {
           return SizedBox(
             width: double.infinity,

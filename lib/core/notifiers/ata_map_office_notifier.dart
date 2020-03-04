@@ -7,17 +7,16 @@ class AtaMapOfficeNotifier extends BaseNotifier {
 
   Location officeLocation;
   double authRange = 0.1;
-
   bool isWithinOfficeAuthRange = false;
 
   AtaMapOfficeNotifier(LocationService locationService) : _locationService = locationService;
 
-  Future<void> compareWithOfficeAuthRange() async {
+  Future<void> refresh() async {
     setBusy(true);
-    await _locationService.updateLocationStatus();
-    officeLocation = _locationService.officeLocation;
-    authRange = _locationService.authRange;
-    isWithinOfficeAuthRange = _locationService.isWithinOfficeAuthRange;
+    await _locationService.refreshService();
+    officeLocation = _locationService.getOfficeLocation();
+    authRange = _locationService.getAuthRange();
+    isWithinOfficeAuthRange = await _locationService.checkLocationForAttendance();
     setBusy(false);
   }
 }
