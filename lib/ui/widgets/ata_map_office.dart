@@ -8,7 +8,7 @@ class AtaMapOffice extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BaseWidget<AtaMapOfficeNotifier>(
-        notifier: AtaMapOfficeNotifier(Provider.of(context), Provider.of(context)),
+        notifier: AtaMapOfficeNotifier(Provider.of(context)),
         onNotifierReady: (notifier) => notifier.compareWithOfficeAuthRange(),
         builder: (context, notifier, child) {
           return SizedBox(

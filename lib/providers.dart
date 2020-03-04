@@ -13,10 +13,8 @@ List<SingleChildWidget> providers = [
   ...proxyUiServices,
 ];
 
-List<SingleChildWidget> services = [
-  Provider.value(value: IpInfoService()),
-  Provider.value(value: LocationService()),
-];
+List<SingleChildWidget> services = [];
+
 List<SingleChildWidget> uIservices = [
   Provider.value(value: AuthService()),
 ];
@@ -24,6 +22,12 @@ List<SingleChildWidget> uIservices = [
 List<SingleChildWidget> proxyServices = [
   ProxyProvider<AuthService, OfficeService>(
     update: (_, authService, __) => OfficeService()..setAuthToken(authService.idToken),
+  ),
+  ProxyProvider<OfficeService, IpInfoService>(
+    update: (_, officeService, __) => IpInfoService(officeService),
+  ),
+  ProxyProvider<OfficeService, LocationService>(
+    update: (_, officeService, __) => LocationService(officeService),
   ),
   ProxyProvider<AuthService, UserService>(
     update: (_, authService, __) => UserService(authService.auth),

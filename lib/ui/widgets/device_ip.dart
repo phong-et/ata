@@ -10,12 +10,12 @@ class DeviceIp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BaseWidget<DeviceIpNotifier>(
-      notifier: DeviceIpNotifier(Provider.of(context), Provider.of(context)),
+      notifier: DeviceIpNotifier(Provider.of(context)),
       onNotifierReady: (notifier) {
-        notifier.compareWithOfficeIpAddress();
+        notifier.updateIpInfoStatus();
       },
       builder: (context, notifier, child) {
-        ipAddressController.text = notifier.busy ? 'Loading ...' : notifier.ipAddress;
+        ipAddressController.text = notifier.busy ? 'Loading ...' : notifier.deviceIp;
         return SizedBox(
           width: double.infinity,
           child: Card(
@@ -37,7 +37,7 @@ class DeviceIp extends StatelessWidget {
                         ),
                       ),
                       AtaButton(
-                        onPressed: notifier.busy ? null : () => notifier.compareWithOfficeIpAddress(),
+                        onPressed: notifier.busy ? null : () => notifier.updateIpInfoStatus(),
                         color: notifier.busy
                             ? Colors.yellow
                             : (notifier.isWithinOfficeNetwork ? Colors.green : Colors.red),
