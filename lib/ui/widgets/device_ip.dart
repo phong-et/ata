@@ -10,24 +10,42 @@ class DeviceIp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BaseWidget<DeviceIpNotifier>(
-      notifier: DeviceIpNotifier(Provider.of(context)),
-      onNotifierReady: (notifier) => notifier.getIpAddress(),
+      notifier: DeviceIpNotifier(Provider.of(context), Provider.of(context)),
+      onNotifierReady: (notifier) {
+        notifier.compareWithOfficeIpAddress();
+      },
       builder: (context, notifier, child) {
         ipAddressController.text = notifier.busy ? 'Loading ...' : notifier.ipAddress;
-        return Row(
-          children: <Widget>[
-            Expanded(
-              child: TextFormField(
-                decoration: InputDecoration(labelText: 'Current IP Address:'),
-                controller: ipAddressController,
-                enabled: false,
+        return SizedBox(
+          width: double.infinity,
+          child: Card(
+            elevation: 10.0,
+            color: notifier.busy ? Colors.yellow : (notifier.isWithinOfficeNetwork ? Colors.green : Colors.red),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                color: Colors.white,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    children: <Widget>[
+                      Expanded(
+                        child: TextFormField(
+                          decoration: InputDecoration(labelText: 'Current IP Address:'),
+                          controller: ipAddressController,
+                          enabled: false,
+                        ),
+                      ),
+                      AtaButton(
+                        onPressed: notifier.busy ? null : () => notifier.compareWithOfficeIpAddress(),
+                        label: 'Refresh',
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ),
-            AtaButton(
-              onPressed: notifier.busy ? null : () => notifier.getIpAddress(),
-              label: 'Refresh',
-            ),
-          ],
+          ),
         );
       },
     );

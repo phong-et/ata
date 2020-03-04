@@ -43,7 +43,7 @@ class ATAMap extends StatefulWidget {
       this.centerMapLng = 106.7007886,
       this.isMoveableMarker = false,
       this.authRange = 100,
-      this.titleMarkedPosition = "Marked Position"});
+      this.titleMarkedPosition = "Office Location"});
 
   @override
   State<ATAMap> createState() => ATAMapState();
@@ -86,8 +86,7 @@ class ATAMapState extends State<ATAMap> {
     try {
       Position currentPosition = await getCurrentLocation();
       final GoogleMapController controller = await _controller.future;
-      controller.animateCamera(
-          CameraUpdate.newCameraPosition(CameraPosition(target: LatLng(currentPosition.latitude, currentPosition.longitude), zoom: DEFAULT_ZOOM)));
+      controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(target: LatLng(currentPosition.latitude, currentPosition.longitude), zoom: DEFAULT_ZOOM)));
       currentLocationLat = currentPosition.latitude;
       currentLocationLng = currentPosition.longitude;
     } on PlatformException catch (e) {
@@ -111,21 +110,13 @@ class ATAMapState extends State<ATAMap> {
       _markers.add(Marker(
           markerId: MarkerId(point.toString()),
           position: point,
-          infoWindow: InfoWindow(
-              title: widget.isMoveableMarker ? '$currentMarkedLat, $currentMarkedLng' : '${widget.titleMarkedPosition}',
-              snippet: 'Distance :${_calcDistance()} m -> isCheckinable:${isCheckinable()}'),
+          infoWindow: InfoWindow(title: widget.isMoveableMarker ? '$currentMarkedLat, $currentMarkedLng' : '${widget.titleMarkedPosition}', snippet: 'Distance to Office :${_calcDistance()} m'),
           icon: markedLocationIcon,
           draggable: widget.isMoveableMarker,
           onDragEnd: ((newPoint) {
             if (widget.isMoveableMarker) _addMarker(newPoint);
           })));
-      _circles.add(Circle(
-          circleId: CircleId(point.toString()),
-          center: point,
-          radius: widget.authRange,
-          strokeWidth: 1,
-          strokeColor: Colors.blue.withOpacity(0.3),
-          fillColor: Colors.blue.withOpacity(0.2)));
+      _circles.add(Circle(circleId: CircleId(point.toString()), center: point, radius: widget.authRange, strokeWidth: 1, strokeColor: Colors.blue.withOpacity(0.3), fillColor: Colors.blue.withOpacity(0.2)));
     });
   }
 
@@ -134,13 +125,11 @@ class ATAMapState extends State<ATAMap> {
   }
 
   int _calcDistance() {
-    return maps.SphericalUtil.computeDistanceBetween(
-            maps.LatLng(currentMarkedLat, currentMarkedLng), maps.LatLng(currentLocationLat, currentLocationLng))
-        .round();
+    return maps.SphericalUtil.computeDistanceBetween(maps.LatLng(currentMarkedLat, currentMarkedLng), maps.LatLng(currentLocationLat, currentLocationLng)).round();
   }
 
   bool isCheckinable() => _calcDistance() <= widget.authRange;
-  
+
   @override
   Widget build(BuildContext context) {
     return new Scaffold(

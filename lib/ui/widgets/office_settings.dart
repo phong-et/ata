@@ -18,28 +18,32 @@ class OfficeSettings extends StatelessWidget {
       builder: (context, notifier, child) {
         ipAddressController.text = notifier.busy ? 'Loading ...' : notifier.ipAddress;
         lonController.text = notifier.busy ? 'Loading ...' : notifier.officeLon;
-        latController.text = notifier.busy ? 'Loading ...' : notifier.officeLon;
+        latController.text = notifier.busy ? 'Loading ...' : notifier.officeLat;
         authRangeController.text = notifier.busy ? 'Loading ...' : notifier.authRange;
         return Column(
           children: <Widget>[
             TextField(
               decoration: InputDecoration(labelText: 'Office IP Address'),
+              keyboardType: TextInputType.number,
               controller: ipAddressController,
               //* TextStyle currently cassing issue, will be fixed soon by Flutter team *//
               // style: TextStyle(color: notifier.busy ? Colors.grey : Colors.white),
             ),
             TextField(
-              decoration: InputDecoration(labelText: 'Office Location\'s Longitude'),
-              controller: lonController,
-              // style: TextStyle(color: notifier.busy ? Colors.grey : Colors.white),
-            ),
-            TextField(
               decoration: InputDecoration(labelText: 'Office Location\'s Lattitude'),
+              keyboardType: TextInputType.number,
               controller: latController,
               // style: TextStyle(color: notifier.busy ? Colors.grey : Colors.white),
             ),
             TextField(
-              decoration: InputDecoration(labelText: 'Authentication Range'),
+              decoration: InputDecoration(labelText: 'Office Location\'s Longitude'),
+              keyboardType: TextInputType.number,
+              controller: lonController,
+              // style: TextStyle(color: notifier.busy ? Colors.grey : Colors.white),
+            ),
+            TextField(
+              decoration: InputDecoration(labelText: 'Authentication Range (in meters)'),
+              keyboardType: TextInputType.number,
               controller: authRangeController,
               // style: TextStyle(color: notifier.busy ? Colors.grey : Colors.white),
             ),
