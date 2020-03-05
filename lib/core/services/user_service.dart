@@ -13,7 +13,12 @@ class UserService {
   String _urlReports = "https://atapp-7720c.firebaseio.com/reports";
 
   final AuthService _authService;
-  UserService(AuthService authService) : _authService = authService;
+  final LocationService _locationService;
+  final IpInfoService _ipInfoService;
+  UserService(AuthService authService, LocationService locationService, IpInfoService ipInfoService)
+      : _authService = authService,
+        _locationService = locationService,
+        _ipInfoService = ipInfoService;
 
   Either<Failure, Auth> get _auth {
     return _authService.auth;
@@ -68,14 +73,6 @@ class UserService {
     } else
       status = AttendanceStatus.NotYetCheckedIn;
     return Right(status);
-  }
-
-  LocationService _locationService;
-  IpInfoService _ipInfoService;
-
-  void setLocationAndIpServices(LocationService locationService, IpInfoService ipInfoService) {
-    _locationService = locationService;
-    _ipInfoService = ipInfoService;
   }
 
   Future<String> checkLocationAndIp() async {

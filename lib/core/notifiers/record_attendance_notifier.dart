@@ -1,17 +1,10 @@
 import 'package:ata/core/notifiers/base_notifier.dart';
-import 'package:ata/core/services/ip_info_service.dart';
-import 'package:ata/core/services/location_service.dart';
 import 'package:ata/core/services/user_service.dart';
 
 class RecordAttendanceNotifier extends BaseNotifier {
   final UserService _userService;
-  final LocationService _locationService;
-  final IpInfoService _ipInfoService;
 
-  RecordAttendanceNotifier(UserService userService, LocationService locationService, IpInfoService ipInfoService)
-      : _userService = userService,
-        _locationService = locationService,
-        _ipInfoService = ipInfoService;
+  RecordAttendanceNotifier(UserService userService) : _userService = userService;
 
   AttendanceStatus attendanceStatus;
   String checkInStatus = '';
@@ -21,7 +14,6 @@ class RecordAttendanceNotifier extends BaseNotifier {
     setBusy(true);
     await _userService.refreshService();
     attendanceStatus = _userService.getAttendanceStatus();
-    _userService.setLocationAndIpServices(_locationService, _ipInfoService);
     setBusy(false);
   }
 

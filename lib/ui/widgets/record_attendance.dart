@@ -24,7 +24,7 @@ class RecordAttendance extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BaseWidget<RecordAttendanceNotifier>(
-      notifier: RecordAttendanceNotifier(Provider.of(context), Provider.of(context), Provider.of(context)),
+      notifier: RecordAttendanceNotifier(Provider.of(context)),
       onNotifierReady: (notifier) => notifier.refresh(),
       builder: (context, notifier, child) {
         return SizedBox(
