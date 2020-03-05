@@ -22,7 +22,7 @@ class IpInfoService {
   }
 
   String getDeviceIp() {
-    return ipInfo.fold(
+    return _ipInfo.fold(
       (failure) => failure.toString(),
       (ipInfo) => ipInfo.ipAddress,
     );
