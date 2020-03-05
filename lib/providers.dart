@@ -20,6 +20,9 @@ List<SingleChildWidget> uIservices = [
 ];
 
 List<SingleChildWidget> proxyServices = [
+  ProxyProvider<AuthService, UserService>(
+    update: (_, authService, __) => UserService(authService.auth),
+  ),
   ProxyProvider<AuthService, OfficeService>(
     update: (_, authService, __) => OfficeService()..setAuthToken(authService.idToken),
   ),
@@ -29,9 +32,6 @@ List<SingleChildWidget> proxyServices = [
   ProxyProvider<OfficeService, LocationService>(
     update: (_, officeService, __) => LocationService(officeService),
   ),
-  ProxyProvider<AuthService, UserService>(
-    update: (_, authService, __) => UserService(authService.auth),
-  )
 ];
 
 List<SingleChildWidget> proxyUiServices = [];
