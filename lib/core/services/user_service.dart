@@ -5,7 +5,6 @@ import 'package:ata/core/services/ip_info_service.dart';
 import 'package:ata/core/services/location_service.dart';
 import 'package:ata/util.dart';
 import 'package:dartz/dartz.dart';
-import 'package:intl/intl.dart';
 
 enum AttendanceStatus { CheckedIn, CheckedOut, NotYetCheckedIn, NotYetCheckedOut }
 
@@ -33,10 +32,11 @@ class UserService {
   }
 
   String get currentDateString {
-    return DateFormat('yyyy-MM-dd').format(DateTime.now());
+    return _ipInfoService.getServerDate();
   }
 
   String get urlRecordAttendance {
+    print(currentDateString);
     return "$_urlReports/$_localId/$currentDateString.json?auth=$_idToken";
   }
 
@@ -44,6 +44,7 @@ class UserService {
 
   //* all async request here
   Future<void> refreshService() async {
+    await _ipInfoService.refreshService(); //* get ipInfoService ready first in order to getServerDate()
     _attendanceStatus = await fetchAttendanceStatus();
   }
 

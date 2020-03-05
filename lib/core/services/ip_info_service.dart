@@ -28,6 +28,13 @@ class IpInfoService {
     );
   }
 
+  String getServerDate() {
+    return _ipInfo.fold(
+      (failure) => failure.toString(),
+      (ipInfo) => ipInfo.serverDate,
+    );
+  }
+
   String getOfficeIp() {
     return _officeService.officeSettings.fold(
       //* '- ' fix error when No Internet shows green status
@@ -46,7 +53,7 @@ class IpInfoService {
   Future<void> fetchDeviceIpInfo() async {
     await Util.requestEither<IpInfo>(
       RequestType.GET,
-      'http://ip-api.com/json',
+      'http://botest.igk99.com/public/ipdate.aspx',
     ).then((value) => _setIpInfo(value));
   }
 }
