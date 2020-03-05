@@ -73,64 +73,76 @@ class AtaMapState extends State<AtaMap> {
     super.initState();
     currentMarkedLat = widget.markedLat;
     currentMarkedLng = widget.markedLng;
+    print('currentMarkedLat :$currentMarkedLat, currentMarkedLng:$currentMarkedLng');
     _setCustomMapIcons();
   }
 
   void _setCustomMapIcons() async {
-    markedLocationIcon = await BitmapDescriptor.fromAssetImage(
-        ImageConfiguration(size: Size(128, 128)), 'assets/images/marked-location-icon.png');
+    markedLocationIcon = await BitmapDescriptor.fromAssetImage(ImageConfiguration(size: Size(128, 128)), 'assets/images/marked-location-icon.png');
   }
 
   Future<Position> getCurrentLocation() async => await Geolocator().getCurrentPosition();
 
-  void _goToCurrentLocation() async {
-    try {
-      Position currentPosition = await getCurrentLocation();
-      final GoogleMapController controller = await _controller.future;
-      controller.animateCamera(CameraUpdate.newCameraPosition(
-          CameraPosition(target: LatLng(currentPosition.latitude, currentPosition.longitude), zoom: DEFAULT_ZOOM)));
-      currentLocationLat = currentPosition.latitude;
-      currentLocationLng = currentPosition.longitude;
-    } on PlatformException catch (e) {
-      if (e.code == 'PERMISSION_DENIED') {
-        showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                  title: Text("PERMISSION_DENIED"), content: Text('GPS device is OFF, please turn ON !'));
-            });
-      }
+  void _catchGPSOff(PlatformException e) {
+    if (e.code == 'PERMISSION_DENIED') {
+      showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(title: Text("PERMISSION_DENIED"), content: Text('GPS device is OFF, please turn ON !'));
+          });
     }
+  }
+
+  void _animateMap(LatLng position) async {
+    final GoogleMapController controller = await _controller.future;
+    controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(target: position, zoom: DEFAULT_ZOOM)));
     if (_markers.length == 0) _addMarker(LatLng(currentMarkedLat, currentMarkedLng));
   }
 
+  void _gotoOfficeLocation() async {
+    try {
+      _animateMap(LatLng(currentMarkedLat, currentMarkedLng));
+    } on PlatformException catch (e) {
+      _catchGPSOff(e);
+    }
+  }
+
+  void _goToCurrentLocation() async {
+    try {
+      Position currentPosition = await getCurrentLocation();
+      _animateMap(LatLng(currentPosition.latitude, currentPosition.longitude));
+      currentLocationLat = currentPosition.latitude;
+      currentLocationLng = currentPosition.longitude;
+    } on PlatformException catch (e) {
+      _catchGPSOff(e);
+    }
+  }
+
   void _addMarker(LatLng point) {
-    if (mounted)
-      setState(() {
-        _markers.clear();
-        _circles.clear();
-        currentMarkedLat = point.latitude;
-        currentMarkedLng = point.longitude;
-        _markers.add(Marker(
-            markerId: MarkerId(point.toString()),
-            position: point,
-            infoWindow: InfoWindow(
-                title:
-                    widget.isMoveableMarker ? '$currentMarkedLat, $currentMarkedLng' : '${widget.titleMarkedPosition}',
-                snippet: 'Distance to Office :${_calcDistance()} m'),
-            icon: markedLocationIcon,
-            draggable: widget.isMoveableMarker,
-            onDragEnd: ((newPoint) {
-              if (widget.isMoveableMarker) _addMarker(newPoint);
-            })));
-        _circles.add(Circle(
-            circleId: CircleId(point.toString()),
-            center: point,
-            radius: widget.authRange,
-            strokeWidth: 1,
-            strokeColor: Colors.blue.withOpacity(0.3),
-            fillColor: Colors.blue.withOpacity(0.2)));
-      });
+    setState(() {
+      _markers.clear();
+      _circles.clear();
+      currentMarkedLat = point.latitude;
+      currentMarkedLng = point.longitude;
+      _markers.add(Marker(
+          markerId: MarkerId(point.toString()),
+          position: point,
+          infoWindow: InfoWindow(
+              title: widget.isMoveableMarker ? '$currentMarkedLat, $currentMarkedLng' : '${widget.titleMarkedPosition}',
+              snippet: 'Distance :${_calcDistance()} m -> isCheckinable:${isCheckinable()}'),
+          icon: markedLocationIcon,
+          draggable: widget.isMoveableMarker,
+          onDragEnd: ((newPoint) {
+            if (widget.isMoveableMarker) _addMarker(newPoint);
+          })));
+      _circles.add(Circle(
+          circleId: CircleId(point.toString()),
+          center: point,
+          radius: widget.authRange,
+          strokeWidth: 1,
+          strokeColor: Colors.blue.withOpacity(0.3),
+          fillColor: Colors.blue.withOpacity(0.2)));
+    });
   }
 
   void _handleLongPress(LatLng point) {
@@ -164,13 +176,28 @@ class AtaMapState extends State<AtaMap> {
           markers: _markers,
           circles: _circles,
           onLongPress: _handleLongPress),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _goToCurrentLocation,
-        backgroundColor: Colors.white70,
-        foregroundColor: Colors.black54,
-        child: Icon(Icons.my_location),
-        shape: RoundedRectangleBorder(side: BorderSide(color: Colors.white70, width: 1)),
-        mini: true,
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: <Widget>[
+            FloatingActionButton(
+                onPressed: _gotoOfficeLocation,
+                backgroundColor: Colors.white70,
+                foregroundColor: Colors.black54,
+                child: Icon(Icons.home),
+                shape: RoundedRectangleBorder(side: BorderSide(color: Colors.white70, width: 1)),
+                mini: true),
+            FloatingActionButton(
+                onPressed: _goToCurrentLocation,
+                backgroundColor: Colors.white70,
+                foregroundColor: Colors.black54,
+                child: Icon(Icons.my_location),
+                shape: RoundedRectangleBorder(side: BorderSide(color: Colors.white70, width: 1)),
+                mini: true)
+          ],
+        ),
       ),
     );
   }
