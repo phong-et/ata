@@ -83,7 +83,7 @@ class AtaMapState extends State<AtaMap> {
 
   Future<Position> getCurrentLocation() async => await Geolocator().getCurrentPosition();
 
-  void _catchGPSOff(PlatformException e) {
+  void _catchGpsOff(PlatformException e) {
     if (e.code == 'PERMISSION_DENIED') {
       showDialog(
           context: context,
@@ -99,11 +99,11 @@ class AtaMapState extends State<AtaMap> {
     if (_markers.length == 0) _addMarker(LatLng(currentMarkedLat, currentMarkedLng));
   }
 
-  void _gotoOfficeLocation() async {
+  void _goToOfficeLocation() async {
     try {
       _animateMap(LatLng(currentMarkedLat, currentMarkedLng));
     } on PlatformException catch (e) {
-      _catchGPSOff(e);
+      _catchGpsOff(e);
     }
   }
 
@@ -114,35 +114,36 @@ class AtaMapState extends State<AtaMap> {
       currentLocationLat = currentPosition.latitude;
       currentLocationLng = currentPosition.longitude;
     } on PlatformException catch (e) {
-      _catchGPSOff(e);
+      _catchGpsOff(e);
     }
   }
 
   void _addMarker(LatLng point) {
-    setState(() {
-      _markers.clear();
-      _circles.clear();
-      currentMarkedLat = point.latitude;
-      currentMarkedLng = point.longitude;
-      _markers.add(Marker(
-          markerId: MarkerId(point.toString()),
-          position: point,
-          infoWindow: InfoWindow(
-              title: widget.isMoveableMarker ? '$currentMarkedLat, $currentMarkedLng' : '${widget.titleMarkedPosition}',
-              snippet: 'Distance :${_calcDistance()} m -> isCheckinable:${isCheckinable()}'),
-          icon: markedLocationIcon,
-          draggable: widget.isMoveableMarker,
-          onDragEnd: ((newPoint) {
-            if (widget.isMoveableMarker) _addMarker(newPoint);
-          })));
-      _circles.add(Circle(
-          circleId: CircleId(point.toString()),
-          center: point,
-          radius: widget.authRange,
-          strokeWidth: 1,
-          strokeColor: Colors.blue.withOpacity(0.3),
-          fillColor: Colors.blue.withOpacity(0.2)));
-    });
+    if (mounted)
+      setState(() {
+        _markers.clear();
+        _circles.clear();
+        currentMarkedLat = point.latitude;
+        currentMarkedLng = point.longitude;
+        _markers.add(Marker(
+            markerId: MarkerId(point.toString()),
+            position: point,
+            infoWindow: InfoWindow(
+                title: widget.isMoveableMarker ? '$currentMarkedLat, $currentMarkedLng' : '${widget.titleMarkedPosition}',
+                snippet: 'Distance to Office :${_calcDistance()} m'),
+            icon: markedLocationIcon,
+            draggable: widget.isMoveableMarker,
+            onDragEnd: ((newPoint) {
+              if (widget.isMoveableMarker) _addMarker(newPoint);
+            })));
+        _circles.add(Circle(
+            circleId: CircleId(point.toString()),
+            center: point,
+            radius: widget.authRange,
+            strokeWidth: 1,
+            strokeColor: Colors.blue.withOpacity(0.3),
+            fillColor: Colors.blue.withOpacity(0.2)));
+      });
   }
 
   void _handleLongPress(LatLng point) {
@@ -183,7 +184,7 @@ class AtaMapState extends State<AtaMap> {
           mainAxisAlignment: MainAxisAlignment.end,
           children: <Widget>[
             FloatingActionButton(
-                onPressed: _gotoOfficeLocation,
+                onPressed: _goToOfficeLocation,
                 backgroundColor: Colors.white70,
                 foregroundColor: Colors.black54,
                 child: Icon(Icons.home),
