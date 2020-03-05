@@ -54,8 +54,7 @@ class AtaMapState extends State<AtaMap> {
   double currentMarkedLng;
   double currentLocationLat;
   double currentLocationLng;
-  bool isMapReady = false;
-  static const int TIMEOUT_PIN_MARKER_MAP_LOADED = 2;
+  bool _isMapReady = false;
   static const double DEFAULT_ZOOM = 17;
   CameraPosition get defaultCamera {
     return CameraPosition(
@@ -73,7 +72,6 @@ class AtaMapState extends State<AtaMap> {
     super.initState();
     currentMarkedLat = widget.markedLat;
     currentMarkedLng = widget.markedLng;
-    print('currentMarkedLat :$currentMarkedLat, currentMarkedLng:$currentMarkedLng');
     _setCustomMapIcons();
   }
 
@@ -81,7 +79,7 @@ class AtaMapState extends State<AtaMap> {
     markedLocationIcon = await BitmapDescriptor.fromAssetImage(ImageConfiguration(size: Size(128, 128)), 'assets/images/marked-location-icon.png');
   }
 
-  Future<Position> getCurrentLocation() async => await Geolocator().getCurrentPosition();
+  Future<Position> _getCurrentLocation() async => await Geolocator().getCurrentPosition();
 
   void _catchGpsOff(PlatformException e) {
     if (e.code == 'PERMISSION_DENIED') {
@@ -109,7 +107,7 @@ class AtaMapState extends State<AtaMap> {
 
   void _goToCurrentLocation() async {
     try {
-      Position currentPosition = await getCurrentLocation();
+      Position currentPosition = await _getCurrentLocation();
       _animateMap(LatLng(currentPosition.latitude, currentPosition.longitude));
       currentLocationLat = currentPosition.latitude;
       currentLocationLng = currentPosition.longitude;
@@ -147,7 +145,7 @@ class AtaMapState extends State<AtaMap> {
   }
 
   void _handleLongPress(LatLng point) {
-    if (widget.isMoveableMarker && isMapReady) _addMarker(point);
+    if (widget.isMoveableMarker && _isMapReady) _addMarker(point);
   }
 
   int _calcDistance() {
@@ -166,11 +164,11 @@ class AtaMapState extends State<AtaMap> {
           initialCameraPosition: defaultCamera,
           onMapCreated: (GoogleMapController controller) async {
             _controller.complete(controller);
-            Position currentLocation = await getCurrentLocation();
+            Position currentLocation = await _getCurrentLocation();
             currentLocationLat = currentLocation.latitude;
             currentLocationLng = currentLocation.longitude;
             _addMarker(LatLng(widget.markedLat, widget.markedLng));
-            isMapReady = true;
+            _isMapReady = true;
           },
           myLocationEnabled: true,
           myLocationButtonEnabled: false,
