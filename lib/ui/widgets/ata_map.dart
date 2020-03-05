@@ -54,8 +54,7 @@ class AtaMapState extends State<AtaMap> {
   double currentMarkedLng;
   double currentLocationLat;
   double currentLocationLng;
-  bool isMapReady = false;
-  static const int TIMEOUT_PIN_MARKER_MAP_LOADED = 2;
+  bool _isMapReady = false;
   static const double DEFAULT_ZOOM = 17;
   CameraPosition get defaultCamera {
     return CameraPosition(
@@ -77,31 +76,44 @@ class AtaMapState extends State<AtaMap> {
   }
 
   void _setCustomMapIcons() async {
-    markedLocationIcon = await BitmapDescriptor.fromAssetImage(
-        ImageConfiguration(size: Size(128, 128)), 'assets/images/marked-location-icon.png');
+    markedLocationIcon = await BitmapDescriptor.fromAssetImage(ImageConfiguration(size: Size(128, 128)), 'assets/images/marked-location-icon.png');
   }
 
-  Future<Position> getCurrentLocation() async => await Geolocator().getCurrentPosition();
+  Future<Position> _getCurrentLocation() async => await Geolocator().getCurrentPosition();
+
+  void _catchGpsOff(PlatformException e) {
+    if (e.code == 'PERMISSION_DENIED') {
+      showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(title: Text("PERMISSION_DENIED"), content: Text('GPS device is OFF, please turn ON !'));
+          });
+    }
+  }
+
+  void _animateMap(LatLng position) async {
+    final GoogleMapController controller = await _controller.future;
+    controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(target: position, zoom: DEFAULT_ZOOM)));
+    if (_markers.length == 0) _addMarker(LatLng(currentMarkedLat, currentMarkedLng));
+  }
+
+  void _goToOfficeLocation() async {
+    try {
+      _animateMap(LatLng(currentMarkedLat, currentMarkedLng));
+    } on PlatformException catch (e) {
+      _catchGpsOff(e);
+    }
+  }
 
   void _goToCurrentLocation() async {
     try {
-      Position currentPosition = await getCurrentLocation();
-      final GoogleMapController controller = await _controller.future;
-      controller.animateCamera(CameraUpdate.newCameraPosition(
-          CameraPosition(target: LatLng(currentPosition.latitude, currentPosition.longitude), zoom: DEFAULT_ZOOM)));
+      Position currentPosition = await _getCurrentLocation();
+      _animateMap(LatLng(currentPosition.latitude, currentPosition.longitude));
       currentLocationLat = currentPosition.latitude;
       currentLocationLng = currentPosition.longitude;
     } on PlatformException catch (e) {
-      if (e.code == 'PERMISSION_DENIED') {
-        showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                  title: Text("PERMISSION_DENIED"), content: Text('GPS device is OFF, please turn ON !'));
-            });
-      }
+      _catchGpsOff(e);
     }
-    if (_markers.length == 0) _addMarker(LatLng(currentMarkedLat, currentMarkedLng));
   }
 
   void _addMarker(LatLng point) {
@@ -115,8 +127,7 @@ class AtaMapState extends State<AtaMap> {
             markerId: MarkerId(point.toString()),
             position: point,
             infoWindow: InfoWindow(
-                title:
-                    widget.isMoveableMarker ? '$currentMarkedLat, $currentMarkedLng' : '${widget.titleMarkedPosition}',
+                title: widget.isMoveableMarker ? '$currentMarkedLat, $currentMarkedLng' : '${widget.titleMarkedPosition}',
                 snippet: 'Distance to Office :${_calcDistance()} m'),
             icon: markedLocationIcon,
             draggable: widget.isMoveableMarker,
@@ -134,7 +145,7 @@ class AtaMapState extends State<AtaMap> {
   }
 
   void _handleLongPress(LatLng point) {
-    if (widget.isMoveableMarker && isMapReady) _addMarker(point);
+    if (widget.isMoveableMarker && _isMapReady) _addMarker(point);
   }
 
   int _calcDistance() {
@@ -153,24 +164,39 @@ class AtaMapState extends State<AtaMap> {
           initialCameraPosition: defaultCamera,
           onMapCreated: (GoogleMapController controller) async {
             _controller.complete(controller);
-            Position currentLocation = await getCurrentLocation();
+            Position currentLocation = await _getCurrentLocation();
             currentLocationLat = currentLocation.latitude;
             currentLocationLng = currentLocation.longitude;
             _addMarker(LatLng(widget.markedLat, widget.markedLng));
-            isMapReady = true;
+            _isMapReady = true;
           },
           myLocationEnabled: true,
           myLocationButtonEnabled: false,
           markers: _markers,
           circles: _circles,
           onLongPress: _handleLongPress),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _goToCurrentLocation,
-        backgroundColor: Colors.white70,
-        foregroundColor: Colors.black54,
-        child: Icon(Icons.my_location),
-        shape: RoundedRectangleBorder(side: BorderSide(color: Colors.white70, width: 1)),
-        mini: true,
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: <Widget>[
+            FloatingActionButton(
+                onPressed: _goToOfficeLocation,
+                backgroundColor: Colors.white70,
+                foregroundColor: Colors.black54,
+                child: Icon(Icons.home),
+                shape: RoundedRectangleBorder(side: BorderSide(color: Colors.white70, width: 1)),
+                mini: true),
+            FloatingActionButton(
+                onPressed: _goToCurrentLocation,
+                backgroundColor: Colors.white70,
+                foregroundColor: Colors.black54,
+                child: Icon(Icons.my_location),
+                shape: RoundedRectangleBorder(side: BorderSide(color: Colors.white70, width: 1)),
+                mini: true)
+          ],
+        ),
       ),
     );
   }
