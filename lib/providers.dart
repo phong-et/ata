@@ -16,15 +16,17 @@ List<SingleChildWidget> providers = [
 List<SingleChildWidget> services = [];
 
 List<SingleChildWidget> uIservices = [
-  Provider.value(value: AuthService()),
+  Provider<AuthService>(
+    create: (_) => AuthService(),
+  )
 ];
 
 List<SingleChildWidget> proxyServices = [
   ProxyProvider<AuthService, UserService>(
-    update: (_, authService, __) => UserService(authService.auth),
+    update: (_, authService, __) => UserService(authService),
   ),
   ProxyProvider<AuthService, OfficeService>(
-    update: (_, authService, __) => OfficeService()..setAuthToken(authService.idToken),
+    update: (_, authService, __) => OfficeService(authService),
   ),
   ProxyProvider<OfficeService, IpInfoService>(
     update: (_, officeService, __) => IpInfoService(officeService),

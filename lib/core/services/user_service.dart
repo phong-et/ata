@@ -1,5 +1,6 @@
 import 'package:ata/core/models/auth.dart';
 import 'package:ata/core/models/failure.dart';
+import 'package:ata/core/services/auth_service.dart';
 import 'package:ata/core/services/ip_info_service.dart';
 import 'package:ata/core/services/location_service.dart';
 import 'package:ata/util.dart';
@@ -10,8 +11,13 @@ enum AttendanceStatus { CheckedIn, CheckedOut, NotYetCheckedIn, NotYetCheckedOut
 
 class UserService {
   String _urlReports = "https://atapp-7720c.firebaseio.com/reports";
-  Either<Failure, Auth> _auth;
-  UserService(Either<Failure, Auth> auth) : _auth = auth;
+
+  final AuthService _authService;
+  UserService(AuthService authService) : _authService = authService;
+
+  Either<Failure, Auth> get _auth {
+    return _authService.auth;
+  }
 
   String get _localId {
     return _auth.fold((failure) => throw (failure.toString()), (auth) => auth.localId);

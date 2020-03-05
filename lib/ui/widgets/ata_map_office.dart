@@ -13,7 +13,7 @@ class AtaMapOffice extends StatelessWidget {
         builder: (context, notifier, child) {
           return SizedBox(
             width: double.infinity,
-            height: 350.0,
+            height: 300.0,
             child: Card(
               elevation: 10.0,
               color: notifier.busy ? Colors.yellow : (notifier.isWithinOfficeAuthRange ? Colors.green : Colors.red),
