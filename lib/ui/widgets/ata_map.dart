@@ -76,7 +76,8 @@ class AtaMapState extends State<AtaMap> {
   }
 
   void _setCustomMapIcons() async {
-    markedLocationIcon = await BitmapDescriptor.fromAssetImage(ImageConfiguration(size: Size(128, 128)), 'assets/images/marked-location-icon.png');
+    markedLocationIcon = await BitmapDescriptor.fromAssetImage(
+        ImageConfiguration(size: Size(128, 128)), 'assets/images/marked-location-icon.png');
   }
 
   Future<Position> _getCurrentLocation() async => await Geolocator().getCurrentPosition();
@@ -127,7 +128,8 @@ class AtaMapState extends State<AtaMap> {
             markerId: MarkerId(point.toString()),
             position: point,
             infoWindow: InfoWindow(
-                title: widget.isMoveableMarker ? '$currentMarkedLat, $currentMarkedLng' : '${widget.titleMarkedPosition}',
+                title:
+                    widget.isMoveableMarker ? '$currentMarkedLat, $currentMarkedLng' : '${widget.titleMarkedPosition}',
                 snippet: 'Distance to Office :${_calcDistance()} m'),
             icon: markedLocationIcon,
             draggable: widget.isMoveableMarker,
@@ -182,19 +184,23 @@ class AtaMapState extends State<AtaMap> {
           mainAxisAlignment: MainAxisAlignment.end,
           children: <Widget>[
             FloatingActionButton(
-                onPressed: _goToOfficeLocation,
-                backgroundColor: Colors.white70,
-                foregroundColor: Colors.black54,
-                child: Icon(Icons.home),
-                shape: RoundedRectangleBorder(side: BorderSide(color: Colors.white70, width: 1)),
-                mini: true),
+              heroTag: "GoToOfficeLocation",
+              onPressed: _goToOfficeLocation,
+              backgroundColor: Colors.white70,
+              foregroundColor: Colors.black54,
+              child: Icon(Icons.home),
+              shape: RoundedRectangleBorder(side: BorderSide(color: Colors.white70, width: 1)),
+              mini: true,
+            ),
             FloatingActionButton(
-                onPressed: _goToCurrentLocation,
-                backgroundColor: Colors.white70,
-                foregroundColor: Colors.black54,
-                child: Icon(Icons.my_location),
-                shape: RoundedRectangleBorder(side: BorderSide(color: Colors.white70, width: 1)),
-                mini: true)
+              heroTag: "GoToDeviceLocation",
+              onPressed: _goToCurrentLocation,
+              backgroundColor: Colors.white70,
+              foregroundColor: Colors.black54,
+              child: Icon(Icons.my_location),
+              shape: RoundedRectangleBorder(side: BorderSide(color: Colors.white70, width: 1)),
+              mini: true,
+            ),
           ],
         ),
       ),
