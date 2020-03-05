@@ -27,7 +27,7 @@ class UserService {
     return "$_urlReports/$_localId/$currentDateString.json?auth=$_idToken";
   }
 
-  Future<Either<Failure, AttendanceStatus>> checkAttendance() async {
+  Future<Either<Failure, AttendanceStatus>> getAttendanceStatus() async {
     AttendanceStatus status;
     var responseData;
     try {
@@ -59,7 +59,7 @@ class UserService {
     String checkMsg = await checkLocationIP();
     if (checkMsg != null) return checkMsg;
 
-    return (await checkAttendance()).fold(
+    return (await getAttendanceStatus()).fold(
       (failure) => failure.toString(),
       (attendanceStatus) async {
         try {
@@ -84,7 +84,7 @@ class UserService {
     String checkMsg = await checkLocationIP();
     if (checkMsg != null) return checkMsg;
 
-    return (await checkAttendance()).fold(
+    return (await getAttendanceStatus()).fold(
       (failure) => failure.toString(),
       (attendanceStatus) async {
         try {
