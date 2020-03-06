@@ -61,7 +61,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ],
         ),
-        body: selectedTab['tab'],
+        body: SingleChildScrollView(scrollDirection: Axis.vertical, child: selectedTab['tab']),
         bottomNavigationBar: BottomNavigationBar(
           currentIndex: _selectedTabIndex,
           onTap: _changeTab,
