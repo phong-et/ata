@@ -22,6 +22,17 @@ class OfficeSettings extends StatelessWidget {
         authRangeController.text = notifier.busy ? 'Loading ...' : notifier.authRange;
         return Column(
           children: <Widget>[
+            Text(
+              'Admin Settings',
+              style: TextStyle(
+                fontWeight: FontWeight.w900,
+                fontStyle: FontStyle.italic,
+                fontSize: 30,
+                color: Colors.green[800],
+                shadows: [Shadow(color: Colors.grey, offset: Offset(1.0, 1.0), blurRadius: 5.0)],
+              ),
+            ),
+            Divider(),
             TextField(
               decoration: InputDecoration(labelText: 'Office IP Address'),
               keyboardType: TextInputType.number,
@@ -48,7 +59,7 @@ class OfficeSettings extends StatelessWidget {
               // style: TextStyle(color: notifier.busy ? Colors.grey : Colors.white),
             ),
             SizedBox(
-              height: 30,
+              height: 20,
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,

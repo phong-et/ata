@@ -67,10 +67,10 @@ class LocationService {
     bool isEnabled = await Geolocator().isLocationServiceEnabled();
     if (isEnabled) {
       try {
-        var device = await Geolocator().getCurrentPosition();
+        var device = await Geolocator().getCurrentPosition().timeout(Duration(seconds: 15));
         return Right(Location(lat: device.latitude, lng: device.longitude));
       } catch (failure) {
-        return Left(failure);
+        return Left(Failure(failure.toString()));
       }
     } else {
       return Left(Failure('Device\'s GPS is OFF, please turn ON !'));

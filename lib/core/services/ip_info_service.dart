@@ -22,9 +22,16 @@ class IpInfoService {
   }
 
   String getDeviceIp() {
-    return ipInfo.fold(
+    return _ipInfo.fold(
       (failure) => failure.toString(),
       (ipInfo) => ipInfo.ipAddress,
+    );
+  }
+
+  String getServerDate() {
+    return _ipInfo.fold(
+      (failure) => failure.toString(),
+      (ipInfo) => ipInfo.serverDate,
     );
   }
 
@@ -46,7 +53,7 @@ class IpInfoService {
   Future<void> fetchDeviceIpInfo() async {
     await Util.requestEither<IpInfo>(
       RequestType.GET,
-      'http://ip-api.com/json',
+      'http://botest.igk99.com/public/ipdate.aspx',
     ).then((value) => _setIpInfo(value));
   }
 }

@@ -1,15 +1,27 @@
 import 'package:ata/core/models/auth.dart';
 import 'package:ata/core/models/failure.dart';
+import 'package:ata/core/services/auth_service.dart';
+import 'package:ata/core/services/ip_info_service.dart';
+import 'package:ata/core/services/location_service.dart';
 import 'package:ata/util.dart';
 import 'package:dartz/dartz.dart';
-import 'package:intl/intl.dart';
 
 enum AttendanceStatus { CheckedIn, CheckedOut, NotYetCheckedIn, NotYetCheckedOut }
 
 class UserService {
-  String _urlReports = "https://attendance-dcecd.firebaseio.com/reports";
-  Either<Failure, Auth> _auth;
-  UserService(Either<Failure, Auth> auth) : _auth = auth;
+  String _urlReports = "https://atapp-7720c.firebaseio.com/reports";
+
+  final AuthService _authService;
+  final LocationService _locationService;
+  final IpInfoService _ipInfoService;
+  UserService(AuthService authService, LocationService locationService, IpInfoService ipInfoService)
+      : _authService = authService,
+        _locationService = locationService,
+        _ipInfoService = ipInfoService;
+
+  Either<Failure, Auth> get _auth {
+    return _authService.auth;
+  }
 
   String get _localId {
     return _auth.fold((failure) => throw (failure.toString()), (auth) => auth.localId);
@@ -20,14 +32,30 @@ class UserService {
   }
 
   String get currentDateString {
-    return DateFormat('yyyy-MM-dd').format(DateTime.now());
+    return _ipInfoService.getServerDate();
   }
 
   String get urlRecordAttendance {
+    print(currentDateString);
     return "$_urlReports/$_localId/$currentDateString.json?auth=$_idToken";
   }
 
-  Future<Either<Failure, AttendanceStatus>> getAttendanceStatus() async {
+  Either<Failure, AttendanceStatus> _attendanceStatus;
+
+  //* all async request here
+  Future<void> refreshService() async {
+    await _ipInfoService.refreshService(); //* get ipInfoService ready first in order to getServerDate()
+    _attendanceStatus = await fetchAttendanceStatus();
+  }
+
+  AttendanceStatus getAttendanceStatus() {
+    return _attendanceStatus.fold(
+      (failure) => null,
+      (attendanceStatus) => attendanceStatus,
+    );
+  }
+
+  Future<Either<Failure, AttendanceStatus>> fetchAttendanceStatus() async {
     AttendanceStatus status;
     var responseData;
     try {
@@ -48,18 +76,25 @@ class UserService {
     return Right(status);
   }
 
-  Future<String> checkLocationIP() async {
-    List<bool> lstChecked = await Future.wait([/*checkIP(), checkLocation()*/]);
-    if (!lstChecked[0]) return 'Wrong IP !!!';
-    if (!lstChecked[1]) return 'Wrong Location !!!';
+  Future<String> checkLocationAndIp() async {
+    await Future.wait([
+      _locationService.refreshService(),
+      _ipInfoService.refreshService(),
+    ]);
+
+    var isValidLocation = await _locationService.checkLocationForAttendance();
+    var isValidIp = _ipInfoService.checkIpForAttendance();
+
+    if (!isValidLocation) return 'Not within Office Location!';
+    if (!isValidIp) return 'Not under Offfice Internet!';
     return null;
   }
 
   Future<String> checkIn() async {
-    String checkMsg = await checkLocationIP();
+    String checkMsg = await checkLocationAndIp();
     if (checkMsg != null) return checkMsg;
 
-    return (await getAttendanceStatus()).fold(
+    return (await fetchAttendanceStatus()).fold(
       (failure) => failure.toString(),
       (attendanceStatus) async {
         try {
@@ -81,10 +116,10 @@ class UserService {
   }
 
   Future<String> checkOut() async {
-    String checkMsg = await checkLocationIP();
+    String checkMsg = await checkLocationAndIp();
     if (checkMsg != null) return checkMsg;
 
-    return (await getAttendanceStatus()).fold(
+    return (await fetchAttendanceStatus()).fold(
       (failure) => failure.toString(),
       (attendanceStatus) async {
         try {

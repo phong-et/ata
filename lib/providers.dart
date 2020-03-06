@@ -16,21 +16,34 @@ List<SingleChildWidget> providers = [
 List<SingleChildWidget> services = [];
 
 List<SingleChildWidget> uIservices = [
-  Provider.value(value: AuthService()),
+  Provider<AuthService>(
+    create: (_) => AuthService(),
+  )
 ];
 
 List<SingleChildWidget> proxyServices = [
-  ProxyProvider<AuthService, UserService>(
-    update: (_, authService, __) => UserService(authService.auth),
-  ),
   ProxyProvider<AuthService, OfficeService>(
-    update: (_, authService, __) => OfficeService()..setAuthToken(authService.idToken),
+    update: (_, authService, __) => OfficeService(authService),
+  ),
+  ProxyProvider<OfficeService, LocationService>(
+    update: (_, officeService, __) => LocationService(officeService),
   ),
   ProxyProvider<OfficeService, IpInfoService>(
     update: (_, officeService, __) => IpInfoService(officeService),
   ),
-  ProxyProvider<OfficeService, LocationService>(
-    update: (_, officeService, __) => LocationService(officeService),
+  ProxyProvider3<AuthService, LocationService, IpInfoService, UserService>(
+    update: (
+      _,
+      authService,
+      locationService,
+      ipInfoService,
+      __,
+    ) =>
+        UserService(
+      authService,
+      locationService,
+      ipInfoService,
+    ),
   ),
 ];
 
