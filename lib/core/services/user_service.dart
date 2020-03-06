@@ -9,7 +9,6 @@ import 'package:ata/util.dart';
 import 'package:dartz/dartz.dart';
 
 enum AttendanceStatus { CheckedIn, CheckedOut, NotYetCheckedIn, NotYetCheckedOut }
-enum UserType { Get, Update }
 
 class UserService {
   String _urlReports = "https://atapp-7720c.firebaseio.com/reports";
@@ -47,13 +46,12 @@ class UserService {
     return Auth.apiKey;
   }
 
-  String _getUrlUser(UserType userType) {
-    switch (userType) {
-      case UserType.Get:
-        return "https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=$_apiKey";
-      default:
-        return "https://identitytoolkit.googleapis.com/v1/accounts:update?key=$_apiKey";
-    }
+  String get _urlGetUser {
+    return "https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=$_apiKey";
+  }
+
+  String get _urlUpdateUser {
+    return "https://identitytoolkit.googleapis.com/v1/accounts:update?key=$_apiKey";
   }
 
   Either<Failure, AttendanceStatus> _attendanceStatus;
@@ -77,7 +75,7 @@ class UserService {
     try {
       responseData = await Util.request(RequestType.GET, urlRecordAttendance);
     } catch (failure) {
-      return Left(failure);
+      return Left(Failure(failure.toString()));
     }
 
     if (responseData != null) {
@@ -160,18 +158,18 @@ class UserService {
 
   Future<Either<Failure, User>> fetchUserInfo() async {
     try {
-      var userData = await Util.request(RequestType.POST, _getUrlUser(UserType.Get), {
+      var userData = await Util.request(RequestType.POST, _urlGetUser, {
         'idToken': _idToken,
       });
       if (userData['error'] != null) return Left(Failure(userData['error']));
       return Right(make<User>(userData["users"][0]));
     } catch (failure) {
-      return Left(failure);
+      return Left(Failure(failure.toString()));
     }
   }
 
   Future<Either<Failure, User>> updateUserInfo(String displayName, String photoUrl) async {
-    return await Util.requestEither<User>(RequestType.POST, _getUrlUser(UserType.Update), {
+    return await Util.requestEither<User>(RequestType.POST, _urlUpdateUser, {
       'idToken': _idToken,
       'displayName': displayName,
       'photoUrl': photoUrl,
