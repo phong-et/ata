@@ -14,8 +14,11 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   List<Map<String, Object>> _tabs;
+  List<Widget> pages = [CheckInScreen(), ReportScreen(), SettingsScreen()];
   int _selectedTabIndex = 0;
-
+  PageController _pageController;
+  bool isSwipeTab;
+  // int _page = 0;
   @override
   void initState() {
     super.initState();
@@ -36,11 +39,24 @@ class _HomeScreenState extends State<HomeScreen> {
         'icon': Icon(Icons.settings),
       },
     ];
+    _pageController = new PageController();
+    isSwipeTab = false;
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _pageController.dispose();
+  }
+
+  //Animates the controlled [PageView] from the current page to the given page.
+  void _navigateToPage(int index) {
+    _pageController.animateToPage(index,duration: Duration(milliseconds: 100), curve: Curves.ease);
   }
 
   void _changeTab(int index) {
     setState(() {
-      _selectedTabIndex = index;
+      this._selectedTabIndex = index;
     });
   }
 
@@ -61,10 +77,16 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ],
         ),
-        body: SingleChildScrollView(scrollDirection: Axis.vertical, child: selectedTab['tab']),
+        body: isSwipeTab
+            ? selectedTab['tab']
+            : PageView(
+                children: pages,
+                controller: _pageController,
+                onPageChanged: _changeTab,
+              ),
         bottomNavigationBar: BottomNavigationBar(
           currentIndex: _selectedTabIndex,
-          onTap: _changeTab,
+          onTap: _navigateToPage,
           items: _tabs
               .map((tab) => BottomNavigationBarItem(
                     icon: tab['icon'],
