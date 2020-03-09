@@ -28,8 +28,6 @@ import 'package:maps_toolkit/maps_toolkit.dart' as maps;
 ///)
 /// ```
 class AtaMap extends StatefulWidget {
-  final double centerMapLat;
-  final double centerMapLng;
   final double markedLat;
   final double markedLng;
   final bool isMoveableMarker;
@@ -39,8 +37,6 @@ class AtaMap extends StatefulWidget {
   AtaMap(
       {this.markedLat = 10.7440878,
       this.markedLng = 106.7007886,
-      this.centerMapLat = 10.7440878,
-      this.centerMapLng = 106.7007886,
       this.isMoveableMarker = false,
       this.authRange = 100,
       this.titleMarkedPosition = "Office Location"});
@@ -58,7 +54,7 @@ class AtaMapState extends State<AtaMap> {
   static const double DEFAULT_ZOOM = 17;
   CameraPosition get defaultCamera {
     return CameraPosition(
-      target: LatLng(widget.centerMapLat, widget.centerMapLng),
+      target: LatLng(currentMarkedLat, currentMarkedLng),
       zoom: DEFAULT_ZOOM,
     );
   }
@@ -76,8 +72,7 @@ class AtaMapState extends State<AtaMap> {
   }
 
   void _setCustomMapIcons() async {
-    markedLocationIcon = await BitmapDescriptor.fromAssetImage(
-        ImageConfiguration(size: Size(128, 128)), 'assets/images/marked-location-icon.png');
+    markedLocationIcon = await BitmapDescriptor.fromAssetImage(ImageConfiguration(size: Size(128, 128)), 'assets/images/marked-location-icon.png');
   }
 
   Future<Position> _getCurrentLocation() async => await Geolocator().getCurrentPosition();
@@ -128,8 +123,7 @@ class AtaMapState extends State<AtaMap> {
             markerId: MarkerId(point.toString()),
             position: point,
             infoWindow: InfoWindow(
-                title:
-                    widget.isMoveableMarker ? '$currentMarkedLat, $currentMarkedLng' : '${widget.titleMarkedPosition}',
+                title: widget.isMoveableMarker ? '$currentMarkedLat, $currentMarkedLng' : '${widget.titleMarkedPosition}',
                 snippet: 'Distance to Office :${_calcDistance()} m'),
             icon: markedLocationIcon,
             draggable: widget.isMoveableMarker,
@@ -177,9 +171,9 @@ class AtaMapState extends State<AtaMap> {
           markers: _markers,
           circles: _circles,
           onLongPress: _handleLongPress),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
       floatingActionButton: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.only(top:50.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: <Widget>[
