@@ -14,26 +14,22 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   List<Map<String, Object>> _tabs;
-  List<Widget> pages = [CheckInScreen(), ReportScreen(), SettingsScreen()];
+  final List<Widget> pages = [CheckInScreen(), ReportScreen(), SettingsScreen()];
   int _selectedTabIndex = 0;
   PageController _pageController;
-  bool isSwipeTab = true;
   @override
   void initState() {
     super.initState();
     _tabs = [
       {
-        'tab': CheckInScreen(),
         'title': Text('Check In/Out'),
         'icon': Icon(Icons.playlist_add_check),
       },
       {
-        'tab': ReportScreen(),
         'title': Text('Reports'),
         'icon': Icon(Icons.chrome_reader_mode),
       },
       {
-        'tab': SettingsScreen(),
         'title': Text('Settings'),
         'icon': Icon(Icons.settings),
       },
@@ -60,7 +56,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var selectedTab = _tabs[_selectedTabIndex];
     return Center(
       child: Scaffold(
         appBar: AppBar(
@@ -75,13 +70,11 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ],
         ),
-        body: isSwipeTab
-            ? PageView(
-                children: pages,
-                controller: _pageController,
-                onPageChanged: _changeTab,
-              )
-            : selectedTab['tab'],
+        body: PageView(
+          children: pages,
+          controller: _pageController,
+          onPageChanged: _changeTab,
+        ),
         bottomNavigationBar: BottomNavigationBar(
           currentIndex: _selectedTabIndex,
           onTap: _navigateToPage,
