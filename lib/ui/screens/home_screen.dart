@@ -17,8 +17,7 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Widget> pages = [CheckInScreen(), ReportScreen(), SettingsScreen()];
   int _selectedTabIndex = 0;
   PageController _pageController;
-  bool isSwipeTab;
-  // int _page = 0;
+  bool isSwipeTab = true;
   @override
   void initState() {
     super.initState();
@@ -40,7 +39,6 @@ class _HomeScreenState extends State<HomeScreen> {
       },
     ];
     _pageController = new PageController();
-    isSwipeTab = false;
   }
 
   @override
@@ -51,7 +49,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   //Animates the controlled [PageView] from the current page to the given page.
   void _navigateToPage(int index) {
-    _pageController.animateToPage(index,duration: Duration(milliseconds: 100), curve: Curves.ease);
+    _pageController.animateToPage(index, duration: Duration(milliseconds: 100), curve: Curves.ease);
   }
 
   void _changeTab(int index) {
@@ -78,12 +76,12 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
         body: isSwipeTab
-            ? selectedTab['tab']
-            : PageView(
+            ? PageView(
                 children: pages,
                 controller: _pageController,
                 onPageChanged: _changeTab,
-              ),
+              )
+            : selectedTab['tab'],
         bottomNavigationBar: BottomNavigationBar(
           currentIndex: _selectedTabIndex,
           onTap: _navigateToPage,
