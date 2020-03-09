@@ -1,8 +1,10 @@
 import 'package:ata/core/models/auth.dart';
 import 'package:ata/core/models/failure.dart';
+import 'package:ata/core/models/user.dart';
 import 'package:ata/core/services/auth_service.dart';
 import 'package:ata/core/services/ip_info_service.dart';
 import 'package:ata/core/services/location_service.dart';
+import 'package:ata/factories.dart';
 import 'package:ata/util.dart';
 import 'package:dartz/dartz.dart';
 
@@ -40,6 +42,18 @@ class UserService {
     return "$_urlReports/$_localId/$currentDateString.json?auth=$_idToken";
   }
 
+  String get _apiKey {
+    return Auth.apiKey;
+  }
+
+  String get _urlGetUser {
+    return "https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=$_apiKey";
+  }
+
+  String get _urlUpdateUser {
+    return "https://identitytoolkit.googleapis.com/v1/accounts:update?key=$_apiKey";
+  }
+
   Either<Failure, AttendanceStatus> _attendanceStatus;
 
   //* all async request here
@@ -61,7 +75,7 @@ class UserService {
     try {
       responseData = await Util.request(RequestType.GET, urlRecordAttendance);
     } catch (failure) {
-      return Left(failure);
+      return Left(Failure(failure.toString()));
     }
 
     if (responseData != null) {
@@ -140,5 +154,25 @@ class UserService {
         }
       },
     );
+  }
+
+  Future<Either<Failure, User>> fetchUserInfo() async {
+    try {
+      var userData = await Util.request(RequestType.POST, _urlGetUser, {
+        'idToken': _idToken,
+      });
+      if (userData['error'] != null) return Left(Failure(userData['error']));
+      return Right(make<User>(userData["users"][0]));
+    } catch (failure) {
+      return Left(Failure(failure.toString()));
+    }
+  }
+
+  Future<Either<Failure, User>> updateUserInfo(String displayName, String photoUrl) async {
+    return await Util.requestEither<User>(RequestType.POST, _urlUpdateUser, {
+      'idToken': _idToken,
+      'displayName': displayName,
+      'photoUrl': photoUrl,
+    });
   }
 }
