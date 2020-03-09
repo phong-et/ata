@@ -31,12 +31,12 @@ class UserSettings extends StatelessWidget {
             Divider(),
             TextField(
               decoration: InputDecoration(labelText: 'Display Name'),
-              keyboardType: TextInputType.number,
+              keyboardType: TextInputType.text,
               controller: displayNameController,
             ),
             TextField(
               decoration: InputDecoration(labelText: 'Photo Url'),
-              keyboardType: TextInputType.number,
+              keyboardType: TextInputType.url,
               controller: photoUrlController,
             ),
             SizedBox(
