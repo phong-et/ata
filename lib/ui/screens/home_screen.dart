@@ -14,7 +14,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   List<Map<String, Object>> _tabs;
-  final List<Widget> pages = [CheckInScreen(), ReportScreen(), SettingsScreen()];
+  final List<Widget> _screens = [CheckInScreen(), ReportScreen(), SettingsScreen()];
   int _selectedTabIndex = 0;
   PageController _pageController;
   @override
@@ -71,7 +71,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
         body: PageView(
-          children: pages,
+          children: _screens,
           controller: _pageController,
           onPageChanged: _changeTab,
         ),
