@@ -1,6 +1,7 @@
 import 'package:ata/core/notifiers/user_settings_notifier.dart';
 import 'package:ata/ui/widgets/ata_button.dart';
 import 'package:ata/ui/widgets/base_widget.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -42,6 +43,14 @@ class UserSettings extends StatelessWidget {
             SizedBox(
               height: 20,
             ),
+            Container(
+              width: 120,
+              height: 120,
+              child: notifier.busy ? _imageLoading : _userImage(photoUrlController.text),
+            ),
+            SizedBox(
+              height: 20,
+            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
@@ -67,4 +76,28 @@ class UserSettings extends StatelessWidget {
       },
     );
   }
+}
+
+Widget _userImage(String url) {
+  return ClipOval(
+    child: CachedNetworkImage(
+      imageUrl: url,
+      imageBuilder: (context, imageProvider) => Image(
+        fit: BoxFit.cover,
+        image: imageProvider,
+      ),
+      placeholder: (context, url) => _imageLoading,
+      errorWidget: (context, url, error) => Icon(Icons.error),
+    ),
+  );
+}
+
+Widget get _imageLoading {
+  return Center(
+    child: SizedBox(
+      width: 20.0,
+      height: 20.0,
+      child: CircularProgressIndicator(),
+    ),
+  );
 }
