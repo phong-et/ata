@@ -9,7 +9,9 @@ class CheckInScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(10.0),
-      child: Column(
+      child: SingleChildScrollView(
+        scrollDirection: Axis.vertical,
+        child:Column(
         children: <Widget>[
           AtaMapOffice(),
           DeviceIp(),
@@ -24,7 +26,8 @@ class CheckInScreen extends StatelessWidget {
             ),
           ),
         ],
-      ),
+       ),
+      )
     );
   }
 }
