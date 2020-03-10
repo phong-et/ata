@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 class UserSettings extends StatelessWidget {
   final displayNameController = TextEditingController();
   final photoUrlController = TextEditingController();
+  final photoUrlFocusNode = FocusNode();
 
   @override
   Widget build(BuildContext context) {
@@ -39,6 +40,14 @@ class UserSettings extends StatelessWidget {
               decoration: InputDecoration(labelText: 'Photo Url'),
               keyboardType: TextInputType.url,
               controller: photoUrlController,
+              focusNode: photoUrlFocusNode,
+              onEditingComplete: () {
+                photoUrlFocusNode.unfocus();
+                notifier.userImagePreviewer(
+                  displayNameController.text,
+                  photoUrlController.text,
+                );
+              },
             ),
             SizedBox(
               height: 20,
@@ -46,7 +55,7 @@ class UserSettings extends StatelessWidget {
             Container(
               width: 120,
               height: 120,
-              child: notifier.busy ? _imageLoading : _userImage(photoUrlController.text),
+              child: notifier.busy ? _imageLoading : _userImagePreviewer(photoUrlController.text),
             ),
             SizedBox(
               height: 20,
@@ -78,7 +87,7 @@ class UserSettings extends StatelessWidget {
   }
 }
 
-Widget _userImage(String url) {
+Widget _userImagePreviewer(String url) {
   return ClipOval(
     child: CachedNetworkImage(
       imageUrl: url,
