@@ -54,4 +54,14 @@ class OfficeSettingsNotifier extends BaseNotifier {
       },
     );
   }
+
+  void setOfficeLocation(
+    String lat,
+    String lng,
+  ) {
+    setBusy(true);
+    officeLng = lng;
+    officeLat = lat;
+    setBusy(false);
+  }
 }
