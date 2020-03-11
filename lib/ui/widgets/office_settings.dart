@@ -2,7 +2,10 @@ import 'package:ata/core/notifiers/office_settings_notifier.dart';
 import 'package:ata/ui/widgets/ata_button.dart';
 import 'package:ata/ui/widgets/base_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
+
+import 'ata_map.dart';
 
 class OfficeSettings extends StatelessWidget {
   final ipAddressController = TextEditingController();
@@ -39,6 +42,28 @@ class OfficeSettings extends StatelessWidget {
               controller: ipAddressController,
               //* TextStyle currently cassing issue, will be fixed soon by Flutter team *//
               // style: TextStyle(color: notifier.busy ? Colors.grey : Colors.white),
+            ),
+            SizedBox(
+              width: double.infinity,
+              height: 300.0,
+              child: Card(
+                elevation: 10.0,
+                color: Colors.green,
+                child: Padding(
+                  padding: const EdgeInsets.all(2.0),
+                  child: Container(
+                    color: Colors.white,
+                    child: AtaMap(
+                        isMoveableMarker: true,
+                        onLongPress: notifier.busy
+                            ? null
+                            : (LatLng point) => notifier.setOfficeSettings(
+                                  point.latitude.toString(),
+                                  point.longitude.toString(),
+                                )),
+                  ),
+                ),
+              ),
             ),
             TextField(
               decoration: InputDecoration(labelText: 'Office Location\'s Lattitude'),
