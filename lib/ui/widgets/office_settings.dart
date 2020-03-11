@@ -57,7 +57,7 @@ class OfficeSettings extends StatelessWidget {
                         isMoveableMarker: true,
                         onLongPress: notifier.busy
                             ? null
-                            : (LatLng point) => notifier.setOfficeSettings(
+                            : (LatLng point) => notifier.setOfficeLocation(
                                   point.latitude.toString(),
                                   point.longitude.toString(),
                                 )),
