@@ -12,13 +12,12 @@ class UserSettings extends StatefulWidget {
 
 class _UserSettingsState extends State<UserSettings> {
   final displayNameController = TextEditingController();
-  final photoUrlController = TextEditingController();
+  String photoUrl;
 
   @override
   void dispose() {
     super.dispose();
     displayNameController.dispose();
-    photoUrlController.dispose();
   }
 
   @override
@@ -28,7 +27,7 @@ class _UserSettingsState extends State<UserSettings> {
       onNotifierReady: (notifier) => notifier.getUserSettings(),
       builder: (context, notifier, child) {
         displayNameController.text = notifier.busy ? 'Loading ...' : notifier.displayName;
-        photoUrlController.text = notifier.busy ? 'Loading ...' : notifier.photoUrl;
+        photoUrl = notifier.busy ? 'Loading ...' : notifier.photoUrl;
         return Column(
           children: <Widget>[
             Text(
@@ -48,8 +47,9 @@ class _UserSettingsState extends State<UserSettings> {
               controller: displayNameController,
             ),
             UserImagePreviewer(
-              photoUrlController: photoUrlController,
+              photoUrl: photoUrl,
               loadingState: notifier.busy,
+              onUpdateUrl: (url) => photoUrl = url,
             ),
             SizedBox(
               height: 20,
@@ -65,12 +65,7 @@ class _UserSettingsState extends State<UserSettings> {
                 AtaButton(
                   label: 'Update',
                   icon: Icon(Icons.save),
-                  onPressed: notifier.busy
-                      ? null
-                      : () => notifier.saveUserSettings(
-                            displayNameController.text,
-                            photoUrlController.text,
-                          ),
+                  onPressed: notifier.busy ? null : () => notifier.saveUserSettings(displayNameController.text, photoUrl),
                 )
               ],
             ),

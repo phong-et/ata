@@ -4,9 +4,14 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class UserImagePreviewer extends StatefulWidget {
-  final TextEditingController photoUrlController;
+  final String photoUrl;
   final bool loadingState;
-  UserImagePreviewer({@required this.photoUrlController, @required this.loadingState});
+  final Function onUpdateUrl;
+  UserImagePreviewer({
+    @required this.photoUrl,
+    @required this.loadingState,
+    this.onUpdateUrl,
+  });
 
   @override
   _UserImagePreviewerState createState() => _UserImagePreviewerState();
@@ -14,15 +19,18 @@ class UserImagePreviewer extends StatefulWidget {
 
 class _UserImagePreviewerState extends State<UserImagePreviewer> {
   final photoUrlFocusNode = FocusNode();
+  final photoUrlController = TextEditingController();
+
   @override
   void dispose() {
     super.dispose();
     photoUrlFocusNode.dispose();
-    widget.photoUrlController.dispose();
+    photoUrlController.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    photoUrlController.text = widget.photoUrl;
     return BaseWidget<UserImagePreviewerNotifier>(
         notifier: UserImagePreviewerNotifier(),
         builder: (context, notifier, child) {
@@ -32,11 +40,12 @@ class _UserImagePreviewerState extends State<UserImagePreviewer> {
                 decoration: InputDecoration(labelText: 'Photo Url'),
                 keyboardType: TextInputType.url,
                 focusNode: photoUrlFocusNode,
-                controller: widget.photoUrlController,
+                controller: photoUrlController,
                 onEditingComplete: () {
                   photoUrlFocusNode.unfocus();
+                  if (widget.onUpdateUrl != null) widget.onUpdateUrl(photoUrlController.text);
                   notifier.updatePhotoUrl(
-                    widget.photoUrlController.text,
+                    photoUrlController.text,
                   );
                 },
               ),
@@ -46,7 +55,7 @@ class _UserImagePreviewerState extends State<UserImagePreviewer> {
               Container(
                 width: 120,
                 height: 120,
-                child: widget.loadingState || notifier.busy ? _imageLoading : _userImagePreviewer(widget.photoUrlController.text),
+                child: widget.loadingState || notifier.busy ? _imageLoading : _userImagePreviewer(photoUrlController.text),
               ),
             ],
           );
