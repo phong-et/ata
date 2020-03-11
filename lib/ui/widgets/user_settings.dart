@@ -5,7 +5,12 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class UserSettings extends StatelessWidget {
+class UserSettings extends StatefulWidget {
+  @override
+  _UserSettingsState createState() => _UserSettingsState();
+}
+
+class _UserSettingsState extends State<UserSettings> {
   final displayNameController = TextEditingController();
   final photoUrlController = TextEditingController();
   final photoUrlFocusNode = FocusNode();
@@ -13,7 +18,7 @@ class UserSettings extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BaseWidget<UserSettingsNotifier>(
-      notifier: UserSettingsNotifier(Provider.of(context)),
+      notifier: UserSettingsNotifier(Provider.of(context, listen: false)),
       onNotifierReady: (notifier) => notifier.getUserSettings(),
       builder: (context, notifier, child) {
         displayNameController.text = notifier.busy ? 'Loading ...' : notifier.displayName;
@@ -52,10 +57,14 @@ class UserSettings extends StatelessWidget {
             SizedBox(
               height: 20,
             ),
-            Container(
-              width: 120,
-              height: 120,
-              child: notifier.busy ? _imageLoading : _userImagePreviewer(photoUrlController.text),
+            Consumer<UserSettingsNotifier>(
+              builder: (context, notifier, child) {
+                return Container(
+                  width: 120,
+                  height: 120,
+                  child: notifier.busy ? _imageLoading : _userImagePreviewer(photoUrlController.text),
+                );
+              },
             ),
             SizedBox(
               height: 20,
