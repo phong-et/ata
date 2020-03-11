@@ -41,11 +41,4 @@ class UserSettingsNotifier extends BaseNotifier {
       },
     );
   }
-
-  void userImagePreviewer(String displayNameLocal, String photoUrlLocal) {
-    setBusy(true);
-    displayName = displayNameLocal;
-    photoUrl = photoUrlLocal;
-    setBusy(false);
-  }
 }

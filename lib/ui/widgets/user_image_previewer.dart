@@ -14,6 +14,12 @@ class UserImagePreviewer extends StatefulWidget {
 
 class _UserImagePreviewerState extends State<UserImagePreviewer> {
   final photoUrlFocusNode = FocusNode();
+  @override
+  void dispose() {
+    print("disposeddd");
+    photoUrlFocusNode.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,11 +31,11 @@ class _UserImagePreviewerState extends State<UserImagePreviewer> {
               TextField(
                 decoration: InputDecoration(labelText: 'Photo Url'),
                 keyboardType: TextInputType.url,
-                controller: widget.photoUrlController,
                 focusNode: photoUrlFocusNode,
+                controller: widget.photoUrlController,
                 onEditingComplete: () {
                   photoUrlFocusNode.unfocus();
-                  notifier.userImagePreviewer(
+                  notifier.updatePhotoUrl(
                     widget.photoUrlController.text,
                   );
                 },

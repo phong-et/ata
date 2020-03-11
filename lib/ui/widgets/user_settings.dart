@@ -13,7 +13,13 @@ class UserSettings extends StatefulWidget {
 class _UserSettingsState extends State<UserSettings> {
   final displayNameController = TextEditingController();
   final photoUrlController = TextEditingController();
-  final photoUrlFocusNode = FocusNode();
+
+  @override
+  void dispose() {
+    displayNameController.dispose();
+    photoUrlController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
