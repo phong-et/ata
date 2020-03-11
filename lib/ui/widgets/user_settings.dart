@@ -16,9 +16,9 @@ class _UserSettingsState extends State<UserSettings> {
 
   @override
   void dispose() {
+    super.dispose();
     displayNameController.dispose();
     photoUrlController.dispose();
-    super.dispose();
   }
 
   @override

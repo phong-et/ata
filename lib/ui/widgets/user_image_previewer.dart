@@ -16,9 +16,9 @@ class _UserImagePreviewerState extends State<UserImagePreviewer> {
   final photoUrlFocusNode = FocusNode();
   @override
   void dispose() {
-    print("disposeddd");
-    photoUrlFocusNode.dispose();
     super.dispose();
+    photoUrlFocusNode.dispose();
+    widget.photoUrlController.dispose();
   }
 
   @override
