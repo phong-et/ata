@@ -5,6 +5,7 @@ class Office {
   double lat;
   double lng;
   double authRange;
+  String dateIPServiceUrl;
   String error;
 
   Office({
@@ -12,6 +13,7 @@ class Office {
     @required this.lat,
     @required this.lng,
     @required this.authRange,
+    @required this.dateIPServiceUrl,
     @required this.error,
   });
 
@@ -21,6 +23,7 @@ class Office {
       lat: parsedJson['lat'],
       lng: parsedJson['lng'],
       authRange: parsedJson['authRange'],
+      dateIPServiceUrl: parsedJson['dateIPServiceUrl'],
       error: parsedJson['error'] == null ? null : parsedJson['error'],
     );
   }
@@ -30,6 +33,7 @@ class Office {
       'lat': this.lat,
       'lng': this.lng,
       'authRange': this.authRange,
+      'dateIPServiceUrl': this.dateIPServiceUrl,
       'error': this.error,
     };
   }
