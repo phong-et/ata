@@ -4,7 +4,10 @@ class ReportScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Text('Report Screen here'),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.vertical,
+        child:Text('Report Screen here')
+      ),
     );
   }
 }
