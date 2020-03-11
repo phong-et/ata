@@ -28,18 +28,21 @@ import 'package:maps_toolkit/maps_toolkit.dart' as maps;
 ///)
 /// ```
 class AtaMap extends StatefulWidget {
+  final Function onLongPress;
   final double markedLat;
   final double markedLng;
   final bool isMoveableMarker;
   final double authRange;
   final String titleMarkedPosition;
 
-  AtaMap(
-      {this.markedLat = 10.7440878,
-      this.markedLng = 106.7007886,
-      this.isMoveableMarker = false,
-      this.authRange = 100,
-      this.titleMarkedPosition = "Office Location"});
+  AtaMap({
+    this.markedLat = 10.7440878,
+    this.markedLng = 106.7007886,
+    this.isMoveableMarker = false,
+    this.authRange = 100,
+    this.titleMarkedPosition = "Office Location",
+    this.onLongPress,
+  });
 
   @override
   State<AtaMap> createState() => AtaMapState();
@@ -142,6 +145,7 @@ class AtaMapState extends State<AtaMap> {
 
   void _handleLongPress(LatLng point) {
     if (widget.isMoveableMarker && _isMapReady) _addMarker(point);
+    if (widget.onLongPress != null) widget.onLongPress(point);
   }
 
   int _calcDistance() {
@@ -173,7 +177,7 @@ class AtaMapState extends State<AtaMap> {
           onLongPress: _handleLongPress),
       floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
       floatingActionButton: Padding(
-        padding: const EdgeInsets.only(top:50.0),
+        padding: const EdgeInsets.only(top: 50.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: <Widget>[
