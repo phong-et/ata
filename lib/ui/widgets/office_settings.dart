@@ -6,7 +6,7 @@ import 'package:provider/provider.dart';
 
 class OfficeSettings extends StatelessWidget {
   final ipAddressController = TextEditingController();
-  final lonController = TextEditingController();
+  final lngController = TextEditingController();
   final latController = TextEditingController();
   final authRangeController = TextEditingController();
 
@@ -17,34 +17,49 @@ class OfficeSettings extends StatelessWidget {
       onNotifierReady: (notifier) => notifier.getOfficeSettings(),
       builder: (context, notifier, child) {
         ipAddressController.text = notifier.busy ? 'Loading ...' : notifier.ipAddress;
-        lonController.text = notifier.busy ? 'Loading ...' : notifier.officeLon;
-        latController.text = notifier.busy ? 'Loading ...' : notifier.officeLon;
+        latController.text = notifier.busy ? 'Loading ...' : notifier.officeLat;
+        lngController.text = notifier.busy ? 'Loading ...' : notifier.officeLng;
         authRangeController.text = notifier.busy ? 'Loading ...' : notifier.authRange;
         return Column(
           children: <Widget>[
+            Text(
+              'Admin Settings',
+              style: TextStyle(
+                fontWeight: FontWeight.w900,
+                fontStyle: FontStyle.italic,
+                fontSize: 30,
+                color: Colors.green[800],
+                shadows: [Shadow(color: Colors.grey, offset: Offset(1.0, 1.0), blurRadius: 5.0)],
+              ),
+            ),
+            Divider(),
             TextField(
               decoration: InputDecoration(labelText: 'Office IP Address'),
+              keyboardType: TextInputType.number,
               controller: ipAddressController,
               //* TextStyle currently cassing issue, will be fixed soon by Flutter team *//
               // style: TextStyle(color: notifier.busy ? Colors.grey : Colors.white),
             ),
             TextField(
-              decoration: InputDecoration(labelText: 'Office Location\'s Longitude'),
-              controller: lonController,
-              // style: TextStyle(color: notifier.busy ? Colors.grey : Colors.white),
-            ),
-            TextField(
               decoration: InputDecoration(labelText: 'Office Location\'s Lattitude'),
+              keyboardType: TextInputType.number,
               controller: latController,
               // style: TextStyle(color: notifier.busy ? Colors.grey : Colors.white),
             ),
             TextField(
-              decoration: InputDecoration(labelText: 'Authentication Range'),
+              decoration: InputDecoration(labelText: 'Office Location\'s Longitude'),
+              keyboardType: TextInputType.number,
+              controller: lngController,
+              // style: TextStyle(color: notifier.busy ? Colors.grey : Colors.white),
+            ),
+            TextField(
+              decoration: InputDecoration(labelText: 'Authentication Range (in meters)'),
+              keyboardType: TextInputType.number,
               controller: authRangeController,
               // style: TextStyle(color: notifier.busy ? Colors.grey : Colors.white),
             ),
             SizedBox(
-              height: 30,
+              height: 20,
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -56,12 +71,13 @@ class OfficeSettings extends StatelessWidget {
                 SizedBox(width: 25.0),
                 AtaButton(
                   label: 'Update',
+                  icon: Icon(Icons.save),
                   onPressed: notifier.busy
                       ? null
                       : () => notifier.saveOfficeSettings(
                             ipAddressController.text,
-                            lonController.text,
                             latController.text,
+                            lngController.text,
                             authRangeController.text,
                           ),
                 )

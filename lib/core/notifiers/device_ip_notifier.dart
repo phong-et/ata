@@ -5,15 +5,14 @@ class DeviceIpNotifier extends BaseNotifier {
   final IpInfoService _ipInfoService;
   DeviceIpNotifier(IpInfoService ipInfoService) : _ipInfoService = ipInfoService;
 
-  String ipAddress;
+  String deviceIp = '0.0.0.0';
+  bool isWithinOfficeNetwork = false;
 
-  Future<void> getIpAddress() async {
+  Future<void> refresh() async {
     setBusy(true);
-    await _ipInfoService.fetchDeviceIpInfo();
-    _ipInfoService.ipInfo.fold(
-      (failure) => ipAddress = failure.toString(),
-      (ipInfo) => ipAddress = ipInfo.ipAddress,
-    );
+    await _ipInfoService.refreshService();
+    deviceIp = _ipInfoService.getDeviceIp();
+    isWithinOfficeNetwork = _ipInfoService.checkIpForAttendance();
     setBusy(false);
   }
 }

@@ -1,4 +1,4 @@
-import 'package:ata/core/models/auth.dart';
+import 'package:ata/core/services/auth_service.dart';
 import 'package:dartz/dartz.dart';
 import 'package:ata/util.dart';
 import 'package:ata/core/models/failure.dart';
@@ -7,8 +7,6 @@ import 'package:ata/core/models/office.dart';
 import '../../factories.dart';
 
 class OfficeService {
-  String _idToken;
-
   //* Model reference
   Either<Failure, Office> _officeSettings;
   Either<Failure, Office> get officeSettings => _officeSettings;
@@ -16,8 +14,11 @@ class OfficeService {
     _officeSettings = officeSettings;
   }
 
-  void setAuthToken(String token) {
-    _idToken = token;
+  final AuthService _authService;
+  OfficeService(AuthService authService) : _authService = authService;
+
+  String get _idToken {
+    return _authService.auth.fold((failure) => throw (failure.toString()), (auth) => auth.idToken);
   }
 
   //! Admin features
@@ -32,8 +33,8 @@ class OfficeService {
   //! Admin features
   Future<void> updateOfficeSettings(
     String ipAddress,
-    String lon,
     String lat,
+    String lng,
     String authRange,
   ) async {
     final officeUrl = 'https://atapp-7720c.firebaseio.com/office.json?auth=$_idToken';
@@ -45,8 +46,8 @@ class OfficeService {
           officeUrl,
           {
             'ipAddress': ipAddress,
-            'lon': double.parse(lon),
             'lat': double.parse(lat),
+            'lng': double.parse(lng),
             'authRange': double.parse(authRange),
           },
         );

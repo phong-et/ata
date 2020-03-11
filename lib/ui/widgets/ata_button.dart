@@ -3,8 +3,15 @@ import 'package:flutter/material.dart';
 class AtaButton extends StatefulWidget {
   final Function onPressed;
   final String label;
+  final Color color;
+  final Icon icon;
 
-  AtaButton({@required this.onPressed, this.label = ''});
+  AtaButton({
+    @required this.onPressed,
+    this.label = '',
+    this.color,
+    this.icon,
+  });
 
   @override
   _AtaButtonState createState() => _AtaButtonState();
@@ -34,7 +41,7 @@ class _AtaButtonState extends State<AtaButton> {
     return FlatButton.icon(
       disabledColor: Theme.of(context).primaryColor.withOpacity(0.5),
       disabledTextColor: Colors.white,
-      color: Theme.of(context).accentColor,
+      color: widget.color == null ? Theme.of(context).primaryColor : widget.color,
       textColor: Colors.white,
       icon: _isLoading
           ? SizedBox(
@@ -44,7 +51,7 @@ class _AtaButtonState extends State<AtaButton> {
                 backgroundColor: Colors.white,
               ),
             )
-          : Icon(Icons.refresh),
+          : widget.icon == null ? Icon(Icons.refresh) : widget.icon,
       label: Text(
         widget.label,
       ),
