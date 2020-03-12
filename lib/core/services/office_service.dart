@@ -36,7 +36,7 @@ class OfficeService {
     String lat,
     String lng,
     String authRange,
-    String dateIPServiceUrl,
+    String dateIpServiceUrl,
   ) async {
     final officeUrl = 'https://atapp-7720c.firebaseio.com/office.json?auth=$_idToken';
 
@@ -50,7 +50,7 @@ class OfficeService {
             'lat': double.parse(lat),
             'lng': double.parse(lng),
             'authRange': double.parse(authRange),
-            'dateIPServiceUrl': dateIPServiceUrl,
+            'dateIpServiceUrl': dateIpServiceUrl,
           },
         );
         return make<Office>(parsedJson);

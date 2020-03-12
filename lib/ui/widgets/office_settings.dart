@@ -12,7 +12,7 @@ class OfficeSettings extends StatelessWidget {
   final lngController = TextEditingController();
   final latController = TextEditingController();
   final authRangeController = TextEditingController();
-  final dateIPServiceUrlController = TextEditingController();
+  final dateIpServiceUrlController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +24,7 @@ class OfficeSettings extends StatelessWidget {
         latController.text = notifier.busy ? 'Loading ...' : notifier.officeLat;
         lngController.text = notifier.busy ? 'Loading ...' : notifier.officeLng;
         authRangeController.text = notifier.busy ? 'Loading ...' : notifier.authRange;
-        dateIPServiceUrlController.text = notifier.busy ? 'Loading ...' : notifier.dateIPServiceUrl;
+        dateIpServiceUrlController.text = notifier.busy ? 'Loading ...' : notifier.dateIpServiceUrl;
         return Column(
           children: <Widget>[
             Text(
@@ -88,7 +88,7 @@ class OfficeSettings extends StatelessWidget {
             TextField(
               decoration: InputDecoration(labelText: 'Date IP and Service Url'),
               keyboardType: TextInputType.url,
-              controller: dateIPServiceUrlController,
+              controller: dateIpServiceUrlController,
             ),
             SizedBox(
               height: 20,
@@ -111,7 +111,7 @@ class OfficeSettings extends StatelessWidget {
                             latController.text,
                             lngController.text,
                             authRangeController.text,
-                            dateIPServiceUrlController.text,
+                            dateIpServiceUrlController.text,
                           ),
                 )
               ],
