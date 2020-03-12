@@ -37,6 +37,10 @@ class UserService {
     return _ipInfoService.getServerDate();
   }
 
+  String get currentDateTimeString {
+    return _ipInfoService.getServerDateTime();
+  }
+
   String get urlRecordAttendance {
     print(currentDateString);
     return "$_urlReports/$_localId/$currentDateString.json?auth=$_idToken";
@@ -116,7 +120,7 @@ class UserService {
           switch (attendanceStatus) {
             case AttendanceStatus.NotYetCheckedIn:
               responseData = await Util.request(RequestType.PUT, urlRecordAttendance, {
-                'in': DateTime.now().toIso8601String(),
+                'in': DateTime.parse(currentDateTimeString).toIso8601String(),
               });
               return responseData['error'] != null ? responseData['error'] : null;
             default:
@@ -141,7 +145,7 @@ class UserService {
           switch (attendanceStatus) {
             case AttendanceStatus.NotYetCheckedOut:
               responseData = await Util.request(RequestType.PATCH, urlRecordAttendance, {
-                'out': DateTime.now().toIso8601String(),
+                'out': DateTime.parse(currentDateTimeString).toIso8601String(),
               });
               return responseData['error'] != null ? responseData['error'] : null;
             case AttendanceStatus.CheckedOut:
