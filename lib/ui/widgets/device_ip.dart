@@ -32,6 +32,7 @@ class DeviceIp extends StatelessWidget {
                           decoration: InputDecoration(labelText: 'Device IP Address:'),
                           controller: ipAddressController,
                           enabled: false,
+                          style: TextStyle(color: notifier.busy ? Colors.grey : Colors.black),
                         ),
                       ),
                       AtaButton(
