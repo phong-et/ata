@@ -1,7 +1,8 @@
-import 'package:ata/ui/screens/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:ata/ui/screens/check_in_screen.dart';
+import 'package:ata/ui/screens/user_settings_screen.dart';
+import 'package:ata/ui/screens/login_screen.dart';
 import 'package:ata/core/services/auth_service.dart';
 import 'package:ata/ui/screens/report_screen.dart';
 import 'package:ata/ui/screens/settings_screen.dart';
@@ -14,7 +15,12 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   List<Map<String, Object>> _tabs;
-  final List<Widget> _screens = [CheckInScreen(), ReportScreen(), SettingsScreen()];
+  final List<Widget> _screens = [
+    CheckInScreen(),
+    ReportScreen(),
+    UserSettingsScreen(),
+    SettingsScreen(),
+  ];
   int _selectedTabIndex = 0;
   PageController _pageController;
   @override
@@ -30,7 +36,11 @@ class _HomeScreenState extends State<HomeScreen> {
         'icon': Icon(Icons.chrome_reader_mode),
       },
       {
-        'title': Text('Settings'),
+        'title': Text('User Settings'),
+        'icon': Icon(Icons.settings),
+      },
+      {
+        'title': Text('Admin Settings'),
         'icon': Icon(Icons.settings),
       },
     ];
@@ -45,7 +55,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   //Animates the controlled [PageView] from the current page to the given page.
   void _navigateToPage(int index) {
-    _pageController.animateToPage(index, duration: Duration(milliseconds: 100), curve: Curves.ease);
+    _pageController.animateToPage(index, duration: Duration(milliseconds: 200), curve: Curves.bounceIn);
   }
 
   void _changeTab(int index) {
@@ -76,6 +86,7 @@ class _HomeScreenState extends State<HomeScreen> {
           onPageChanged: _changeTab,
         ),
         bottomNavigationBar: BottomNavigationBar(
+          type: BottomNavigationBarType.fixed,
           currentIndex: _selectedTabIndex,
           onTap: _navigateToPage,
           items: _tabs

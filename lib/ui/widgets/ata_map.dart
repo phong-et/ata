@@ -93,9 +93,13 @@ class AtaMapState extends State<AtaMap> {
   }
 
   void _animateMap(LatLng position) async {
-    final GoogleMapController controller = await _controller.future;
-    controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(target: position, zoom: DEFAULT_ZOOM)));
-    if (_markers.length == 0) _addMarker(LatLng(currentMarkedLat, currentMarkedLng));
+    try {
+      final GoogleMapController controller = await _controller.future;
+      controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(target: position, zoom: DEFAULT_ZOOM)));
+      if (_markers.length == 0) _addMarker(LatLng(currentMarkedLat, currentMarkedLng));
+    } on MissingPluginException catch (e) {
+      print(e.toString());
+    }
   }
 
   void _goToOfficeLocation() async {
@@ -151,9 +155,14 @@ class AtaMapState extends State<AtaMap> {
   }
 
   int _calcDistance() {
-    return maps.SphericalUtil.computeDistanceBetween(
-            maps.LatLng(currentMarkedLat, currentMarkedLng), maps.LatLng(currentLocationLat, currentLocationLng))
-        .round();
+    try {
+      return maps.SphericalUtil.computeDistanceBetween(
+              maps.LatLng(currentMarkedLat, currentMarkedLng), maps.LatLng(currentLocationLat, currentLocationLng))
+          .round();
+    } on Exception catch (e) {
+      print(e.toString());
+      return 9999;
+    }
   }
 
   bool isCheckinable() => _calcDistance() <= widget.authRange;
@@ -162,6 +171,7 @@ class AtaMapState extends State<AtaMap> {
   Widget build(BuildContext context) {
     return new Scaffold(
       body: GoogleMap(
+          //* This fixes GoogleMaps gestures within ScrollView
           gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>[
             new Factory<OneSequenceGestureRecognizer>(
               () => new EagerGestureRecognizer(),
