@@ -45,6 +45,7 @@ class _UserSettingsState extends State<UserSettings> {
               decoration: InputDecoration(labelText: 'Display Name'),
               keyboardType: TextInputType.text,
               controller: displayNameController,
+              style: TextStyle(color: notifier.busy ? Colors.grey : Colors.black),
             ),
             UserImagePreviewer(
               photoUrl: photoUrl,
@@ -65,7 +66,8 @@ class _UserSettingsState extends State<UserSettings> {
                 AtaButton(
                   label: 'Update',
                   icon: Icon(Icons.save),
-                  onPressed: notifier.busy ? null : () => notifier.saveUserSettings(displayNameController.text, photoUrl),
+                  onPressed:
+                      notifier.busy ? null : () => notifier.saveUserSettings(displayNameController.text, photoUrl),
                 )
               ],
             ),
