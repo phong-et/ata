@@ -78,7 +78,8 @@ class AtaMapState extends State<AtaMap> {
   }
 
   void _setCustomMapIcons() async {
-    markedLocationIcon = await BitmapDescriptor.fromAssetImage(ImageConfiguration(size: Size(128, 128)), 'assets/images/marked-location-icon.png');
+    markedLocationIcon = await BitmapDescriptor.fromAssetImage(
+        ImageConfiguration(size: Size(128, 128)), 'assets/images/marked-location-icon.png');
   }
 
   Future<Position> _getCurrentLocation() async => await Geolocator().getCurrentPosition();
@@ -133,7 +134,8 @@ class AtaMapState extends State<AtaMap> {
             markerId: MarkerId(point.toString()),
             position: point,
             infoWindow: InfoWindow(
-                title: widget.isMoveableMarker ? '$currentMarkedLat, $currentMarkedLng' : '${widget.titleMarkedPosition}',
+                title:
+                    widget.isMoveableMarker ? '$currentMarkedLat, $currentMarkedLng' : '${widget.titleMarkedPosition}',
                 snippet: 'Distance to Office :${_calcDistance()} m'),
             icon: markedLocationIcon,
             draggable: widget.isMoveableMarker,
@@ -249,7 +251,8 @@ abstract class _DockedFloatingActionButtonLocation extends FloatingActionButtonL
     final double snackBarHeight = scaffoldGeometry.snackBarSize.height;
 
     double fabY = contentBottom - fabHeight / 2.0;
-    if (snackBarHeight > 0.0) fabY = math.min(fabY, contentBottom - snackBarHeight - fabHeight - kFloatingActionButtonMargin);
+    if (snackBarHeight > 0.0)
+      fabY = math.min(fabY, contentBottom - snackBarHeight - fabHeight - kFloatingActionButtonMargin);
     if (appBarHeight > 0.0) fabY = math.min(fabY, contentBottom - appBarHeight - fabHeight / 2.0);
 
     final double maxFabY = scaffoldGeometry.scaffoldSize.height - fabHeight;
