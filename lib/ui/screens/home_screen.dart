@@ -71,6 +71,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
         body: PageView(
+          physics: NeverScrollableScrollPhysics(),
           children: _screens,
           controller: _pageController,
           onPageChanged: _changeTab,

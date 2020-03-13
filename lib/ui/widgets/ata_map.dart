@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -159,22 +161,29 @@ class AtaMapState extends State<AtaMap> {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      body: GoogleMap(
-          mapType: MapType.normal,
-          initialCameraPosition: defaultCamera,
-          onMapCreated: (GoogleMapController controller) async {
-            _controller.complete(controller);
-            Position currentLocation = await _getCurrentLocation();
-            currentLocationLat = currentLocation.latitude;
-            currentLocationLng = currentLocation.longitude;
-            _addMarker(LatLng(widget.markedLat, widget.markedLng));
-            _isMapReady = true;
-          },
-          myLocationEnabled: true,
-          myLocationButtonEnabled: false,
-          markers: _markers,
-          circles: _circles,
-          onLongPress: _handleLongPress),
+      body: AbsorbPointer(
+        absorbing: false,
+        child: GoogleMap(
+            scrollGesturesEnabled: true,
+            mapType: MapType.normal,
+            initialCameraPosition: defaultCamera,
+            gestureRecognizers: {
+              Factory<OneSequenceGestureRecognizer>(() => ScaleGestureRecognizer()),
+            },
+            onMapCreated: (GoogleMapController controller) async {
+              _controller.complete(controller);
+              Position currentLocation = await _getCurrentLocation();
+              currentLocationLat = currentLocation.latitude;
+              currentLocationLng = currentLocation.longitude;
+              _addMarker(LatLng(widget.markedLat, widget.markedLng));
+              _isMapReady = true;
+            },
+            myLocationEnabled: true,
+            myLocationButtonEnabled: false,
+            markers: _markers,
+            circles: _circles,
+            onLongPress: _handleLongPress),
+      ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
       floatingActionButton: Padding(
         padding: const EdgeInsets.only(top: 50.0),
