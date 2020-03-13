@@ -164,6 +164,7 @@ class AtaMapState extends State<AtaMap> {
   Widget build(BuildContext context) {
     return new Scaffold(
       body: GoogleMap(
+          //* This fixes GoogleMaps gestures within ScrollView
           gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>[
             new Factory<OneSequenceGestureRecognizer>(
               () => new EagerGestureRecognizer(),
