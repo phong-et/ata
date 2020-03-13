@@ -77,8 +77,7 @@ class AtaMapState extends State<AtaMap> {
   }
 
   void _setCustomMapIcons() async {
-    markedLocationIcon = await BitmapDescriptor.fromAssetImage(
-        ImageConfiguration(size: Size(128, 128)), 'assets/images/marked-location-icon.png');
+    markedLocationIcon = await BitmapDescriptor.fromAssetImage(ImageConfiguration(size: Size(128, 128)), 'assets/images/marked-location-icon.png');
   }
 
   Future<Position> _getCurrentLocation() async => await Geolocator().getCurrentPosition();
@@ -94,9 +93,13 @@ class AtaMapState extends State<AtaMap> {
   }
 
   void _animateMap(LatLng position) async {
-    final GoogleMapController controller = await _controller.future;
-    controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(target: position, zoom: DEFAULT_ZOOM)));
-    if (_markers.length == 0) _addMarker(LatLng(currentMarkedLat, currentMarkedLng));
+    try {
+      final GoogleMapController controller = await _controller.future;
+      controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(target: position, zoom: DEFAULT_ZOOM)));
+      if (_markers.length == 0) _addMarker(LatLng(currentMarkedLat, currentMarkedLng));
+    } on MissingPluginException catch (e) {
+      print(e.toString());
+    }
   }
 
   void _goToOfficeLocation() async {
@@ -129,8 +132,7 @@ class AtaMapState extends State<AtaMap> {
             markerId: MarkerId(point.toString()),
             position: point,
             infoWindow: InfoWindow(
-                title:
-                    widget.isMoveableMarker ? '$currentMarkedLat, $currentMarkedLng' : '${widget.titleMarkedPosition}',
+                title: widget.isMoveableMarker ? '$currentMarkedLat, $currentMarkedLng' : '${widget.titleMarkedPosition}',
                 snippet: 'Distance to Office :${_calcDistance()} m'),
             icon: markedLocationIcon,
             draggable: widget.isMoveableMarker,
@@ -153,9 +155,14 @@ class AtaMapState extends State<AtaMap> {
   }
 
   int _calcDistance() {
-    return maps.SphericalUtil.computeDistanceBetween(
-            maps.LatLng(currentMarkedLat, currentMarkedLng), maps.LatLng(currentLocationLat, currentLocationLng))
-        .round();
+    try {
+      return maps.SphericalUtil.computeDistanceBetween(
+              maps.LatLng(currentMarkedLat, currentMarkedLng), maps.LatLng(currentLocationLat, currentLocationLng))
+          .round();
+    } on Exception catch (e) {
+      print(e.toString());
+      return 9999;
+    }
   }
 
   bool isCheckinable() => _calcDistance() <= widget.authRange;
