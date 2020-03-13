@@ -7,6 +7,7 @@ import 'package:ata/core/services/location_service.dart';
 import 'package:ata/factories.dart';
 import 'package:ata/util.dart';
 import 'package:dartz/dartz.dart';
+import 'package:intl/intl.dart';
 
 enum AttendanceStatus { CheckedIn, CheckedOut, NotYetCheckedIn, NotYetCheckedOut }
 
@@ -120,7 +121,7 @@ class UserService {
           switch (attendanceStatus) {
             case AttendanceStatus.NotYetCheckedIn:
               responseData = await Util.request(RequestType.PUT, urlRecordAttendance, {
-                'in': DateTime.parse(currentDateTimeString).toIso8601String(),
+                'in': DateFormat('yyyy-MM-dd HH:mm:ss').parse(currentDateTimeString).toIso8601String(),
               });
               return responseData['error'] != null ? responseData['error'] : null;
             default:
@@ -145,7 +146,7 @@ class UserService {
           switch (attendanceStatus) {
             case AttendanceStatus.NotYetCheckedOut:
               responseData = await Util.request(RequestType.PATCH, urlRecordAttendance, {
-                'out': DateTime.parse(currentDateTimeString).toIso8601String(),
+                'out': DateFormat("yyyy-MM-dd HH:mm:ss").parse(currentDateTimeString).toIso8601String(),
               });
               return responseData['error'] != null ? responseData['error'] : null;
             case AttendanceStatus.CheckedOut:
