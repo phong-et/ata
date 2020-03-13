@@ -210,7 +210,6 @@ class AtaMapState extends State<AtaMap> {
                   foregroundColor: Colors.black54,
                   child: Icon(Icons.home),
                   shape: RoundedRectangleBorder(side: BorderSide(color: Colors.white70, width: 1)),
-                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 )),
             Container(
                 height: 40.0,
