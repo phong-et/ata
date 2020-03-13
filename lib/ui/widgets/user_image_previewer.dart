@@ -20,6 +20,22 @@ class UserImagePreviewer extends StatefulWidget {
 class _UserImagePreviewerState extends State<UserImagePreviewer> {
   final photoUrlFocusNode = FocusNode();
   final photoUrlController = TextEditingController();
+  Function unFocusHandler;
+
+  void _updateUrl(String url) {
+    if (widget.onUpdateUrl != null) widget.onUpdateUrl(url);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    photoUrlFocusNode.addListener(() {
+      if (!photoUrlFocusNode.hasFocus) {
+        _updateUrl(photoUrlController.text);
+        unFocusHandler();
+      }
+    });
+  }
 
   @override
   void dispose() {
@@ -34,6 +50,10 @@ class _UserImagePreviewerState extends State<UserImagePreviewer> {
     return BaseWidget<UserImagePreviewerNotifier>(
         notifier: UserImagePreviewerNotifier(),
         builder: (context, notifier, child) {
+          unFocusHandler = () {
+            notifier.updatePhotoUrl(photoUrlController.text);
+          };
+
           return Column(
             children: <Widget>[
               TextField(
@@ -41,12 +61,9 @@ class _UserImagePreviewerState extends State<UserImagePreviewer> {
                 keyboardType: TextInputType.url,
                 focusNode: photoUrlFocusNode,
                 controller: photoUrlController,
-                onEditingComplete: () {
-                  photoUrlFocusNode.unfocus();
-                  if (widget.onUpdateUrl != null) widget.onUpdateUrl(photoUrlController.text);
-                  notifier.updatePhotoUrl(
-                    photoUrlController.text,
-                  );
+                style: TextStyle(color: widget.loadingState || notifier.busy ? Colors.grey : Colors.black),
+                onChanged: (url) {
+                  _updateUrl(url);
                 },
               ),
               SizedBox(
@@ -55,7 +72,8 @@ class _UserImagePreviewerState extends State<UserImagePreviewer> {
               Container(
                 width: 120,
                 height: 120,
-                child: widget.loadingState || notifier.busy ? _imageLoading : _userImagePreviewer(photoUrlController.text),
+                child:
+                    widget.loadingState || notifier.busy ? _imageLoading : _userImagePreviewer(photoUrlController.text),
               ),
             ],
           );
