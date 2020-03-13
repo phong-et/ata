@@ -25,6 +25,7 @@ class _AtaButtonState extends State<AtaButton> {
       return null;
     else
       return () async {
+        FocusScope.of(context).unfocus();
         setState(() {
           _isLoading = true;
         });
