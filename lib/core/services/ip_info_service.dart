@@ -17,8 +17,8 @@ class IpInfoService {
 
   //* all async request here
   Future<void> refreshService() async {
-    await fetchDeviceIpInfo();
     await _officeService.fetchOfficeSettings();
+    await fetchDeviceIpInfo();
   }
 
   String getDeviceIp() {
@@ -43,6 +43,13 @@ class IpInfoService {
     );
   }
 
+  String get getDateIpServiceUrl {
+    return _officeService.officeSettings.fold(
+      (failure) => throw (failure.toString()),
+      (office) => office.dateIpServiceUrl,
+    );
+  }
+
   bool checkIpForAttendance() {
     var deviceIp = getDeviceIp();
     var officeIp = getOfficeIp();
@@ -53,7 +60,7 @@ class IpInfoService {
   Future<void> fetchDeviceIpInfo() async {
     await Util.requestEither<IpInfo>(
       RequestType.GET,
-      'http://botest.igk99.com/public/ipdate.aspx',
+      getDateIpServiceUrl,
     ).then((value) => _setIpInfo(value));
   }
 }
