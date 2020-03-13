@@ -35,6 +35,13 @@ class IpInfoService {
     );
   }
 
+  String getServerDateTime() {
+    return _ipInfo.fold(
+      (failure) => failure.toString(),
+      (ipInfo) => ipInfo.serverDateTime,
+    );
+  }
+
   String getOfficeIp() {
     return _officeService.officeSettings.fold(
       //* '- ' fix error when No Internet shows green status
