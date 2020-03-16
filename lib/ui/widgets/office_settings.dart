@@ -38,12 +38,11 @@ class OfficeSettings extends StatelessWidget {
               ),
             ),
             Divider(),
-            TextField(
-              decoration: InputDecoration(labelText: 'Office IP Address'),
-              keyboardType: TextInputType.number,
-              controller: ipAddressController,
-              //* TextStyle currently cassing issue, will be fixed soon by Flutter team *//
-              // style: TextStyle(color: notifier.busy ? Colors.grey : Colors.white),
+            Text(
+              '(Tap and Hold to select Office Location)',
+              style: TextStyle(
+                color: Colors.grey,
+              ),
             ),
             SizedBox(
               width: double.infinity,
@@ -55,14 +54,19 @@ class OfficeSettings extends StatelessWidget {
                   padding: const EdgeInsets.all(2.0),
                   child: Container(
                     color: Colors.white,
-                    child: AtaMap(
-                        isMoveableMarker: true,
-                        onLongPress: notifier.busy
-                            ? null
-                            : (LatLng point) => notifier.setOfficeLocation(
-                                  point.latitude.toString(),
-                                  point.longitude.toString(),
-                                )),
+                    child: notifier.busy
+                        ? Center(
+                            child: CircularProgressIndicator(),
+                          )
+                        : AtaMap(
+                            markedLat: double.tryParse(notifier.officeLat),
+                            markedLng: double.tryParse(notifier.officeLng),
+                            isMoveableMarker: true,
+                            onLongPress: (LatLng point) => notifier.setOfficeLocation(
+                              point.latitude.toString(),
+                              point.longitude.toString(),
+                            ),
+                          ),
                   ),
                 ),
               ),
@@ -71,24 +75,31 @@ class OfficeSettings extends StatelessWidget {
               decoration: InputDecoration(labelText: 'Office Location\'s Lattitude'),
               keyboardType: TextInputType.number,
               controller: latController,
-              // style: TextStyle(color: notifier.busy ? Colors.grey : Colors.white),
+              style: TextStyle(color: notifier.busy ? Colors.grey : Colors.black),
             ),
             TextField(
               decoration: InputDecoration(labelText: 'Office Location\'s Longitude'),
               keyboardType: TextInputType.number,
               controller: lngController,
-              // style: TextStyle(color: notifier.busy ? Colors.grey : Colors.white),
+              style: TextStyle(color: notifier.busy ? Colors.grey : Colors.black),
             ),
             TextField(
               decoration: InputDecoration(labelText: 'Authentication Range (in meters)'),
               keyboardType: TextInputType.number,
               controller: authRangeController,
-              // style: TextStyle(color: notifier.busy ? Colors.grey : Colors.white),
+              style: TextStyle(color: notifier.busy ? Colors.grey : Colors.black),
+            ),
+            TextField(
+              decoration: InputDecoration(labelText: 'Office IP Address'),
+              keyboardType: TextInputType.number,
+              controller: ipAddressController,
+              style: TextStyle(color: notifier.busy ? Colors.grey : Colors.black),
             ),
             TextField(
               decoration: InputDecoration(labelText: 'Date IP and Service Url'),
               keyboardType: TextInputType.url,
               controller: dateIpServiceUrlController,
+              style: TextStyle(color: notifier.busy ? Colors.grey : Colors.black),
             ),
             SizedBox(
               height: 20,
