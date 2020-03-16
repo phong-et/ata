@@ -6,6 +6,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter/services.dart';
 import 'package:maps_toolkit/maps_toolkit.dart' as maps;
+import 'dart:math' as math;
 
 /// A custom Flutter Google Map.
 /// Have some features:
@@ -94,14 +95,18 @@ class AtaMapState extends State<AtaMap> {
   }
 
   void _animateMap(LatLng position) async {
-    final GoogleMapController controller = await _controller.future;
-    controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(target: position, zoom: DEFAULT_ZOOM)));
-    if (_markers.length == 0) _addMarker(LatLng(currentMarkedLat, currentMarkedLng));
+    try {
+      final GoogleMapController controller = await _controller.future;
+      controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(target: position, zoom: DEFAULT_ZOOM)));
+      if (_markers.length == 0) _addMarker(LatLng(currentMarkedLat, currentMarkedLng));
+    } on MissingPluginException catch (e) {
+      print(e.toString());
+    }
   }
 
   void _goToOfficeLocation() async {
     try {
-      _animateMap(LatLng(currentMarkedLat, currentMarkedLng));
+      if (_isMapReady) _animateMap(LatLng(currentMarkedLat, currentMarkedLng));
     } on PlatformException catch (e) {
       _catchGpsOff(e);
     }
@@ -153,13 +158,17 @@ class AtaMapState extends State<AtaMap> {
   }
 
   int _calcDistance() {
-    return maps.SphericalUtil.computeDistanceBetween(
-            maps.LatLng(currentMarkedLat, currentMarkedLng), maps.LatLng(currentLocationLat, currentLocationLng))
-        .round();
+    try {
+      return maps.SphericalUtil.computeDistanceBetween(
+              maps.LatLng(currentMarkedLat, currentMarkedLng), maps.LatLng(currentLocationLat, currentLocationLng))
+          .round();
+    } on Exception catch (e) {
+      print(e.toString());
+      return 9999;
+    }
   }
 
   bool isCheckinable() => _calcDistance() <= widget.authRange;
-
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
@@ -185,33 +194,68 @@ class AtaMapState extends State<AtaMap> {
           markers: _markers,
           circles: _circles,
           onLongPress: _handleLongPress),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
+      floatingActionButtonLocation: _CenterDockedFloatingActionButtonLocation(),
       floatingActionButton: Padding(
-        padding: const EdgeInsets.only(top: 50.0),
+        padding: const EdgeInsets.only(top: 47.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: <Widget>[
-            FloatingActionButton(
-              heroTag: "GoToOfficeLocation",
-              onPressed: _goToOfficeLocation,
-              backgroundColor: Colors.white70,
-              foregroundColor: Colors.black54,
-              child: Icon(Icons.home),
-              shape: RoundedRectangleBorder(side: BorderSide(color: Colors.white70, width: 1)),
-              mini: true,
-            ),
-            FloatingActionButton(
-              heroTag: "GoToDeviceLocation",
-              onPressed: _goToCurrentLocation,
-              backgroundColor: Colors.white70,
-              foregroundColor: Colors.black54,
-              child: Icon(Icons.my_location),
-              shape: RoundedRectangleBorder(side: BorderSide(color: Colors.white70, width: 1)),
-              mini: true,
-            ),
+            Container(
+                height: 40.0,
+                width: 45.0,
+                padding: const EdgeInsets.only(right: 5),
+                child: FloatingActionButton(
+                  heroTag: "GoToOfficeLocation",
+                  onPressed: _goToOfficeLocation,
+                  backgroundColor: Colors.white70,
+                  foregroundColor: Colors.black54,
+                  child: Icon(Icons.home),
+                  shape: RoundedRectangleBorder(side: BorderSide(color: Colors.white70, width: 1)),
+                )),
+            Container(
+                height: 40.0,
+                width: 45.0,
+                padding: const EdgeInsets.only(right: 5),
+                child: FloatingActionButton(
+                  heroTag: "GoToDeviceLocation",
+                  onPressed: _goToCurrentLocation,
+                  backgroundColor: Colors.white70,
+                  foregroundColor: Colors.black54,
+                  child: Icon(Icons.my_location),
+                  shape: RoundedRectangleBorder(side: BorderSide(color: Colors.white70, width: 1)),
+                )),
           ],
         ),
       ),
     );
+  }
+}
+
+class _CenterDockedFloatingActionButtonLocation extends _DockedFloatingActionButtonLocation {
+  const _CenterDockedFloatingActionButtonLocation();
+
+  @override
+  Offset getOffset(ScaffoldPrelayoutGeometry scaffoldGeometry) {
+    final double fabX = (scaffoldGeometry.scaffoldSize.width - scaffoldGeometry.floatingActionButtonSize.width) / 2.0;
+    return Offset(fabX, getDockedY(scaffoldGeometry));
+  }
+}
+
+abstract class _DockedFloatingActionButtonLocation extends FloatingActionButtonLocation {
+  const _DockedFloatingActionButtonLocation();
+  @protected
+  double getDockedY(ScaffoldPrelayoutGeometry scaffoldGeometry) {
+    final double contentBottom = scaffoldGeometry.contentTop;
+    final double appBarHeight = scaffoldGeometry.bottomSheetSize.height;
+    final double fabHeight = scaffoldGeometry.floatingActionButtonSize.height;
+    final double snackBarHeight = scaffoldGeometry.snackBarSize.height;
+
+    double fabY = contentBottom - fabHeight / 2.0;
+    if (snackBarHeight > 0.0)
+      fabY = math.min(fabY, contentBottom - snackBarHeight - fabHeight - kFloatingActionButtonMargin);
+    if (appBarHeight > 0.0) fabY = math.min(fabY, contentBottom - appBarHeight - fabHeight / 2.0);
+
+    final double maxFabY = scaffoldGeometry.scaffoldSize.height - fabHeight;
+    return math.min(maxFabY, fabY);
   }
 }

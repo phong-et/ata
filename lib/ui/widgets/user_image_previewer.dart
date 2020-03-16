@@ -61,7 +61,7 @@ class _UserImagePreviewerState extends State<UserImagePreviewer> {
                 keyboardType: TextInputType.url,
                 focusNode: photoUrlFocusNode,
                 controller: photoUrlController,
-                style: TextStyle(color: notifier.busy ? Colors.grey : Colors.black),
+                style: TextStyle(color: widget.loadingState || notifier.busy ? Colors.grey : Colors.black),
                 onChanged: (url) {
                   _updateUrl(url);
                 },
@@ -72,7 +72,8 @@ class _UserImagePreviewerState extends State<UserImagePreviewer> {
               Container(
                 width: 120,
                 height: 120,
-                child: widget.loadingState || notifier.busy ? _imageLoading : _userImagePreviewer(photoUrlController.text),
+                child:
+                    widget.loadingState || notifier.busy ? _imageLoading : _userImagePreviewer(photoUrlController.text),
               ),
             ],
           );
