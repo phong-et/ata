@@ -62,6 +62,7 @@ class OfficeSettings extends StatelessWidget {
                             markedLat: double.tryParse(notifier.officeLat),
                             markedLng: double.tryParse(notifier.officeLng),
                             isMoveableMarker: true,
+                            authRange: double.tryParse(notifier.authRange),
                             onLongPress: (LatLng point) => notifier.setOfficeLocation(
                               point.latitude.toString(),
                               point.longitude.toString(),
