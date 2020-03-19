@@ -13,6 +13,9 @@ class OfficeSettings extends StatelessWidget {
   final latController = TextEditingController();
   final authRangeController = TextEditingController();
   final dateIpServiceUrlController = TextEditingController();
+  final starTimeController = TextEditingController();
+  final endTimeController = TextEditingController();
+  final acceptableLateTimeController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -25,6 +28,9 @@ class OfficeSettings extends StatelessWidget {
         lngController.text = notifier.busy ? 'Loading ...' : notifier.officeLng;
         authRangeController.text = notifier.busy ? 'Loading ...' : notifier.authRange;
         dateIpServiceUrlController.text = notifier.busy ? 'Loading ...' : notifier.dateIpServiceUrl;
+        starTimeController.text = notifier.busy ? 'Loading ...' : notifier.startTime;
+        endTimeController.text = notifier.busy ? 'Loading ...' : notifier.endTime;
+        acceptableLateTimeController.text = notifier.busy ? 'Loading ...' : notifier.acceptableLateTime;
         return Column(
           children: <Widget>[
             Text(
@@ -100,6 +106,24 @@ class OfficeSettings extends StatelessWidget {
               decoration: InputDecoration(labelText: 'Date IP and Service Url'),
               keyboardType: TextInputType.url,
               controller: dateIpServiceUrlController,
+              style: TextStyle(color: notifier.busy ? Colors.grey : Colors.black),
+            ),
+            TextField(
+              decoration: InputDecoration(labelText: 'Start Time'),
+              keyboardType: TextInputType.url,
+              controller: starTimeController,
+              style: TextStyle(color: notifier.busy ? Colors.grey : Colors.black),
+            ),
+             TextField(
+              decoration: InputDecoration(labelText: 'End Time'),
+              keyboardType: TextInputType.url,
+              controller: endTimeController,
+              style: TextStyle(color: notifier.busy ? Colors.grey : Colors.black),
+            ),
+             TextField(
+              decoration: InputDecoration(labelText: 'Acceptable Late Time'),
+              keyboardType: TextInputType.url,
+              controller: acceptableLateTimeController,
               style: TextStyle(color: notifier.busy ? Colors.grey : Colors.black),
             ),
             SizedBox(
