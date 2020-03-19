@@ -14,6 +14,9 @@ class OfficeSettingsNotifier extends BaseNotifier {
   String officeLat;
   String authRange;
   String dateIpServiceUrl;
+  String startTime;
+  String endTime;
+  String acceptableLateTime;
 
   Future<void> getOfficeSettings() async {
     setBusy(true);
@@ -28,6 +31,9 @@ class OfficeSettingsNotifier extends BaseNotifier {
     String lng,
     String authRange,
     String dateIpServiceUrl,
+    String startTime,
+    String endTime,
+    String acceptableLateTime
   ) async {
     setBusy(true);
     await _officeService.updateOfficeSettings(
@@ -36,6 +42,9 @@ class OfficeSettingsNotifier extends BaseNotifier {
       lng,
       authRange,
       dateIpServiceUrl,
+      startTime,
+      endTime,
+      acceptableLateTime
     );
     setNotifierInfo(_officeService.officeSettings);
     setBusy(false);
@@ -49,6 +58,9 @@ class OfficeSettingsNotifier extends BaseNotifier {
         officeLng = failure.toString();
         authRange = failure.toString();
         dateIpServiceUrl = failure.toString();
+        startTime = failure.toString();
+        endTime = failure.toString();
+        acceptableLateTime = failure.toString();
       },
       (office) {
         ipAddress = office.error == null ? office.ipAddress.toString() : office.error;
@@ -56,6 +68,9 @@ class OfficeSettingsNotifier extends BaseNotifier {
         officeLng = office.error == null ? office.lng.toString() : office.error;
         authRange = office.error == null ? office.authRange.toString() : office.error;
         dateIpServiceUrl = office.error == null ? office.dateIpServiceUrl.toString() : office.error;
+        startTime = office.error == null ? office.startTime.toString() : office.error;
+        endTime = office.error == null ? office.endTime.toString() : office.error;
+        acceptableLateTime = office.error == null ? office.acceptableLateTime.toString() : office.error;
       },
     );
   }

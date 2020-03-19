@@ -6,6 +6,9 @@ class Office {
   double lng;
   double authRange;
   String dateIpServiceUrl;
+  String startTime;
+  String endTime;
+  String acceptableLateTime;
   String error;
 
   Office({
@@ -14,6 +17,9 @@ class Office {
     @required this.lng,
     @required this.authRange,
     @required this.dateIpServiceUrl,
+    @required this.startTime,
+    @required this.endTime,
+    @required this.acceptableLateTime,
     @required this.error,
   });
 
@@ -24,6 +30,9 @@ class Office {
       lng: parsedJson['lng'],
       authRange: parsedJson['authRange'],
       dateIpServiceUrl: parsedJson['dateIpServiceUrl'],
+      startTime: parsedJson['startTime'],
+      endTime: parsedJson['endTime'],
+      acceptableLateTime: parsedJson['acceptableLateTime'],
       error: parsedJson['error'] == null ? null : parsedJson['error'],
     );
   }
@@ -34,6 +43,9 @@ class Office {
       'lng': this.lng,
       'authRange': this.authRange,
       'dateIpServiceUrl': this.dateIpServiceUrl,
+      'startTime': this.startTime,
+      'endTime': this.endTime,
+      'acceptableLateTime': this.acceptableLateTime,
       'error': this.error,
     };
   }
