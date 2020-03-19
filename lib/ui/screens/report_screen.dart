@@ -1,13 +1,12 @@
+import 'package:ata/ui/widgets/report_attendance.dart';
 import 'package:flutter/material.dart';
 
 class ReportScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: SingleChildScrollView(
+    return SingleChildScrollView(
         scrollDirection: Axis.vertical,
-        child:Text('Report Screen here')
-      ),
+        child:ReportAttendance()
     );
   }
 }

@@ -59,6 +59,10 @@ class UserService {
     return "https://identitytoolkit.googleapis.com/v1/accounts:update?key=$_apiKey";
   }
 
+  String get urlLocalIdRecordAttendance {
+    return "$_urlReports/$_localId.json?auth=$_idToken";
+  }
+
   Either<Failure, AttendanceStatus> _attendanceStatus;
 
   //* all async request here
