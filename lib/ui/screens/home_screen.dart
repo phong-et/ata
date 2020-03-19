@@ -14,6 +14,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
+  AuthService _authService;
   List<Map<String, Object>> _tabs;
   final List<Widget> _screens = [
     CheckInScreen(),
@@ -46,6 +47,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     ];
     _pageController = new PageController();
     WidgetsBinding.instance.addObserver(this);
+    _authService = Provider.of<AuthService>(context, listen: false);
   }
 
   @override
@@ -62,8 +64,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       case AppLifecycleState.paused:
         break;
       case AppLifecycleState.resumed:
-        bool isExpiredToken = await Provider.of<AuthService>(context, listen: false).autoSignIn();
-        if (!isExpiredToken) Navigator.of(context).pushReplacementNamed(LoginScreen.routeName);
+        bool isExpiredToken = await _authService.autoSignIn();
+        if (!isExpiredToken) {
+          String newToken = await _authService.refeshToken();
+          if (newToken != null) Navigator.of(context).pushReplacementNamed(LoginScreen.routeName);
+        }
         break;
       case AppLifecycleState.inactive:
         break;
@@ -93,7 +98,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             IconButton(
               icon: Icon(Icons.exit_to_app),
               onPressed: () async {
-                await Provider.of<AuthService>(context, listen: false).signOut();
+                await _authService.signOut();
                 Navigator.of(context).pushReplacementNamed(LoginScreen.routeName);
               },
             ),
