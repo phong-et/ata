@@ -53,7 +53,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     _fingerPrintService = Provider.of<FingerPrintService>(context, listen: false);
   }
 
-  Future<void> _autoSignout() async {
+  Future<void> _signOutToLoginScreen() async {
     await _authService.signOut();
     Navigator.of(context).pushReplacementNamed(LoginScreen.routeName);
   }
@@ -74,15 +74,18 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       case AppLifecycleState.resumed:
         bool isExpiredToken = await _authService.autoSignIn();
         if (!isExpiredToken) {
-          (await _fingerPrintService.authenticate()).fold((failure) async {
-            await _autoSignout();
-          }, (authenticated) async {
-            if (authenticated) {
-              String newToken = await _authService.refeshToken();
-              if (newToken != null) Navigator.of(context).pushReplacementNamed(LoginScreen.routeName);
-            } else
-              await _autoSignout();
-          });
+          (await _fingerPrintService.authenticate()).fold(
+            (failure) async {
+              await _signOutToLoginScreen();
+            },
+            (authenticated) async {
+              if (authenticated) {
+                String newToken = await _authService.refeshToken();
+                if (newToken != null) Navigator.of(context).pushReplacementNamed(LoginScreen.routeName);
+              } else
+                await _signOutToLoginScreen();
+            },
+          );
         }
         break;
       case AppLifecycleState.inactive:
@@ -113,7 +116,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             IconButton(
               icon: Icon(Icons.exit_to_app),
               onPressed: () async {
-                await _autoSignout();
+                await _signOutToLoginScreen();
               },
             ),
           ],
