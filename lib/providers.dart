@@ -1,3 +1,4 @@
+import 'package:ata/core/services/fingerprint_service.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 import 'package:ata/core/services/location_service.dart';
@@ -18,6 +19,9 @@ List<SingleChildWidget> services = [];
 List<SingleChildWidget> uIservices = [
   Provider<AuthService>(
     create: (_) => AuthService(),
+  ),
+  Provider<FingerPrintService>(
+    create: (_) => FingerPrintService(),
   )
 ];
 

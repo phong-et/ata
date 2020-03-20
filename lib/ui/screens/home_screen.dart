@@ -1,3 +1,4 @@
+import 'package:ata/core/services/fingerprint_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:ata/ui/screens/check_in_screen.dart';
@@ -15,6 +16,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   AuthService _authService;
+  FingerPrintService _fingerPrintService;
   List<Map<String, Object>> _tabs;
   final List<Widget> _screens = [
     CheckInScreen(),
@@ -48,6 +50,12 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     _pageController = new PageController();
     WidgetsBinding.instance.addObserver(this);
     _authService = Provider.of<AuthService>(context, listen: false);
+    _fingerPrintService = Provider.of<FingerPrintService>(context, listen: false);
+  }
+
+  Future<void> _signOutToLoginScreen() async {
+    await _authService.signOut();
+    Navigator.of(context).pushReplacementNamed(LoginScreen.routeName);
   }
 
   @override
@@ -66,8 +74,18 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       case AppLifecycleState.resumed:
         bool isExpiredToken = await _authService.autoSignIn();
         if (!isExpiredToken) {
-          String newToken = await _authService.refeshToken();
-          if (newToken != null) Navigator.of(context).pushReplacementNamed(LoginScreen.routeName);
+          (await _fingerPrintService.authenticate()).fold(
+            (failure) async {
+              await _signOutToLoginScreen();
+            },
+            (authenticated) async {
+              if (authenticated) {
+                String newToken = await _authService.refeshToken();
+                if (newToken != null) Navigator.of(context).pushReplacementNamed(LoginScreen.routeName);
+              } else
+                await _signOutToLoginScreen();
+            },
+          );
         }
         break;
       case AppLifecycleState.inactive:
@@ -98,8 +116,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             IconButton(
               icon: Icon(Icons.exit_to_app),
               onPressed: () async {
-                await _authService.signOut();
-                Navigator.of(context).pushReplacementNamed(LoginScreen.routeName);
+                await _signOutToLoginScreen();
               },
             ),
           ],
