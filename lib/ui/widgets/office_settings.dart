@@ -24,7 +24,7 @@ class OfficeSettings extends StatelessWidget {
       context: context,
       initialTime: TimeOfDay.fromDateTime(currentValue ?? DateTime.now()),
     );
-    if(time !=null)
+    if(time != null)
       return DateTimeField.combine(DateTime.now(), time);
     return currentValue;
   }
