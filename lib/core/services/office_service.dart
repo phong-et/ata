@@ -53,6 +53,7 @@ class OfficeService {
             'lat': double.parse(lat),
             'lng': double.parse(lng),
             'authRange': double.parse(authRange),
+            'dateIpServiceUrl': dateIpServiceUrl,
             'startTime': startTime,
             'endTime': endTime,
             'acceptableLateTime': acceptableLateTime,
