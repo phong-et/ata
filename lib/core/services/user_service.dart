@@ -1,3 +1,4 @@
+import 'package:ata/core/models/attendance_record.dart';
 import 'package:ata/core/models/auth.dart';
 import 'package:ata/core/models/failure.dart';
 import 'package:ata/core/models/user.dart';
@@ -26,6 +27,12 @@ class UserService {
     return _authService.auth;
   }
 
+  Either<Failure, AttendanceRecord> _attendance;
+  Either<Failure, AttendanceRecord> get ipInfo => _attendance;
+  void _setAttendanceRecord(Either<Failure, AttendanceRecord> attendance) {
+    _attendance = attendance;
+  }
+  
   String get _localId {
     return _auth.fold((failure) => throw (failure.toString()), (auth) => auth.localId);
   }
@@ -47,6 +54,10 @@ class UserService {
     return "$_urlReports/$_localId/$currentDateString.json?auth=$_idToken";
   }
 
+  String get _urlUserAttendance {
+    return "$_urlReports/$_localId.json?auth=$_idToken";
+  }
+
   String get _apiKey {
     return Auth.apiKey;
   }
@@ -57,10 +68,6 @@ class UserService {
 
   String get _urlUpdateUser {
     return "https://identitytoolkit.googleapis.com/v1/accounts:update?key=$_apiKey";
-  }
-
-  String get urlLocalIdRecordAttendance {
-    return "$_urlReports/$_localId.json?auth=$_idToken";
   }
 
   Either<Failure, AttendanceStatus> _attendanceStatus;
@@ -183,5 +190,17 @@ class UserService {
       'displayName': displayName,
       'photoUrl': photoUrl,
     });
+  }
+
+  Future fetchDataToAttendanceRecord() async {
+    await Util.requestEither<AttendanceRecord>(
+      RequestType.GET,
+      _urlUserAttendance,
+    ).then((value) => _setAttendanceRecord(value));
+  }
+
+  Future getDataAttendanceRecord() async {
+   var responseData = await Util.request(RequestType.GET, _urlUserAttendance);
+   return responseData;
   }
 }
