@@ -1,8 +1,10 @@
 import 'package:ata/core/notifiers/office_settings_notifier.dart';
 import 'package:ata/ui/widgets/ata_button.dart';
 import 'package:ata/ui/widgets/base_widget.dart';
+import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import 'ata_map.dart';
@@ -16,6 +18,14 @@ class OfficeSettings extends StatelessWidget {
   final starTimeController = TextEditingController();
   final endTimeController = TextEditingController();
   final acceptableLateTimeController = TextEditingController();
+
+  Future<DateTime> showPicker(context, currentValue) async {
+    final time = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.fromDateTime(currentValue ?? DateTime.now()),
+    );
+    return DateTimeField.combine(DateTime.now(), time);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -108,23 +118,31 @@ class OfficeSettings extends StatelessWidget {
               controller: dateIpServiceUrlController,
               style: TextStyle(color: notifier.busy ? Colors.grey : Colors.black),
             ),
-            TextField(
+            DateTimeField(
               decoration: InputDecoration(labelText: 'Start Time'),
-              keyboardType: TextInputType.url,
+              keyboardType: TextInputType.datetime,
               controller: starTimeController,
               style: TextStyle(color: notifier.busy ? Colors.grey : Colors.black),
-            ),
-             TextField(
+              format: DateFormat.Hm(),
+              onShowPicker: showPicker),
+            DateTimeField(
               decoration: InputDecoration(labelText: 'End Time'),
-              keyboardType: TextInputType.url,
+              keyboardType: TextInputType.datetime,
               controller: endTimeController,
               style: TextStyle(color: notifier.busy ? Colors.grey : Colors.black),
-            ),
-             TextField(
-              decoration: InputDecoration(labelText: 'Acceptable Late Time'),
-              keyboardType: TextInputType.url,
-              controller: acceptableLateTimeController,
-              style: TextStyle(color: notifier.busy ? Colors.grey : Colors.black),
+              format: DateFormat.Hm(),
+              onShowPicker: showPicker),
+            Visibility(
+              child: TextField(
+                decoration: InputDecoration(labelText: 'Acceptable Late Time'),
+                keyboardType: TextInputType.number,
+                controller: acceptableLateTimeController,
+                style: TextStyle(color: notifier.busy ? Colors.grey : Colors.black),
+              ),
+              maintainSize: true,
+              maintainAnimation: true,
+              maintainState: true,
+              visible: false,
             ),
             SizedBox(
               height: 20,
@@ -148,6 +166,9 @@ class OfficeSettings extends StatelessWidget {
                             lngController.text,
                             authRangeController.text,
                             dateIpServiceUrlController.text,
+                            starTimeController.text,
+                            endTimeController.text,
+                            acceptableLateTimeController.text
                           ),
                 )
               ],
