@@ -180,6 +180,7 @@ class AtaMapState extends State<AtaMap> {
           mapType: MapType.normal,
           initialCameraPosition: defaultCamera,
           onMapCreated: (GoogleMapController controller) async {
+            _controller.complete(controller);
             _addMarker(LatLng(widget.markedLat, widget.markedLng));
             _isMapReady = true;
           },
