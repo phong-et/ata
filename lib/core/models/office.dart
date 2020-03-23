@@ -6,9 +6,9 @@ class Office {
   double lng;
   double authRange;
   String dateIpServiceUrl;
-  String startTime;
-  String endTime;
-  String acceptableLateTime;
+  DateTime startTime;
+  DateTime endTime;
+  int acceptableLateTime;
   String error;
 
   Office({
@@ -30,8 +30,8 @@ class Office {
       lng: parsedJson['lng'],
       authRange: parsedJson['authRange'],
       dateIpServiceUrl: parsedJson['dateIpServiceUrl'],
-      startTime: parsedJson['startTime'],
-      endTime: parsedJson['endTime'],
+      startTime: DateTime.parse(parsedJson['startTime']),
+      endTime: DateTime.parse(parsedJson['endTime']),
       acceptableLateTime: parsedJson['acceptableLateTime'],
       error: parsedJson['error'] == null ? null : parsedJson['error'],
     );

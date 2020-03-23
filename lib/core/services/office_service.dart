@@ -3,7 +3,6 @@ import 'package:dartz/dartz.dart';
 import 'package:ata/util.dart';
 import 'package:ata/core/models/failure.dart';
 import 'package:ata/core/models/office.dart';
-
 import '../../factories.dart';
 
 class OfficeService {
@@ -56,7 +55,7 @@ class OfficeService {
             'dateIpServiceUrl': dateIpServiceUrl,
             'startTime': startTime,
             'endTime': endTime,
-            'acceptableLateTime': acceptableLateTime,
+            'acceptableLateTime': int.parse(acceptableLateTime),
           },
         );
         return make<Office>(parsedJson);
