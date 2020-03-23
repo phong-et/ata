@@ -180,4 +180,8 @@ class UserService {
       'photoUrl': photoUrl,
     });
   }
+
+  Future<bool> isCheckinLate(DateTime startWorkTime, DateTime checkingTime, int acceptableLateTime) async {
+    return checkingTime.difference(startWorkTime).inSeconds > acceptableLateTime;
+  }
 }
