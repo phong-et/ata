@@ -164,14 +164,15 @@ class OfficeSettings extends StatelessWidget {
                   onPressed: notifier.busy
                       ? null
                       : () => notifier.saveOfficeSettings(
-                          ipAddressController.text,
-                          latController.text,
-                          lngController.text,
-                          authRangeController.text,
-                          dateIpServiceUrlController.text,
-                          starTimeController.text,
-                          endTimeController.text,
-                          acceptableLateTimeController.text),
+                            ipAddressController.text,
+                            latController.text,
+                            lngController.text,
+                            authRangeController.text,
+                            dateIpServiceUrlController.text,
+                            starTimeController.text,
+                            endTimeController.text,
+                            acceptableLateTimeController.text,
+                          ),
                 )
               ],
             ),
