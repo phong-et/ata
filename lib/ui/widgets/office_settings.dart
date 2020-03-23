@@ -24,8 +24,7 @@ class OfficeSettings extends StatelessWidget {
       context: context,
       initialTime: TimeOfDay.fromDateTime(currentValue ?? DateTime.now()),
     );
-    if(time != null)
-      return DateTimeField.combine(DateTime.now(), time);
+    if (time != null) return DateTimeField.combine(DateTime.now(), time);
     return currentValue;
   }
 
@@ -126,14 +125,16 @@ class OfficeSettings extends StatelessWidget {
               controller: starTimeController,
               style: TextStyle(color: notifier.busy ? Colors.grey : Colors.black),
               format: DateFormat.Hm(),
-              onShowPicker: showPicker),
+              onShowPicker: showPicker,
+            ),
             DateTimeField(
               decoration: InputDecoration(labelText: 'End Time'),
               keyboardType: TextInputType.datetime,
               controller: endTimeController,
               style: TextStyle(color: notifier.busy ? Colors.grey : Colors.black),
               format: DateFormat.Hm(),
-              onShowPicker: showPicker),
+              onShowPicker: showPicker,
+            ),
             Visibility(
               child: TextField(
                 decoration: InputDecoration(labelText: 'Acceptable Late Time'),
@@ -163,15 +164,14 @@ class OfficeSettings extends StatelessWidget {
                   onPressed: notifier.busy
                       ? null
                       : () => notifier.saveOfficeSettings(
-                            ipAddressController.text,
-                            latController.text,
-                            lngController.text,
-                            authRangeController.text,
-                            dateIpServiceUrlController.text,
-                            starTimeController.text,
-                            endTimeController.text,
-                            acceptableLateTimeController.text
-                          ),
+                          ipAddressController.text,
+                          latController.text,
+                          lngController.text,
+                          authRangeController.text,
+                          dateIpServiceUrlController.text,
+                          starTimeController.text,
+                          endTimeController.text,
+                          acceptableLateTimeController.text),
                 )
               ],
             ),
