@@ -31,7 +31,7 @@ class _UserSettingsState extends State<UserSettings> {
         return Column(
           children: <Widget>[
             Text(
-              'User Settings',
+              'User Profile',
               style: TextStyle(
                 fontWeight: FontWeight.w900,
                 fontStyle: FontStyle.italic,

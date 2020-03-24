@@ -120,7 +120,8 @@ class OfficeSettings extends StatelessWidget {
               style: TextStyle(color: notifier.busy ? Colors.grey : Colors.black),
             ),
             DateTimeField(
-              decoration: InputDecoration(labelText: 'Start Time'),
+              resetIcon: null,
+              decoration: InputDecoration(labelText: 'Working-Hour From'),
               keyboardType: TextInputType.datetime,
               controller: starTimeController,
               style: TextStyle(color: notifier.busy ? Colors.grey : Colors.black),
@@ -128,7 +129,8 @@ class OfficeSettings extends StatelessWidget {
               onShowPicker: showPicker,
             ),
             DateTimeField(
-              decoration: InputDecoration(labelText: 'End Time'),
+              resetIcon: null,
+              decoration: InputDecoration(labelText: 'Working-Hour To'),
               keyboardType: TextInputType.datetime,
               controller: endTimeController,
               style: TextStyle(color: notifier.busy ? Colors.grey : Colors.black),
