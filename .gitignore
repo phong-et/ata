@@ -8,6 +8,8 @@
 .buildlog/
 .history
 .svn/
+/ataweb/ataweb/bin/
+/ataweb/ataweb/obj/
 
 # IntelliJ related
 *.iml
