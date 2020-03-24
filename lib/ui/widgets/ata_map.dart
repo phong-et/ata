@@ -77,7 +77,8 @@ class AtaMapState extends State<AtaMap> {
   }
 
   void _setCustomMapIcons() async {
-    markedLocationIcon = await BitmapDescriptor.fromAssetImage(ImageConfiguration(size: Size(128, 128)), 'assets/images/marked-location-icon.png');
+    markedLocationIcon = await BitmapDescriptor.fromAssetImage(
+        ImageConfiguration(size: Size(128, 128)), 'assets/images/marked-location-icon.png');
   }
 
   Future<Position> _getCurrentLocation() async => await Geolocator().getCurrentPosition();
@@ -132,8 +133,8 @@ class AtaMapState extends State<AtaMap> {
             markerId: MarkerId(point.toString()),
             position: point,
             infoWindow: InfoWindow(
-                title: widget.isMoveableMarker ? '$currentMarkedLat, $currentMarkedLng' : '${widget.titleMarkedPosition}',
-                snippet: 'Distance to Office :${_calcDistance()} m'),
+              title: widget.isMoveableMarker ? '$currentMarkedLat, $currentMarkedLng' : '${widget.titleMarkedPosition}',
+            ),
             icon: markedLocationIcon,
             draggable: widget.isMoveableMarker,
             onDragEnd: ((newPoint) {
@@ -180,9 +181,6 @@ class AtaMapState extends State<AtaMap> {
           initialCameraPosition: defaultCamera,
           onMapCreated: (GoogleMapController controller) async {
             _controller.complete(controller);
-            Position currentLocation = await _getCurrentLocation();
-            currentLocationLat = currentLocation.latitude;
-            currentLocationLng = currentLocation.longitude;
             _addMarker(LatLng(widget.markedLat, widget.markedLng));
             _isMapReady = true;
           },

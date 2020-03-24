@@ -39,11 +39,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         'icon': Icon(Icons.chrome_reader_mode),
       },
       {
-        'title': Text('User Settings'),
-        'icon': Icon(Icons.settings),
+        'title': Text('Profile'),
+        'icon': Icon(Icons.person),
       },
       {
-        'title': Text('Admin Settings'),
+        'title': Text('Admin'),
         'icon': Icon(Icons.settings),
       },
     ];
