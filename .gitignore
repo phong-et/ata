@@ -39,3 +39,5 @@ lib/generated_plugin_registrant.dart
 !/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
 
 pubspec.lock
+
+ataweb/ataweb/wwwroot/libs/ext-6.2.0/
