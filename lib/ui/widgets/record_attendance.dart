@@ -21,6 +21,68 @@ class RecordAttendance extends StatelessWidget {
     }
   }
 
+  final reasonTextFieldController = TextEditingController();
+  Future showReasonDialog(BuildContext context, RecordAttendanceNotifier notifier, Function action) async {
+    reasonTextFieldController.text = '';
+    await showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: TextFormField(
+                    decoration: InputDecoration(labelText: 'Reason'),
+                    controller: reasonTextFieldController,
+                  ),
+                ),
+                Text(
+                  notifier.reasonText,
+                  style: TextStyle(
+                    fontStyle: FontStyle.italic,
+                    fontSize: 12,
+                    color: Colors.red[600],
+                    shadows: [Shadow(color: Colors.grey, offset: Offset(1.0, 1.0), blurRadius: 5.0)],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: <Widget>[
+                      RaisedButton(
+                        child: Text("Ok"),
+                        color: Colors.green,
+                        textColor: Colors.white,
+                        onPressed: () {
+                          if (reasonTextFieldController.text == '') {
+                            print('Reason must be not null');
+                          } else
+                            Navigator.of(context).pop();
+                        },
+                      ),
+                      RaisedButton(
+                        child: Text("Cancel"),
+                        color: Colors.green,
+                        textColor: Colors.white,
+                        onPressed: () {
+                          reasonTextFieldController.text = '';
+                          Navigator.of(context).pop();
+                        },
+                      )
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          );
+        });
+    if (reasonTextFieldController.text == '' || reasonTextFieldController.text == null) return null;
+    return action(reasonTextFieldController.text);
+  }
+
   @override
   Widget build(BuildContext context) {
     return BaseWidget<RecordAttendanceNotifier>(
@@ -28,7 +90,7 @@ class RecordAttendance extends StatelessWidget {
       onNotifierReady: (notifier) => notifier.refresh(),
       builder: (context, notifier, child) {
         return SizedBox(
-          width: 150.0,
+          width: 140.0,
           child: IntrinsicWidth(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -37,8 +99,11 @@ class RecordAttendance extends StatelessWidget {
                   label: 'Check In',
                   color: Colors.green,
                   icon: Icon(Icons.add_location),
-                  onPressed:
-                      notifier.attendanceStatus == AttendanceStatus.NotYetCheckedIn ? () => notifier.checkIn() : null,
+                  onPressed: notifier.attendanceStatus == AttendanceStatus.NotYetCheckedIn
+                      ? (notifier.isLateCheckIn()
+                          ? () => showReasonDialog(context, notifier, notifier.checkIn)
+                          : () => notifier.checkIn())
+                      : null,
                 ),
                 Text(
                   notifier.checkInStatus == null ? 'Success!' : notifier.checkInStatus,
@@ -54,8 +119,11 @@ class RecordAttendance extends StatelessWidget {
                   label: 'Check Out',
                   color: Colors.green,
                   icon: Icon(Icons.location_off),
-                  onPressed:
-                      notifier.attendanceStatus == AttendanceStatus.NotYetCheckedOut ? () => notifier.checkOut() : null,
+                  onPressed: notifier.attendanceStatus == AttendanceStatus.NotYetCheckedOut
+                      ? (notifier.isEarlyCheckOut()
+                          ? () => showReasonDialog(context, notifier, notifier.checkOut)
+                          : () => notifier.checkOut())
+                      : null,
                 ),
                 Text(
                   notifier.checkOutStatus == null ? 'Success!' : notifier.checkOutStatus,
