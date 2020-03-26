@@ -1,4 +1,3 @@
-import 'package:ata/core/models/attendance_record.dart';
 import 'package:ata/core/notifiers/report_attendance_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:ata/ui/widgets/base_widget.dart';
@@ -6,12 +5,12 @@ import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
-class AttendanceReport extends StatefulWidget {
+class AtaScreen extends StatefulWidget {
   @override
-  _AttendanceReportState createState() => _AttendanceReportState();
+  _AtaScreenState createState() => _AtaScreenState();
 }
 
-class _AttendanceReportState extends State<AttendanceReport> {
+class _AtaScreenState extends State<AtaScreen> {
   static DateTime now = DateTime.now();
   String fromtDate = parseDateTime(now);
   String toDate = parseDateTime(now);
@@ -24,7 +23,7 @@ class _AttendanceReportState extends State<AttendanceReport> {
 
   // Format DateTime -> String
   static String parseDateTime(DateTime dateTime) {
-    return DateFormat("y-MM-d", 'en-US').format(dateTime);
+    return DateFormat("y-MM-dd", 'en-US').format(dateTime);
   }
 
   // Convert String DateTime -> Object DateTime
@@ -185,40 +184,36 @@ class _AttendanceReportState extends State<AttendanceReport> {
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
                   elevation: 8.0,
                   child: ListView.builder(
-                    itemCount: notifier.attendanceRecordList == null ? 0 : notifier.attendanceRecordList.length,
+                    itemCount: notifier.ataDataList == null ? 0 : notifier.ataDataList.length,
                     itemBuilder: (BuildContext context, int index) {
-                      AttendanceRecord attendanceRecord = AttendanceRecord.fromJson(notifier.attendanceRecordList, index);
-                      String daysAttendance = attendanceRecord.dateAttendance;
-                      String timeCheckIn = attendanceRecord.timeCheckIn;
-                      final convertTimeCheckIn = DateTime.parse(timeCheckIn);
-                      String timeIn = DateFormat('kk:mm a').format(convertTimeCheckIn);
-                      String timeCheckOut = attendanceRecord.timeCheckOut;
-                      String timeOut;
-                      String sumTimeAttendance;
-                      if (timeCheckOut != null) {
-                        DateTime convertTimeCheckOut = DateTime.parse(timeCheckOut);
-                        timeOut = DateFormat('kk:mm a').format(convertTimeCheckOut);
-                        sumTimeAttendance = "${convertTimeCheckIn.difference(convertTimeCheckOut).inHours}";
+                      String ataDate = parseDateTime(notifier.ataDataList[index].checkInTime);
+                      final convertCheckInTime = notifier.ataDataList[index].checkInTime;
+                      String inTime = DateFormat('kk:mm a').format(convertCheckInTime);
+                      final checkOutTime = notifier.ataDataList[index].checkOutTime;
+                      String outTime;
+                      String ataTotalTime;
+                      if (checkOutTime != null) {
+                        outTime = DateFormat('kk:mm a').format(checkOutTime);
+                        ataTotalTime = "${convertCheckInTime.difference(checkOutTime).inHours}";
                       }
-                      final startDay = DateTime.parse(fromDateAttendance);
-                      final endDay = DateTime.parse(toDateAttendance);
-                      final rangeDayAttendance = DateTime.parse(daysAttendance);
-                      if (rangeDayAttendance.isBefore(endDay) && rangeDayAttendance.isAfter(startDay)) {
-                        String rangeDays = parseDateTime(rangeDayAttendance);
-                        print(rangeDays);
+                      final startDate = DateTime.parse(fromDateAttendance);
+                      final endDate = DateTime.parse(toDateAttendance);
+                      final rangeAtaDate = DateTime.parse(ataDate);
+                      if (rangeAtaDate.isBefore(endDate) && rangeAtaDate.isAfter(startDate)) {
+                        String rangeDates = parseDateTime(rangeAtaDate);
+                        print(rangeDates);
                         return Card(
                           child: Container(
                               height: 50,
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                                 children: <Widget>[
-                                  Text(rangeDays, style: TextStyle(color: Colors.grey[600], fontWeight: FontWeight.bold, fontSize: 14.0)),
-                                  Text(timeIn, style: TextStyle(color: Colors.grey[600], fontWeight: FontWeight.bold, fontSize: 14.0)),
-                                  Text(timeCheckOut == null ? 'ForgotCheckOut' : timeOut,
+                                  Text(rangeDates, style: TextStyle(color: Colors.grey[600], fontWeight: FontWeight.bold, fontSize: 14.0)),
+                                  Text(inTime, style: TextStyle(color: Colors.grey[600], fontWeight: FontWeight.bold, fontSize: 14.0)),
+                                  Text(outTime == null ? 'ForgotCheckOut' : outTime,
                                       style: TextStyle(color: Colors.grey[600], fontWeight: FontWeight.bold, fontSize: 14.0)),
-                                  Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                    Text(timeCheckOut == null ? '' : sumTimeAttendance + ' Hrs ',
+                                  Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                                    Text(outTime == null ? '' : ataTotalTime + ' Hrs ',
                                         style: TextStyle(color: Colors.grey[600], fontWeight: FontWeight.bold, fontSize: 14.0)),
                                     Icon(
                                       Icons.access_time,

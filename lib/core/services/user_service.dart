@@ -27,12 +27,6 @@ class UserService {
     return _authService.auth;
   }
 
-  Either<Failure, AttendanceRecord> _attendance;
-  Either<Failure, AttendanceRecord> get ipInfo => _attendance;
-  void _setAttendanceRecord(Either<Failure, AttendanceRecord> attendance) {
-    _attendance = attendance;
-  }
-  
   String get _localId {
     return _auth.fold((failure) => throw (failure.toString()), (auth) => auth.localId);
   }
@@ -192,15 +186,23 @@ class UserService {
     });
   }
 
-  Future fetchDataToAttendanceRecord() async {
-    await Util.requestEither<AttendanceRecord>(
-      RequestType.GET,
-      _urlUserAttendance,
-    ).then((value) => _setAttendanceRecord(value));
-  }
-
-  Future getDataAttendanceRecord() async {
-   var responseData = await Util.request(RequestType.GET, _urlUserAttendance);
-   return responseData;
+  Future<List<AttendanceRecord>> fetchAtaData() async {
+    try {
+      var responseData = await Util.request(RequestType.GET, _urlUserAttendance);
+      List<AttendanceRecord> ataList = new List<AttendanceRecord>();
+      if (responseData != null) {
+        final jsonParsed = responseData as Map<String, dynamic>;
+        for (var i = 0; i < jsonParsed.length; i++) {
+          var ataTime = jsonParsed.values.elementAt(i);
+          print(ataTime);
+          AttendanceRecord ataRecord = AttendanceRecord.fromJson(ataTime);
+          ataList.add(ataRecord);
+        }
+      }
+      return ataList;
+    } catch (error) {
+      print(error);
+      throw error;
+    }
   }
 }

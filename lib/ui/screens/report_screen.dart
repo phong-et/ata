@@ -6,7 +6,7 @@ class ReportScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return SingleChildScrollView(
         scrollDirection: Axis.vertical,
-        child:AttendanceReport()
+        child:AtaScreen()
     );
   }
 }
