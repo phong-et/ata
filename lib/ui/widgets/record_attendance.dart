@@ -48,10 +48,7 @@ class RecordAttendance extends StatelessWidget {
                         color: Colors.green,
                         textColor: Colors.white,
                         onPressed: () {
-                          if (reasonTextFieldController.text == '') {
-                            print('Reason must be not null');
-                          } else
-                            Navigator.of(context).pop();
+                          if (reasonTextFieldController.text != '') Navigator.of(context).pop();
                         },
                       ),
                       RaisedButton(
