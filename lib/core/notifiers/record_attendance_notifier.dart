@@ -32,6 +32,6 @@ class RecordAttendanceNotifier extends BaseNotifier {
     setBusy(false);
   }
 
-  bool isLateCheckIn() => _userService.isLateCheckIn();
-  bool isEarlyCheckOut() => _userService.isEarlyCheckOut();
+  bool get isLateCheckIn => _userService.isLateCheckIn();
+  bool get isEarlyCheckOut => _userService.isEarlyCheckOut();
 }
