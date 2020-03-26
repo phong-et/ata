@@ -205,21 +205,18 @@ class UserService {
   bool isLateCheckIn() {
     Office office = _getOfficeInfo();
     DateTime startTimeToday = _genTodayTimeByHhMm(office.startTime);
-    //return startTimeToday.difference(DateTime.now()).inSeconds > office.acceptableLateTime;
     return DateTime.now().millisecondsSinceEpoch  > startTimeToday.millisecondsSinceEpoch + office.acceptableLateTime*1000;
   }
 
   bool isEarlyCheckIn() {
     Office office = _getOfficeInfo();
     DateTime startTimeToday = _genTodayTimeByHhMm(office.startTime);
-    //return startTimeToday.difference(DateTime.now()).inSeconds < 0;
     return DateTime.now().millisecondsSinceEpoch < startTimeToday.millisecondsSinceEpoch;
   }
 
   bool isEarlyCheckOut() {
     Office office = _getOfficeInfo();
     DateTime endTimeToday = _genTodayTimeByHhMm(office.endTime);
-    //return DateTime.now().difference(endTimeToday).inSeconds < 0;
     return DateTime.now().millisecondsSinceEpoch < endTimeToday.millisecondsSinceEpoch;
   }
 }
