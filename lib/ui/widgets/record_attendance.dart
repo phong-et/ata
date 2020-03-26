@@ -22,7 +22,7 @@ class RecordAttendance extends StatelessWidget {
   }
 
   final reasonTextFieldController = TextEditingController();
-  Future showReasonDialog(BuildContext context, RecordAttendanceNotifier notifier, String reasonLabel, Function action) async {
+  Future showReasonDialog(BuildContext context, RecordAttendanceNotifier notifier, String reasonLabel) async {
     reasonTextFieldController.text = '';
     await showDialog(
         context: context,
@@ -67,8 +67,12 @@ class RecordAttendance extends StatelessWidget {
             ),
           );
         });
-    if (reasonTextFieldController.text == '' || reasonTextFieldController.text == null) return null;
-    return action(reasonTextFieldController.text);
+    String reasonContent = reasonTextFieldController.text;
+    if (reasonContent == '' || reasonContent == null) return null;
+    switch(reasonLabel){
+      case 'Reason checkin late': return  notifier.checkIn(reasonContent); 
+      case 'Reason checkout early': return  notifier.checkOut(reasonContent); 
+    }
   }
 
   @override
@@ -89,7 +93,7 @@ class RecordAttendance extends StatelessWidget {
                   icon: Icon(Icons.add_location),
                   onPressed: notifier.attendanceStatus == AttendanceStatus.NotYetCheckedIn
                       ? (notifier.isLateCheckIn()
-                          ? () => showReasonDialog(context, notifier, 'Reason checkin late', notifier.checkIn)
+                          ? () => showReasonDialog(context, notifier, 'Reason checkin late')
                           : () => notifier.checkIn())
                       : null,
                 ),
@@ -109,7 +113,7 @@ class RecordAttendance extends StatelessWidget {
                   icon: Icon(Icons.location_off),
                   onPressed: notifier.attendanceStatus == AttendanceStatus.NotYetCheckedOut
                       ? (notifier.isEarlyCheckOut()
-                          ? () => showReasonDialog(context, notifier, 'Reason checkout early', notifier.checkOut)
+                          ? () => showReasonDialog(context, notifier, 'Reason checkout early')
                           : () => notifier.checkOut())
                       : null,
                 ),
