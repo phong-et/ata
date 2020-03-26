@@ -121,7 +121,7 @@ class UserService {
   Future<String> checkIn({String lateReason = ''}) async {
     String checkMsg = await checkLocationAndIp();
     if (checkMsg != null) return checkMsg;
-    if(isEarlyCheckIn()) return 'Must check in working hours';
+    if(isEarlyCheckIn()) return 'Too early! Please check in within Working hours period.';
     return (await fetchAttendanceStatus()).fold(
       (failure) => failure.toString(),
       (attendanceStatus) async {
