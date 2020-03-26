@@ -1,4 +1,4 @@
-import 'package:ata/core/notifiers/report_attendance_notifier.dart';
+import 'package:ata/core/notifiers/attendance_report_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:ata/ui/widgets/base_widget.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
@@ -12,7 +12,7 @@ class AtaScreen extends StatefulWidget {
 
 class _AtaScreenState extends State<AtaScreen> {
   static DateTime now = DateTime.now();
-  String fromtDate = parseDateTime(now);
+  String fromDate = parseDateTime(now);
   String toDate = parseDateTime(now);
 
   String parseFromDate;
@@ -34,7 +34,7 @@ class _AtaScreenState extends State<AtaScreen> {
   @override
   void initState() {
     super.initState();
-    fromDateAttendance = fromtDate;
+    fromDateAttendance = fromDate;
     toDateAttendance = toDate;
   }
 
@@ -172,7 +172,7 @@ class _AtaScreenState extends State<AtaScreen> {
                             ],
                           ),
                           Divider(),
-                          titleReport()
+                          buildReportTitle()
                         ],
                       ))),
             ]),
@@ -184,12 +184,12 @@ class _AtaScreenState extends State<AtaScreen> {
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
                   elevation: 8.0,
                   child: ListView.builder(
-                    itemCount: notifier.ataDataList == null ? 0 : notifier.ataDataList.length,
+                    itemCount: notifier.attendanceRecordList == null ? 0 : notifier.attendanceRecordList.length,
                     itemBuilder: (BuildContext context, int index) {
-                      String ataDate = parseDateTime(notifier.ataDataList[index].checkInTime);
-                      final convertCheckInTime = notifier.ataDataList[index].checkInTime;
+                      String ataDate = parseDateTime(notifier.attendanceRecordList[index].checkInTime);
+                      final convertCheckInTime = notifier.attendanceRecordList[index].checkInTime;
                       String inTime = DateFormat('kk:mm a').format(convertCheckInTime);
-                      final checkOutTime = notifier.ataDataList[index].checkOutTime;
+                      final checkOutTime = notifier.attendanceRecordList[index].checkOutTime;
                       String outTime;
                       String ataTotalTime;
                       if (checkOutTime != null) {
@@ -233,7 +233,7 @@ class _AtaScreenState extends State<AtaScreen> {
         });
   }
 
-  Widget titleReport() {
+  Widget buildReportTitle() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: <Widget>[

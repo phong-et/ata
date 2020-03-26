@@ -186,20 +186,18 @@ class UserService {
     });
   }
 
-  Future<List<AttendanceRecord>> fetchAtaData() async {
+  Future<List<AttendanceRecord>> fetchAttendanceRecords() async {
     try {
       var responseData = await Util.request(RequestType.GET, _urlUserAttendance);
-      List<AttendanceRecord> ataList = new List<AttendanceRecord>();
+      List<AttendanceRecord> attendanceRecordList = new List<AttendanceRecord>();
       if (responseData != null) {
         final jsonParsed = responseData as Map<String, dynamic>;
-        for (var i = 0; i < jsonParsed.length; i++) {
-          var ataTime = jsonParsed.values.elementAt(i);
-          print(ataTime);
-          AttendanceRecord ataRecord = AttendanceRecord.fromJson(ataTime);
-          ataList.add(ataRecord);
-        }
+        jsonParsed.forEach((key, value) {
+          AttendanceRecord ataRecord = AttendanceRecord.fromJson(value);
+          attendanceRecordList.add(ataRecord);
+        });
       }
-      return ataList;
+      return attendanceRecordList;
     } catch (error) {
       print(error);
       throw error;

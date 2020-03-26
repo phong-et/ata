@@ -7,11 +7,11 @@ class AttendanceReportNotifier extends BaseNotifier {
 
   AttendanceReportNotifier(UserService userService) : _userService = userService;
 
-  List<AttendanceRecord> ataDataList = new List();
+  List<AttendanceRecord> attendanceRecordList;
 
   Future<void> refresh() async {
     setBusy(true);
-    ataDataList = await _userService.fetchAtaData();
+    attendanceRecordList = await _userService.fetchAttendanceRecords();
     setBusy(false);
   }
 }
