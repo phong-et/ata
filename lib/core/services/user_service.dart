@@ -14,7 +14,7 @@ import 'package:intl/intl.dart';
 enum AttendanceStatus { CheckedIn, CheckedOut, NotYetCheckedIn, NotYetCheckedOut }
 
 class UserService {
-  String _urlReports = "https://ata-flutter.firebaseio.com/reports";
+  String _urlReports = dbUrl + "/reports";
 
   final AuthService _authService;
   final LocationService _locationService;
@@ -205,18 +205,21 @@ class UserService {
   bool isLateCheckIn() {
     Office office = _getOfficeInfo();
     DateTime startTimeToday = _genTodayTimeByHhMm(office.startTime);
-    return startTimeToday.difference(DateTime.now()).inSeconds > office.acceptableLateTime;
+    //return startTimeToday.difference(DateTime.now()).inSeconds > office.acceptableLateTime;
+    return DateTime.now().millisecondsSinceEpoch  > startTimeToday.millisecondsSinceEpoch + office.acceptableLateTime*1000;
   }
 
   bool isEarlyCheckIn() {
     Office office = _getOfficeInfo();
     DateTime startTimeToday = _genTodayTimeByHhMm(office.startTime);
-    return startTimeToday.difference(DateTime.now()).inSeconds < 0;
+    //return startTimeToday.difference(DateTime.now()).inSeconds < 0;
+    return DateTime.now().millisecondsSinceEpoch < startTimeToday.millisecondsSinceEpoch;
   }
 
   bool isEarlyCheckOut() {
     Office office = _getOfficeInfo();
     DateTime endTimeToday = _genTodayTimeByHhMm(office.endTime);
-    return DateTime.now().difference(endTimeToday).inSeconds < 0;
+    //return DateTime.now().difference(endTimeToday).inSeconds < 0;
+    return DateTime.now().millisecondsSinceEpoch < endTimeToday.millisecondsSinceEpoch;
   }
 }
