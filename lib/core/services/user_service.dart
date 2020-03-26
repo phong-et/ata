@@ -205,7 +205,7 @@ class UserService {
   bool isLateCheckIn() {
     Office office = _getOfficeInfo();
     DateTime startTimeToday = _genTodayTimeByHhMm(office.startTime);
-    return DateTime.now().millisecondsSinceEpoch  > startTimeToday.millisecondsSinceEpoch + office.acceptableLateTime*1000;
+    return DateTime.now().millisecondsSinceEpoch  > startTimeToday.millisecondsSinceEpoch + (office.acceptableLateTime + 1)*60*1000;
   }
 
   bool isEarlyCheckIn() {

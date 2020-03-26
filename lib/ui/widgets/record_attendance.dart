@@ -49,7 +49,9 @@ class RecordAttendance extends StatelessWidget {
                         child: Text("Ok"),
                         color: Colors.green,
                         textColor: Colors.white,
-                        onPressed: reasonTextFieldController.text != '' ? () => Navigator.of(context).pop() : null,
+                        onPressed: () {
+                          if (reasonTextFieldController.text != '') Navigator.of(context).pop();
+                        },
                       ),
                       RaisedButton(
                         child: Text("Cancel"),

@@ -139,7 +139,7 @@ class OfficeSettings extends StatelessWidget {
             ),
             Visibility(
               child: TextField(
-                decoration: InputDecoration(labelText: 'Acceptable Late Time'),
+                decoration: InputDecoration(labelText: 'Acceptable Late Time(minute)'),
                 keyboardType: TextInputType.number,
                 controller: acceptableLateTimeController,
                 style: TextStyle(color: notifier.busy ? Colors.grey : Colors.black),
@@ -147,7 +147,7 @@ class OfficeSettings extends StatelessWidget {
               maintainSize: true,
               maintainAnimation: true,
               maintainState: true,
-              visible: false,
+              visible: true,
             ),
             SizedBox(
               height: 20,
