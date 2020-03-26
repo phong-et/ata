@@ -1,8 +1,7 @@
 import 'package:flutter/foundation.dart';
 
 class Auth {
-  //static final apiKey = 'AIzaSyCfrk-pANuYEeE3Npr87FEyyk8TwH6jJ5s';
-  static final apiKey = 'AIzaSyCaDtNrAIdLIVtZinC-2KfwdgHya-huuVk';
+  static final apiKey = 'AIzaSyCfrk-pANuYEeE3Npr87FEyyk8TwH6jJ5s';
   String idToken; // Firebase ID token of the account.
   String localId; // The uid of the current user.
   String email;
