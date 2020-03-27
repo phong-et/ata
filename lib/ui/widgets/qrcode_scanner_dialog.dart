@@ -3,7 +3,7 @@ import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:flutter/material.dart';
 import 'package:qrscan/qrscan.dart' as scanner;
 
-String secretKey = '6PAm5tu8zhKE9mSU';
+String secretKey = 'aA123Bb321@8*iPg';
 
 class QrcodeScannerDialog extends StatefulWidget {
   @override
@@ -23,11 +23,14 @@ class QrcodeScannerDialogState extends State<QrcodeScannerDialog> {
   }
 
   String decrypt(String qrCode) {
-    try {
-      return encrypter.decrypt64(qrCode, iv: encrypt.IV.fromUtf8(secretKey));
-    } on Exception catch (e) {
-      return 'Error:' + e.toString();
-    }
+    print(qrCode);
+    if (qrCode != '')
+      try {
+        return encrypter.decrypt64(qrCode, iv: encrypt.IV.fromUtf8(secretKey));
+      } on Exception catch (e) {
+        return 'Error:' + e.toString();
+      }
+    return '';
   }
 
   @override
@@ -42,7 +45,7 @@ class QrcodeScannerDialogState extends State<QrcodeScannerDialog> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
                 RaisedButton(
-                  child: Text("Scan QR Code"),
+                  child: Text("Scan QR"),
                   color: Colors.green,
                   textColor: Colors.white,
                   onPressed: scanQRCode,
@@ -62,7 +65,7 @@ class QrcodeScannerDialogState extends State<QrcodeScannerDialog> {
           Padding(
             padding: const EdgeInsets.all(5.0),
             child: Text(
-              scanResult != '' ? decrypt(scanResult) : '',
+              decrypt(scanResult),
             ),
           ),
         ],
