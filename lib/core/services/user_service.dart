@@ -126,7 +126,7 @@ class UserService {
           switch (attendanceStatus) {
             case AttendanceStatus.NotYetCheckedIn:
               responseData = await Util.request(RequestType.PUT, urlRecordAttendance, {
-                'in': DateFormat('yyyy-MM-dd HH:mm:ss').parse(currentDateTimeString).toIso8601String(),
+                'checkInTime': DateFormat('yyyy-MM-dd HH:mm:ss').parse(currentDateTimeString).toIso8601String(),
               });
               return responseData['error'] != null ? responseData['error'] : null;
             default:
@@ -151,7 +151,7 @@ class UserService {
           switch (attendanceStatus) {
             case AttendanceStatus.NotYetCheckedOut:
               responseData = await Util.request(RequestType.PATCH, urlRecordAttendance, {
-                'out': DateFormat("yyyy-MM-dd HH:mm:ss").parse(currentDateTimeString).toIso8601String(),
+                'checkOutTime': DateFormat("yyyy-MM-dd HH:mm:ss").parse(currentDateTimeString).toIso8601String(),
               });
               return responseData['error'] != null ? responseData['error'] : null;
             case AttendanceStatus.CheckedOut:
@@ -193,8 +193,10 @@ class UserService {
       if (responseData != null) {
         final jsonParsed = responseData as Map<String, dynamic>;
         jsonParsed.forEach((key, value) {
-          AttendanceRecord ataRecord = AttendanceRecord.fromJson(value);
-          attendanceRecordList.add(ataRecord);
+          if (key != "null") {
+            AttendanceRecord ataRecord = AttendanceRecord.fromJson(value);
+            attendanceRecordList.add(ataRecord);
+          }
         });
       }
       return attendanceRecordList;
