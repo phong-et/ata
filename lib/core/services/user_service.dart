@@ -1,10 +1,12 @@
 import 'package:ata/core/models/attendance_record.dart';
 import 'package:ata/core/models/auth.dart';
 import 'package:ata/core/models/failure.dart';
+import 'package:ata/core/models/office.dart';
 import 'package:ata/core/models/user.dart';
 import 'package:ata/core/services/auth_service.dart';
 import 'package:ata/core/services/ip_info_service.dart';
 import 'package:ata/core/services/location_service.dart';
+import 'package:ata/core/services/office_service.dart';
 import 'package:ata/factories.dart';
 import 'package:ata/util.dart';
 import 'package:dartz/dartz.dart';
@@ -13,18 +15,25 @@ import 'package:intl/intl.dart';
 enum AttendanceStatus { CheckedIn, CheckedOut, NotYetCheckedIn, NotYetCheckedOut }
 
 class UserService {
-  String _urlReports = "https://atapp-7720c.firebaseio.com/reports";
+  String _urlReports = dbUrl + "/reports";
 
   final AuthService _authService;
   final LocationService _locationService;
   final IpInfoService _ipInfoService;
-  UserService(AuthService authService, LocationService locationService, IpInfoService ipInfoService)
+  final OfficeService _officeService;
+  UserService(AuthService authService, LocationService locationService, IpInfoService ipInfoService,
+      OfficeService officeService)
       : _authService = authService,
         _locationService = locationService,
-        _ipInfoService = ipInfoService;
+        _ipInfoService = ipInfoService,
+        _officeService = officeService;
 
   Either<Failure, Auth> get _auth {
     return _authService.auth;
+  }
+
+  Either<Failure, Office> get _officeSettings {
+    return _officeService.officeSettings;
   }
 
   String get _localId {
@@ -90,8 +99,8 @@ class UserService {
 
     if (responseData != null) {
       if (responseData['error'] != null) return Left(Failure(responseData['error']));
-      if (responseData['in'] != null) status = AttendanceStatus.CheckedIn;
-      if (responseData['out'] != null)
+      if (responseData['checkInTime'] != null) status = AttendanceStatus.CheckedIn;
+      if (responseData['checkOutTime'] != null)
         status = AttendanceStatus.CheckedOut;
       else
         status = AttendanceStatus.NotYetCheckedOut;
@@ -114,10 +123,10 @@ class UserService {
     return null;
   }
 
-  Future<String> checkIn() async {
+  Future<String> checkIn({String lateReason = ''}) async {
     String checkMsg = await checkLocationAndIp();
     if (checkMsg != null) return checkMsg;
-
+    if(isEarlyCheckIn()) return 'Too early! Please check in within Working hours period.';
     return (await fetchAttendanceStatus()).fold(
       (failure) => failure.toString(),
       (attendanceStatus) async {
@@ -127,6 +136,7 @@ class UserService {
             case AttendanceStatus.NotYetCheckedIn:
               responseData = await Util.request(RequestType.PUT, urlRecordAttendance, {
                 'checkInTime': DateFormat('yyyy-MM-dd HH:mm:ss').parse(currentDateTimeString).toIso8601String(),
+                'lateReason': lateReason
               });
               return responseData['error'] != null ? responseData['error'] : null;
             default:
@@ -139,7 +149,7 @@ class UserService {
     );
   }
 
-  Future<String> checkOut() async {
+  Future<String> checkOut({String earlyReason = ''}) async {
     String checkMsg = await checkLocationAndIp();
     if (checkMsg != null) return checkMsg;
 
@@ -152,6 +162,7 @@ class UserService {
             case AttendanceStatus.NotYetCheckedOut:
               responseData = await Util.request(RequestType.PATCH, urlRecordAttendance, {
                 'checkOutTime': DateFormat("yyyy-MM-dd HH:mm:ss").parse(currentDateTimeString).toIso8601String(),
+                'earlyReason': earlyReason
               });
               return responseData['error'] != null ? responseData['error'] : null;
             case AttendanceStatus.CheckedOut:
@@ -204,5 +215,33 @@ class UserService {
       print(error);
       throw error;
     }
+  }
+
+  Office _getOfficeInfo() {
+    if (_officeSettings == null) _officeService.fetchOfficeSettings();
+    return _officeSettings.fold((failure) => null, (office) => office);
+  }
+
+  DateTime _genTodayTimeByHhMm(DateTime time) {
+    DateTime currentTime = DateTime.now();
+    return DateTime(currentTime.year, currentTime.month, currentTime.day, time.hour, time.minute);
+  }
+
+  bool isLateCheckIn() {
+    Office office = _getOfficeInfo();
+    DateTime startTimeToday = _genTodayTimeByHhMm(office.startTime);
+    return ((DateTime.now().millisecondsSinceEpoch - startTimeToday.millisecondsSinceEpoch)/60000).round() > office.acceptableLateTime;
+  }
+
+  bool isEarlyCheckIn() {
+    Office office = _getOfficeInfo();
+    DateTime startTimeToday = _genTodayTimeByHhMm(office.startTime);
+    return DateTime.now().millisecondsSinceEpoch < startTimeToday.millisecondsSinceEpoch;
+  }
+
+  bool isEarlyCheckOut() {
+    Office office = _getOfficeInfo();
+    DateTime endTimeToday = _genTodayTimeByHhMm(office.endTime);
+    return DateTime.now().millisecondsSinceEpoch < endTimeToday.millisecondsSinceEpoch;
   }
 }

@@ -8,7 +8,7 @@ import 'package:ata/core/models/failure.dart';
 import 'package:ata/core/models/auth.dart';
 
 enum AuthType { SignUp, SignIn }
-
+final String dbUrl = 'https://atapp-7720c.firebaseio.com';
 class AuthService {
   //* Model reference
   Either<Failure, Auth> _auth;
@@ -105,7 +105,6 @@ class AuthService {
     final expiringDate = DateTime.parse(loginData['expiringDate']);
 
     if (expiringDate.isBefore(DateTime.now())) {
-      prefs.clear();
       return false;
     }
 
@@ -114,5 +113,30 @@ class AuthService {
     ).attempt().mapLeftToFailure().run());
 
     return true;
+  }
+
+  Future<String> refeshToken() async {
+    String urlRefeshToken = "https://securetoken.googleapis.com/v1/token?key=$apiKey";
+    final prefs = await SharedPreferences.getInstance();
+    final loginData = json.decode(prefs.getString('loginData')) as Map<String, Object>;
+    try {
+      var tokenData = await Util.request(RequestType.POST, urlRefeshToken, {
+        'grant_type': "refresh_token",
+        'refresh_token': loginData['refreshToken'],
+      });
+      if (tokenData['error'] != null) return tokenData['error'];
+
+      loginData['expiringDate'] = DateTime.now().add(Duration(seconds: int.parse(tokenData['expires_in']))).toIso8601String();
+      loginData['idToken'] = tokenData['id_token'];
+      final loginJsonString = json.encode(loginData);
+      prefs.setString('loginData', loginJsonString);
+
+      _setAuth(await Task(
+        () async => make<Auth>(loginData),
+      ).attempt().mapLeftToFailure().run());
+      return null;
+    } catch (error) {
+      return error.toString();
+    }
   }
 }

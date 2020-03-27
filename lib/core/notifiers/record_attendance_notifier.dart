@@ -9,7 +9,6 @@ class RecordAttendanceNotifier extends BaseNotifier {
   AttendanceStatus attendanceStatus;
   String checkInStatus = '';
   String checkOutStatus = '';
-
   Future<void> refresh() async {
     setBusy(true);
     await _userService.refreshService();
@@ -17,19 +16,22 @@ class RecordAttendanceNotifier extends BaseNotifier {
     setBusy(false);
   }
 
-  Future<void> checkIn() async {
+  Future<void> checkIn([String lateReason = '']) async {
     checkInStatus = '';
     setBusy(true);
-    checkInStatus = await _userService.checkIn();
+    checkInStatus = await _userService.checkIn(lateReason: lateReason);
     if (checkInStatus == null) await refresh();
     setBusy(false);
   }
 
-  Future<void> checkOut() async {
+  Future<void> checkOut([String earlyReason = '']) async {
     checkOutStatus = '';
     setBusy(true);
-    checkOutStatus = await _userService.checkOut();
+    checkOutStatus = await _userService.checkOut(earlyReason: earlyReason);
     if (checkOutStatus == null) await refresh();
     setBusy(false);
   }
+
+  bool get isLateCheckIn => _userService.isLateCheckIn();
+  bool get isEarlyCheckOut => _userService.isEarlyCheckOut();
 }

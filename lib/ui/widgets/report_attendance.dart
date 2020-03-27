@@ -5,12 +5,12 @@ import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
-class AtaScreen extends StatefulWidget {
+class AttendanceReport  extends StatefulWidget {
   @override
-  _AtaScreenState createState() => _AtaScreenState();
+  _AttendanceReportState createState() => _AttendanceReportState();
 }
 
-class _AtaScreenState extends State<AtaScreen> {
+class _AttendanceReportState extends State<AttendanceReport > {
   static DateTime now = DateTime.now();
   String fromDate = parseDateTime(now);
   String toDate = parseDateTime(now);

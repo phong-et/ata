@@ -3,7 +3,6 @@ import 'package:dartz/dartz.dart';
 import 'package:ata/util.dart';
 import 'package:ata/core/models/failure.dart';
 import 'package:ata/core/models/office.dart';
-
 import '../../factories.dart';
 
 class OfficeService {
@@ -23,7 +22,7 @@ class OfficeService {
 
   //! Admin features
   Future<void> fetchOfficeSettings() async {
-    final officeUrl = 'https://atapp-7720c.firebaseio.com/office.json?auth=$_idToken';
+    final officeUrl = dbUrl + '/office.json?auth=$_idToken';
     await Util.requestEither<Office>(
       RequestType.GET,
       officeUrl,
@@ -37,8 +36,11 @@ class OfficeService {
     String lng,
     String authRange,
     String dateIpServiceUrl,
+    String startTime,
+    String endTime,
+    String acceptableLateTime,
   ) async {
-    final officeUrl = 'https://atapp-7720c.firebaseio.com/office.json?auth=$_idToken';
+    final officeUrl = dbUrl + '/office.json?auth=$_idToken';
 
     return await Task<Office>(() async {
       try {
@@ -51,6 +53,9 @@ class OfficeService {
             'lng': double.parse(lng),
             'authRange': double.parse(authRange),
             'dateIpServiceUrl': dateIpServiceUrl,
+            'startTime': startTime,
+            'endTime': endTime,
+            'acceptableLateTime': int.parse(acceptableLateTime),
           },
         );
         return make<Office>(parsedJson);
