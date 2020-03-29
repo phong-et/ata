@@ -23,6 +23,15 @@ namespace ataweb.Controllers
             if (principal != null)
                 if (principal.Claims.Count() != 0) return RedirectToAction("Index", "Home");
 
+            //Dictionary<string, string> dict = new Dictionary<string, string>();
+
+            //var listClaims  = HttpContext.User.Claims.ToList();
+            //foreach (var item in listClaims)
+            //{
+            //    dict.Add(item.Type, item.Value);
+            //}
+            //Auth json = JsonConvert.DeserializeObject<Auth>(JsonConvert.SerializeObject(dict));
+
             return View();
         }
         [HttpPost]
@@ -44,7 +53,7 @@ namespace ataweb.Controllers
                     new Claim("idToken",auth.idToken),
                     new Claim("refreshToken",auth.refreshToken),
                 };
-                var authIndentity = new ClaimsIdentity(authClaim, "User Identity");
+                var authIndentity = new ClaimsIdentity(authClaim, "UserIdentity");
                 var userPrincipal = new ClaimsPrincipal(authIndentity);
                 await HttpContext.SignInAsync(userPrincipal);
                 return Content("{\"success\":true,\"data\":\"/Home\"}"); ;

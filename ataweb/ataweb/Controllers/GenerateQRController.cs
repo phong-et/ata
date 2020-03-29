@@ -23,14 +23,12 @@ namespace ataweb.Controllers
         }
         public string Get()
         {
-            string keyString = "6PAm5tu8zhKE9mSU";
             string domianName = _httpContextAccessor.HttpContext.Request.Host.Value;
             string timeStamp = DateTime.Now.ToFileTimeUtc().ToString();
-            var key = Encoding.UTF8.GetBytes(keyString);
-            string original = $"{domianName}_{timeStamp}";
+            byte[] keyAndIV = Encoding.UTF8.GetBytes("aA123Bb321@8*iPg");
 
-            Aes myAes = Aes.Create();
-            string encrypted = EncryptStringToStrings_Aes(original, key, myAes.IV);
+            string original = $"{domianName}_{timeStamp}";
+            string encrypted = EncryptStringToStrings_Aes(original, keyAndIV, keyAndIV);
 
             return encrypted;
         }
