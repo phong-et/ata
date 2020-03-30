@@ -1,4 +1,5 @@
 import 'package:ata/core/services/fingerprint_service.dart';
+import 'package:ata/ui/widgets/qrcode_scanner_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:ata/ui/screens/check_in_screen.dart';
@@ -76,14 +77,14 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         if (!isExpiredToken) {
           (await _fingerPrintService.authenticate()).fold(
             (failure) async {
-              await _signOutToLoginScreen();
+              if (!isDialogCreated) await showQrCodeSannerDialog();
             },
             (authenticated) async {
               if (authenticated) {
                 String newToken = await _authService.refeshToken();
                 if (newToken != null) Navigator.of(context).pushReplacementNamed(LoginScreen.routeName);
               } else
-                await _signOutToLoginScreen();
+                await showQrCodeSannerDialog();
             },
           );
         }
@@ -103,6 +104,21 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   void _changeTab(int index) {
     setState(() {
       this._selectedTabIndex = index;
+    });
+  }
+
+  bool isDialogCreated = false;
+  Future showQrCodeSannerDialog() async {
+    await showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (context) {
+        isDialogCreated = true;
+        return QrcodeScannerDialog();
+      },
+    ).then((onValue) {
+      print(onValue);
+      if (onValue == null) isDialogCreated = false;
     });
   }
 
