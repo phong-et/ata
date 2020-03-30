@@ -135,7 +135,7 @@ Ext.application({
                             xtype: 'button',
                             width: 80,
                             bind: {
-                                iconCls: '{isLoading?"fa fa-spinner fa-spin":"fa fa-sign-in"}',
+                                iconCls: '{isLoading?"fa fa-spinner fa-spin":"fa fa-sign-in-alt"}',
                                 disabled: '{isLoading}'
                             },
                             text: 'Sign In',
