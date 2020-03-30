@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:qrscan/qrscan.dart' as scanner;
 
 String secretKey = 'aA123Bb321@8*iPg';
-
+String authDomain = 'localhost:51457';
 class QrcodeScannerDialog extends StatefulWidget {
   @override
   QrcodeScannerDialogState createState() => QrcodeScannerDialogState();
@@ -40,15 +40,16 @@ class QrcodeScannerDialogState extends State<QrcodeScannerDialog> {
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           Padding(
-            padding: const EdgeInsets.all(5.0),
+            padding: const EdgeInsets.only(top: 20),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
-                RaisedButton(
-                  child: Text("Scan QR"),
+                RaisedButton.icon(
+                  onPressed: scanQRCode,
+                  icon: Icon(Icons.crop_free),
+                  label: Text('Scan QR'),
                   color: Colors.green,
                   textColor: Colors.white,
-                  onPressed: scanQRCode,
                 ),
                 RaisedButton(
                   child: Text("Cancel"),
@@ -63,7 +64,7 @@ class QrcodeScannerDialogState extends State<QrcodeScannerDialog> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(5.0),
+            padding: const EdgeInsets.all(1.0),
             child: Text(
               decrypt(scanResult),
             ),
