@@ -1,4 +1,6 @@
-﻿function generateQRcode(qrCode) {
+﻿var viewModel;
+function generateQRcode(qrCode) {
+    document.getElementById("qrcode").innerHTML = "";
     new QRCode(document.getElementById("qrcode"), {
         text: qrCode,
         width: 150,
@@ -10,42 +12,67 @@
 }
 var qrPopup = Ext.create('Ext.window.Window', {
     title: 'ReAuthenticate QR',
-    height: 200,
+    height: 204,
     width: 400,
-    layout: 'fit',
     draggable: false,
     resizable: false,
     border: 0,
-    padding:'2 0 0 120',
     closeAction: 'method-hide',
+    modal: true,
     listeners: {
         'beforeshow': function () {
             Ext.Ajax.request({
-                url: 'api/GenerateQR',
+                url: 'api/generateqr',
                 success: function (res) {
                     generateQRcode(res.responseText);
                 }
             });
         },
-        'beforehide': function () {
-            document.getElementById("qrcode").innerHTML = "";
-        }
     },
     items: {
         xtype: 'component',
-        html: '<div id="qrcode"></div>'
+        html: '<div id="qrcode"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>'
     }
 });
 
+Ext.define('ATA.view.LoginModel', {
+    extend: 'Ext.app.ViewModel',
+    alias: 'viewmodel.login',
+    data: {
+        isLoading: false,
+        Error: {
+            isError: false,
+            textError: "",
+        },
+        textError: "",
+        email: "",
+        password: "",
+    },
+    formulas: {
+        isDisabled: function (get) {
+            var email = get('email'), password = get('password');
+            if (email != "" && password != "") return false;
+            return true;
+        }
+    },
+})
 Ext.application({
-    name: 'Login',
+    name: 'ATA',
     launch: function () {
         Ext.create('Ext.window.Window', {
+            viewModel: {
+                type: 'login'
+            },
             autoShow: true,
             height: 180,
             width: 400,
             layout: {
                 type: 'fit'
+            },
+            listeners: {
+                'afterrender': function () {
+                    viewModel = this.getViewModel();
+                },
             },
             iconCls: 'fa fa-key fa-lg',
             title: 'Welcome',
@@ -67,13 +94,33 @@ Ext.application({
                     items: [{
                         name: 'email',
                         id: 'txtEmail',
-                        fieldLabel: 'Email'
+                        fieldLabel: 'Email',
+                        bind: {
+                            value: '{email}'
+                        }
                     }, {
                         name: 'password',
                         id: 'txtPassword',
                         inputType: 'password',
                         fieldLabel: 'Password',
+                        bind: {
+                            value: '{password}'
+                        },
                         enableKeyEvents: true,
+                    }, {
+                        xtype: 'container',
+                        layout: {
+                            type: 'vbox',
+                            align: 'center'
+                        },
+                        items: [{
+                            xtype: 'label',
+                            cls: 'error',
+                            bind: {
+                                hidden: '{!Error.isError}',
+                                text: '{Error.textError}'
+                            }
+                        }]
                     }],
                     dockedItems: [{
                         xtype: 'toolbar',
@@ -93,9 +140,13 @@ Ext.application({
                         }, {
                             xtype: 'button',
                             width: 80,
-                            iconCls: 'fa fa-sign-in',
+                            bind: {
+                                iconCls: '{isLoading?"fa fa-spinner fa-spin":"fa fa-sign-in"}',
+                               // disabled: '{isDisabled}'
+                            },
                             text: 'Sign In',
                             handler: function () {
+                                viewModel.set('isLoading', true)
                                 Ext.Ajax.request({
                                     headers: {
                                         'Content-Type': 'application/x-www-form-urlencoded'
@@ -103,19 +154,28 @@ Ext.application({
                                     url: '/Login/SignIn',
                                     method: 'post',
                                     params: {
-                                        jsonUser: JSON.stringify({
-                                            email: Ext.getCmp('txtEmail').getValue(),
-                                            password: Ext.getCmp('txtPassword').getValue(),
-                                            returnSecureToken: true,
+                                        jsonUser: Ext.JSON.encode({
+                                            ...this.up('form').getValues(),
+                                            ...{ "returnSecureToken": true },
                                         })
                                     },
                                     success: function (res) {
+                                        viewModel.set('isLoading', false)
                                         var dataJson = JSON.parse(res.responseText);
                                         if (dataJson.success) window.location.href = dataJson.data;
-                                        else alert(dataJson.data);
+                                        else {
+                                            viewModel.set('Error', {
+                                                isError: true,
+                                                textError: dataJson.data,
+                                            })
+                                        }
                                     },
                                     failure: function (res) {
-                                        console.log('server-side failure with status code ' + res.status);
+                                        viewModel.set('isLoading', false)
+                                        viewModel.set('Error', {
+                                            isError: true,
+                                            textError: res.statusText,
+                                        })
                                     }
                                 });
                             },
