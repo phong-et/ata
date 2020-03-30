@@ -11,26 +11,23 @@ class AttendanceReport extends StatefulWidget {
 }
 
 class _AttendanceReportState extends State<AttendanceReport> {
-  String attendanceFromDate;
-  String attendanceToDate;
-
-  // Format DateTime -> String
+  // Format DateTime -> DateString
   static String parseDateTime(DateTime dateTime) {
     return DateFormat("y-MM-dd", 'en-US').format(dateTime);
   }
 
-  // Convert String DateTime -> Object DateTime
-  DateTime convertStringToDateTime(String string) {
-    return DateTime.parse(string);
+  // Format DateTime -> TimeString
+  static String formatTime(DateTime time){
+    return DateFormat('kk:mm a').format(time);
   }
 
+  DateTime fromDate;
+  DateTime toDate;
   @override
   void initState() {
     super.initState();
-    DateTime toDate = DateTime.now();
-    DateTime fromDate = new DateTime(toDate.year, toDate.month, 1);
-    attendanceFromDate = parseDateTime(fromDate);
-    attendanceToDate = parseDateTime(toDate);
+    toDate = DateTime.now();
+    fromDate = new DateTime(toDate.year, toDate.month, 1);
   }
 
   @override
@@ -67,9 +64,8 @@ class _AttendanceReportState extends State<AttendanceReport> {
                               showTitleActions: true,
                               minTime: DateTime(2000, 01, 1),
                               maxTime: DateTime(2050, 12, 31), onConfirm: (date) {
-                            String parseFromDate = parseDateTime(date);
                             setState(() {
-                              attendanceFromDate = parseFromDate;
+                              fromDate = date;
                             });
                           }, currentTime: DateTime.now(), locale: LocaleType.en);
                         },
@@ -90,7 +86,7 @@ class _AttendanceReportState extends State<AttendanceReport> {
                                           color: Colors.green[600],
                                         ),
                                         Text(
-                                          attendanceFromDate,
+                                          parseDateTime(fromDate),
                                           style: TextStyle(color: Colors.green[600], fontWeight: FontWeight.bold, fontSize: 14.0),
                                         ),
                                       ],
@@ -124,9 +120,8 @@ class _AttendanceReportState extends State<AttendanceReport> {
                                     showTitleActions: true,
                                     minTime: DateTime(2000, 01, 1),
                                     maxTime: DateTime(2050, 12, 31), onConfirm: (date) {
-                                  String parseToDate = parseDateTime(date);
                                   setState(() {
-                                    attendanceToDate = parseToDate;
+                                    toDate = date;
                                   });
                                 }, currentTime: DateTime.now(), locale: LocaleType.en);
                               },
@@ -147,7 +142,7 @@ class _AttendanceReportState extends State<AttendanceReport> {
                                                 color: Colors.green[600],
                                               ),
                                               Text(
-                                                attendanceToDate,
+                                                parseDateTime(toDate),
                                                 style: TextStyle(color: Colors.green[600], fontWeight: FontWeight.bold, fontSize: 14.0),
                                               ),
                                             ],
@@ -181,22 +176,13 @@ class _AttendanceReportState extends State<AttendanceReport> {
                     : ListView.builder(
                         itemCount: notifier.attendanceRecordList == null ? 0 : notifier.attendanceRecordList.length,
                         itemBuilder: (BuildContext context, int index) {
-                          String attendanceDate = parseDateTime(notifier.attendanceRecordList[index].checkInTime);
-                          final convertCheckInTime = notifier.attendanceRecordList[index].checkInTime;
-                          String inTime = DateFormat('kk:mm a').format(convertCheckInTime);
+                          final attendanceDateTime = notifier.attendanceRecordList[index].checkInTime;
                           final checkOutTime = notifier.attendanceRecordList[index].checkOutTime;
-                          String outTime;
                           String totalTime;
                           if (checkOutTime != null) {
-                            outTime = DateFormat('kk:mm a').format(checkOutTime);
-                            totalTime = "${convertCheckInTime.difference(checkOutTime).inHours}";
+                            totalTime = "${checkOutTime.difference(attendanceDateTime).inHours}";
                           }
-                          final startDate = DateTime.parse(attendanceFromDate);
-                          final endDate = DateTime.parse(attendanceToDate);
-                          final rangeDate = DateTime.parse(attendanceDate);
-                          if (rangeDate.isBefore(endDate.add(new Duration(days: 1))) && rangeDate.isAfter(startDate.subtract(new Duration(days: 1)))) {
-                            String rangeDates = parseDateTime(rangeDate);
-                            print(rangeDates);
+                          if (attendanceDateTime.isBefore(toDate.add(new Duration(days: 1))) && attendanceDateTime.isAfter(fromDate.subtract(new Duration(days: 0)))) {
                             return Container(
                               height: 50,
                               child: Card(
@@ -222,7 +208,7 @@ class _AttendanceReportState extends State<AttendanceReport> {
                                         Row(
                                           children: [
                                             Text(
-                                              rangeDates,
+                                              parseDateTime(attendanceDateTime),
                                               style: TextStyle(color: Colors.grey[600], fontWeight: FontWeight.bold, fontSize: 12.0),
                                             ),
                                           ],
@@ -248,7 +234,7 @@ class _AttendanceReportState extends State<AttendanceReport> {
                                         Row(
                                           children: [
                                             Text(
-                                              inTime,
+                                              formatTime(attendanceDateTime),
                                               style: TextStyle(color: Colors.grey[600], fontWeight: FontWeight.bold, fontSize: 12.0),
                                             ),
                                           ],
@@ -274,7 +260,7 @@ class _AttendanceReportState extends State<AttendanceReport> {
                                         Row(
                                           children: [
                                             Text(
-                                              outTime == null ? '-' : outTime,
+                                              formatTime(checkOutTime) == null ? '-' : formatTime(checkOutTime),
                                               style: TextStyle(color: Colors.grey[600], fontWeight: FontWeight.bold, fontSize: 12.0),
                                             ),
                                           ],
@@ -301,10 +287,10 @@ class _AttendanceReportState extends State<AttendanceReport> {
                                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                           children: [
                                             Text(
-                                              outTime == null ? '-' : totalTime + ' Hrs ',
+                                              formatTime(checkOutTime) == null ? '-' : totalTime + ' Hrs ',
                                               style: TextStyle(color: Colors.grey[600], fontWeight: FontWeight.bold, fontSize: 12.0),
                                             ),
-                                            outTime == null
+                                            formatTime(checkOutTime) == null
                                                 ? Text('')
                                                 : Icon(
                                                     Icons.access_time,
