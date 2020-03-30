@@ -51,3 +51,7 @@ ataweb/ataweb/.config/
 ataweb/ataweb/bin/
 
 ataweb/ataweb/obj/
+
+ataweb/ataweb/ataweb.csproj.user
+
+ataweb/ataweb/Properties/PublishProfiles/
