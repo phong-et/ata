@@ -7,18 +7,19 @@ function generateQRcode(qrCode) {
         height: 150,
         colorDark: "#000000",
         colorLight: "#ffffff",
-        correctLevel: QRCode.CorrectLevel.H
+        correctLevel: QRCode.CorrectLevel.L
     });
 }
 var qrPopup = Ext.create('Ext.window.Window', {
     title: 'ReAuthenticate QR',
-    height: 204,
-    width: 400,
+    height: 250,
+    width: 300,
     draggable: false,
     resizable: false,
     border: 0,
     closeAction: 'method-hide',
     modal: true,
+    padding:'22 0 0 0',
     listeners: {
         'beforeshow': function () {
             Ext.Ajax.request({
