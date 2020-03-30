@@ -1,3 +1,4 @@
+import 'package:ata/core/models/attendance_record.dart';
 import 'package:ata/core/models/auth.dart';
 import 'package:ata/core/models/failure.dart';
 import 'package:ata/core/models/office.dart';
@@ -54,6 +55,10 @@ class UserService {
   String get urlRecordAttendance {
     print(currentDateString);
     return "$_urlReports/$_localId/$currentDateString.json?auth=$_idToken";
+  }
+
+  String get _urlUserAttendance {
+    return "$_urlReports/$_localId.json?auth=$_idToken";
   }
 
   String get _apiKey {
@@ -190,6 +195,26 @@ class UserService {
       'displayName': displayName,
       'photoUrl': photoUrl,
     });
+  }
+
+  Future<List<AttendanceRecord>> fetchAttendanceRecords() async {
+    try {
+      var responseData = await Util.request(RequestType.GET, _urlUserAttendance);
+      List<AttendanceRecord> attendanceRecordList = new List<AttendanceRecord>();
+      if (responseData != null) {
+        final jsonParsed = responseData as Map<String, dynamic>;
+        jsonParsed.forEach((key, value) {
+          if (key != "null") {
+            AttendanceRecord ataRecord = AttendanceRecord.fromJson(value);
+            attendanceRecordList.add(ataRecord);
+          }
+        });
+      }
+      return attendanceRecordList;
+    } catch (error) {
+      print(error);
+      throw error;
+    }
   }
 
   Office _getOfficeInfo() {

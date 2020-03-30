@@ -18,7 +18,7 @@ class AttendanceRecord {
   factory AttendanceRecord.fromJson(Map<String, dynamic> parsedJson) {
     return AttendanceRecord(
       checkInTime: DateTime.parse(parsedJson['checkInTime']),
-      checkOutTime: DateTime.parse(parsedJson['checkInTime']),
+      checkOutTime: DateTime.tryParse(parsedJson['checkOutTime'].toString()),
       lateReason: parsedJson['lateReason'],
       earlyReason: parsedJson['earlyReason'],
       error: parsedJson['error'] == null ? null : parsedJson['error'],
@@ -27,10 +27,11 @@ class AttendanceRecord {
   Map<String, dynamic> toJson() {
     return {
       'checkInTime': this.checkInTime.toIso8601String(),
-      'checkInTime': this.checkOutTime.toIso8601String(),
+      'checkOutTime': this.checkOutTime.toIso8601String(),
       'lateReason': this.lateReason,
       'earlyReason': this.lateReason,
       'error': this.error,
     };
   }
 }
+
