@@ -22,7 +22,7 @@ class OfficeService {
 
   //! Admin features
   Future<void> fetchOfficeSettings() async {
-    final officeUrl = 'https://atapp-7720c.firebaseio.com/office.json?auth=$_idToken';
+    final officeUrl = dbUrl + '/office.json?auth=$_idToken';
     await Util.requestEither<Office>(
       RequestType.GET,
       officeUrl,
@@ -40,7 +40,7 @@ class OfficeService {
     String endTime,
     String acceptableLateTime,
   ) async {
-    final officeUrl = 'https://atapp-7720c.firebaseio.com/office.json?auth=$_idToken';
+    final officeUrl = dbUrl + '/office.json?auth=$_idToken';
 
     return await Task<Office>(() async {
       try {

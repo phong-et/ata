@@ -137,17 +137,11 @@ class OfficeSettings extends StatelessWidget {
               format: DateFormat.Hm(),
               onShowPicker: showPicker,
             ),
-            Visibility(
-              child: TextField(
-                decoration: InputDecoration(labelText: 'Acceptable Late Time'),
-                keyboardType: TextInputType.number,
-                controller: acceptableLateTimeController,
-                style: TextStyle(color: notifier.busy ? Colors.grey : Colors.black),
-              ),
-              maintainSize: true,
-              maintainAnimation: true,
-              maintainState: true,
-              visible: false,
+            TextField(
+              decoration: InputDecoration(labelText: 'Acceptable Late Time(minute)'),
+              keyboardType: TextInputType.number,
+              controller: acceptableLateTimeController,
+              style: TextStyle(color: notifier.busy ? Colors.grey : Colors.black),
             ),
             SizedBox(
               height: 20,

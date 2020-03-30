@@ -8,7 +8,7 @@ import 'package:ata/core/models/failure.dart';
 import 'package:ata/core/models/auth.dart';
 
 enum AuthType { SignUp, SignIn }
-
+final String dbUrl = 'https://atapp-7720c.firebaseio.com';
 class AuthService {
   //* Model reference
   Either<Failure, Auth> _auth;
