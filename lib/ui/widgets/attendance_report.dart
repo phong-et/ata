@@ -190,21 +190,21 @@ class _AttendanceReportState extends State<AttendanceReport> {
                         ),
                         itemCount: notifier.attendanceRecordList == null ? 0 : notifier.attendanceRecordList.length,
                         itemBuilder: (BuildContext context, int index) {
-                          String ataDate = parseDateTime(notifier.attendanceRecordList[index].checkInTime);
+                          String dateAttendance = parseDateTime(notifier.attendanceRecordList[index].checkInTime);
                           final convertCheckInTime = notifier.attendanceRecordList[index].checkInTime;
                           String inTime = DateFormat('kk:mm a').format(convertCheckInTime);
                           final checkOutTime = notifier.attendanceRecordList[index].checkOutTime;
                           String outTime;
-                          String ataTotalTime;
+                          String totalTime;
                           if (checkOutTime != null) {
                             outTime = DateFormat('kk:mm a').format(checkOutTime);
-                            ataTotalTime = "${convertCheckInTime.difference(checkOutTime).inHours}";
+                            totalTime = "${convertCheckInTime.difference(checkOutTime).inHours}";
                           }
                           final startDate = DateTime.parse(fromDateAttendance);
                           final endDate = DateTime.parse(toDateAttendance);
-                          final rangeAtaDate = DateTime.parse(ataDate);
-                          if (rangeAtaDate.isBefore(endDate) && rangeAtaDate.isAfter(startDate)) {
-                            String rangeDates = parseDateTime(rangeAtaDate);
+                          final rangeDate = DateTime.parse(dateAttendance);
+                          if (rangeDate.isBefore(endDate.add(new Duration(days: 1))) && rangeDate.isAfter(startDate.add(new Duration(days: -1)))) {
+                            String rangeDates = parseDateTime(rangeDate);
                             print(rangeDates);
                             return Container(
                               height: 50,
@@ -264,7 +264,7 @@ class _AttendanceReportState extends State<AttendanceReport> {
                                       ),
                                       Row(children: [
                                         Text(
-                                          outTime == null ? 'Forgot' : outTime,
+                                          outTime == null ? '-' : outTime,
                                           style: TextStyle(color: Colors.grey[600], fontWeight: FontWeight.bold, fontSize: 12.0),
                                         ),
                                       ])
@@ -280,11 +280,14 @@ class _AttendanceReportState extends State<AttendanceReport> {
                                           ),
                                         ],
                                       ),
+                                      SizedBox(
+                                        height: 5,
+                                      ),
                                       Row(
                                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                         children: [
                                           Text(
-                                            outTime == null ? '' : ataTotalTime + ' Hrs ',
+                                            outTime == null ? '-' : totalTime + ' Hrs ',
                                             style: TextStyle(color: Colors.grey[600], fontWeight: FontWeight.bold, fontSize: 12.0),
                                           ),
                                           outTime == null
@@ -292,6 +295,7 @@ class _AttendanceReportState extends State<AttendanceReport> {
                                               : Icon(
                                                   Icons.access_time,
                                                   color: Colors.green[600],
+                                                  size: 14,
                                                 ),
                                         ],
                                       )
