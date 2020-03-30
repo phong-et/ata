@@ -48,13 +48,6 @@ Ext.define('ATA.view.LoginModel', {
         email: "",
         password: "",
     },
-    formulas: {
-        isDisabled: function (get) {
-            var email = get('email'), password = get('password');
-            if (email != "" && password != "") return false;
-            return true;
-        }
-    },
 })
 Ext.application({
     name: 'ATA',
@@ -97,7 +90,7 @@ Ext.application({
                         fieldLabel: 'Email',
                         bind: {
                             value: '{email}'
-                        }
+                        },
                     }, {
                         name: 'password',
                         id: 'txtPassword',
@@ -142,7 +135,7 @@ Ext.application({
                             width: 80,
                             bind: {
                                 iconCls: '{isLoading?"fa fa-spinner fa-spin":"fa fa-sign-in"}',
-                               // disabled: '{isDisabled}'
+                                disabled: '{isLoading}'
                             },
                             text: 'Sign In',
                             handler: function () {

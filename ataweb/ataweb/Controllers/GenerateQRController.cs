@@ -32,12 +32,6 @@ namespace ataweb.Controllers
 
             return encrypted;
         }
-        static byte[] GetBytes(string str)
-        {
-            byte[] bytes = new byte[str.Length * sizeof(char)];
-            System.Buffer.BlockCopy(str.ToCharArray(), 0, bytes, 0, bytes.Length);
-            return bytes;
-        }
         static string EncryptStringToStrings_Aes(string plainText, byte[] Key, byte[] IV)
         {
             // Check arguments.

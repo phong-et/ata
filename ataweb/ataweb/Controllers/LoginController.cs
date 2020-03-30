@@ -19,19 +19,8 @@ namespace ataweb.Controllers
 
         public IActionResult Index()
         {
-            ClaimsPrincipal principal = HttpContext.User as ClaimsPrincipal;
-            if (principal != null)
-                if (principal.Claims.Count() != 0) return RedirectToAction("Index", "Home");
-
-            //Dictionary<string, string> dict = new Dictionary<string, string>();
-
-            //var listClaims  = HttpContext.User.Claims.ToList();
-            //foreach (var item in listClaims)
-            //{
-            //    dict.Add(item.Type, item.Value);
-            //}
-            //Auth json = JsonConvert.DeserializeObject<Auth>(JsonConvert.SerializeObject(dict));
-
+            var lstUserClaims = HttpContext.User.Claims.ToList();
+            if (lstUserClaims.Count() != 0) return RedirectToAction("Index", "Home");
             return View();
         }
         [HttpPost]

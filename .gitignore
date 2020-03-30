@@ -41,3 +41,5 @@ lib/generated_plugin_registrant.dart
 pubspec.lock
 
 ataweb/ataweb/wwwroot/libs/ext-6.2.0/
+
+ataweb/ataweb/wwwroot/libs/font-awesome-4.7.0/
