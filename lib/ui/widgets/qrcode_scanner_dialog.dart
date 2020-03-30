@@ -37,7 +37,8 @@ class QrcodeScannerDialogState extends State<QrcodeScannerDialog> {
       if (tokenError != null) await _signOutToLoginScreen();
       Navigator.of(context).pop();
     } else {
-      setState(() {});
+      setState(() {
+      });
     }
   }
 
@@ -47,6 +48,8 @@ class QrcodeScannerDialogState extends State<QrcodeScannerDialog> {
       try {
         decryptedCode = encrypter.decrypt64(qrCode, iv: encrypt.IV.fromUtf8(secretKey));
         decryptedCode = isInvalidQrCode(decryptedCode) ? decryptedCode : 'Error: Invalid QR code (1)';
+      } on ArgumentError catch (_) {
+        decryptedCode = 'Error: Invalid QR code (2)';
       } on Exception catch (_) {
         decryptedCode = 'Error: Invalid QR code (2)';
       }
@@ -92,7 +95,7 @@ class QrcodeScannerDialogState extends State<QrcodeScannerDialog> {
           Padding(
             padding: const EdgeInsets.all(1.0),
             child: Text(
-              scanResult.contains('Error') ? scanResult : '',
+              scanResult,
               style: TextStyle(color: Colors.red, fontStyle: FontStyle.italic),
             ),
           ),

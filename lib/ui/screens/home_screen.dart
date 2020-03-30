@@ -81,7 +81,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             if (!isExpiredToken) {
               (await _fingerPrintService.authenticate()).fold(
                 (failure) async {
-                  await showQrCodeSannerDialog();
+                  // await showQrCodeSannerDialog();
                 },
                 (authenticated) async {
                   if (authenticated) {
