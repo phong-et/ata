@@ -32,13 +32,12 @@ class QrcodeScannerDialogState extends State<QrcodeScannerDialog> {
   Future scanQRCode() async {
     String cameraScanResult = await scanner.scan();
     if (cameraScanResult != '') scanResult = decrypt(cameraScanResult);
-    if (isInvalidQrCode(scanResult)) {
+    if (isValidQrCode(scanResult)) {
       String tokenError = await _authService.refeshToken();
       if (tokenError != null) await _signOutToLoginScreen();
       Navigator.of(context).pop();
     } else {
-      setState(() {
-      });
+      setState(() {});
     }
   }
 
@@ -47,7 +46,7 @@ class QrcodeScannerDialogState extends State<QrcodeScannerDialog> {
     if (qrCode != '')
       try {
         decryptedCode = encrypter.decrypt64(qrCode, iv: encrypt.IV.fromUtf8(secretKey));
-        decryptedCode = isInvalidQrCode(decryptedCode) ? decryptedCode : 'Error: Invalid QR code (1)';
+        decryptedCode = isValidQrCode(decryptedCode) ? decryptedCode : 'Error: Invalid QR code (1)';
       } on ArgumentError catch (_) {
         decryptedCode = 'Error: Invalid QR code (2)';
       } on Exception catch (_) {
@@ -56,7 +55,7 @@ class QrcodeScannerDialogState extends State<QrcodeScannerDialog> {
     return decryptedCode;
   }
 
-  bool isInvalidQrCode(String qrCode) {
+  bool isValidQrCode(String qrCode) {
     return qrCode.contains(authDomain);
   }
 
