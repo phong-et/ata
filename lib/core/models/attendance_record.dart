@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+
 class AttendanceRecord {
   DateTime checkInTime;
   DateTime checkOutTime;
@@ -17,7 +18,7 @@ class AttendanceRecord {
   factory AttendanceRecord.fromJson(Map<String, dynamic> parsedJson) {
     return AttendanceRecord(
       checkInTime: DateTime.parse(parsedJson['checkInTime']),
-      checkOutTime: DateTime.parse(parsedJson['checkOutTime']),
+      checkOutTime: DateTime.tryParse(parsedJson['checkOutTime'].toString()),
       lateReason: parsedJson['lateReason'],
       earlyReason: parsedJson['earlyReason'],
       error: parsedJson['error'] == null ? null : parsedJson['error'],
