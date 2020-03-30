@@ -19,7 +19,7 @@ var qrPopup = Ext.create('Ext.window.Window', {
     border: 0,
     closeAction: 'method-hide',
     modal: true,
-    padding:'22 0 0 0',
+    padding: '22 0 0 0',
     listeners: {
         'beforeshow': function () {
             Ext.Ajax.request({
@@ -125,14 +125,6 @@ Ext.application({
                         },
                         items: [{
                             xtype: 'button',
-                            width: 100,
-                            iconCls: 'fa fa-qrcode',
-                            text: 'QR Code',
-                            handler: function () {
-                                qrPopup.show();
-                            }
-                        }, {
-                            xtype: 'button',
                             width: 80,
                             bind: {
                                 iconCls: '{isLoading?"fa fa-spinner fa-spin":"fa fa-sign-in-alt"}',
@@ -173,6 +165,14 @@ Ext.application({
                                     }
                                 });
                             },
+                        }, {
+                            xtype: 'button',
+                            width: 100,
+                            iconCls: 'fa fa-qrcode',
+                            text: 'QR Code',
+                            handler: function () {
+                                qrPopup.show();
+                            }
                         }]
                     }]
                 }

@@ -52,5 +52,11 @@ namespace ataweb.Controllers
                 throw error;
             }
         }
+        [HttpPost]
+        public async Task<IActionResult> SignOut()
+        {
+            await HttpContext.SignOutAsync();
+            return Content("{\"success\":true,\"data\":\"/Login\"}");
+        }
     }
 }
