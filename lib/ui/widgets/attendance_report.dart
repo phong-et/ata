@@ -13,11 +13,12 @@ class AttendanceReport extends StatefulWidget {
 class _AttendanceReportState extends State<AttendanceReport> {
   // Format DateTime -> DateString
   static String parseDateTime(DateTime dateTime) {
-    return DateFormat("y-MM-dd", 'en-US').format(dateTime);
+    return DateFormat("dd-MMM-yyyy").format(dateTime);
   }
 
   // Format DateTime -> TimeString
-  static String formatTime(DateTime time){
+  static String formatTime(DateTime time) {
+    if (time == null) return '-';
     return DateFormat('kk:mm a').format(time);
   }
 
@@ -57,17 +58,24 @@ class _AttendanceReportState extends State<AttendanceReport> {
                       ),
                       FlatButton(
                         onPressed: () {
-                          DatePicker.showDatePicker(context,
-                              theme: DatePickerTheme(
-                                containerHeight: 210.0,
-                              ),
-                              showTitleActions: true,
-                              minTime: DateTime(2000, 01, 1),
-                              maxTime: DateTime(2050, 12, 31), onConfirm: (date) {
-                            setState(() {
-                              fromDate = date;
-                            });
-                          }, currentTime: DateTime.now(), locale: LocaleType.en);
+                          DatePicker.showDatePicker(
+                            context,
+                            theme: DatePickerTheme(
+                              containerHeight: 210.0,
+                            ),
+                            showTitleActions: true,
+                            minTime: DateTime(2000, 01, 1),
+                            maxTime: DateTime(2050, 12, 31),
+                            onConfirm: (date) {
+                              setState(
+                                () {
+                                  fromDate = date;
+                                },
+                              );
+                            },
+                            currentTime: fromDate,
+                            locale: LocaleType.en,
+                          );
                         },
                         child: Container(
                           alignment: Alignment.center,
@@ -87,7 +95,11 @@ class _AttendanceReportState extends State<AttendanceReport> {
                                         ),
                                         Text(
                                           parseDateTime(fromDate),
-                                          style: TextStyle(color: Colors.green[600], fontWeight: FontWeight.bold, fontSize: 14.0),
+                                          style: TextStyle(
+                                            color: Colors.green[600],
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 14.0,
+                                          ),
                                         ),
                                       ],
                                     ),
@@ -113,17 +125,24 @@ class _AttendanceReportState extends State<AttendanceReport> {
                             ),
                             FlatButton(
                               onPressed: () {
-                                DatePicker.showDatePicker(context,
-                                    theme: DatePickerTheme(
-                                      containerHeight: 210.0,
-                                    ),
-                                    showTitleActions: true,
-                                    minTime: DateTime(2000, 01, 1),
-                                    maxTime: DateTime(2050, 12, 31), onConfirm: (date) {
-                                  setState(() {
-                                    toDate = date;
-                                  });
-                                }, currentTime: DateTime.now(), locale: LocaleType.en);
+                                DatePicker.showDatePicker(
+                                  context,
+                                  theme: DatePickerTheme(
+                                    containerHeight: 210.0,
+                                  ),
+                                  showTitleActions: true,
+                                  minTime: DateTime(2000, 01, 1),
+                                  maxTime: DateTime(2050, 12, 31),
+                                  onConfirm: (date) {
+                                    setState(
+                                      () {
+                                        toDate = date;
+                                      },
+                                    );
+                                  },
+                                  currentTime: toDate,
+                                  locale: LocaleType.en,
+                                );
                               },
                               child: Container(
                                 alignment: Alignment.center,
@@ -143,7 +162,11 @@ class _AttendanceReportState extends State<AttendanceReport> {
                                               ),
                                               Text(
                                                 parseDateTime(toDate),
-                                                style: TextStyle(color: Colors.green[600], fontWeight: FontWeight.bold, fontSize: 14.0),
+                                                style: TextStyle(
+                                                  color: Colors.green[600],
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 14.0,
+                                                ),
                                               ),
                                             ],
                                           ),
@@ -176,13 +199,14 @@ class _AttendanceReportState extends State<AttendanceReport> {
                     : ListView.builder(
                         itemCount: notifier.attendanceRecordList == null ? 0 : notifier.attendanceRecordList.length,
                         itemBuilder: (BuildContext context, int index) {
-                          final attendanceDateTime = notifier.attendanceRecordList[index].checkInTime;
+                          final checkInTime = notifier.attendanceRecordList[index].checkInTime;
                           final checkOutTime = notifier.attendanceRecordList[index].checkOutTime;
-                          String totalTime;
+                          String totalTime = '-';
                           if (checkOutTime != null) {
-                            totalTime = "${checkOutTime.difference(attendanceDateTime).inHours}";
+                            totalTime = "${checkOutTime.difference(checkInTime).inHours}";
                           }
-                          if (attendanceDateTime.isBefore(toDate.add(new Duration(days: 1))) && attendanceDateTime.isAfter(fromDate.subtract(new Duration(days: 0)))) {
+                          if (checkInTime.isBefore(toDate.add(new Duration(days: 1))) &&
+                              checkInTime.isAfter(fromDate.subtract(new Duration(days: 0)))) {
                             return Container(
                               height: 50,
                               child: Card(
@@ -198,7 +222,11 @@ class _AttendanceReportState extends State<AttendanceReport> {
                                           children: [
                                             Text(
                                               'Date',
-                                              style: TextStyle(color: Colors.grey[600], fontWeight: FontWeight.bold, fontSize: 12.0),
+                                              style: TextStyle(
+                                                color: Colors.grey[600],
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 12.0,
+                                              ),
                                             ),
                                           ],
                                         ),
@@ -208,8 +236,12 @@ class _AttendanceReportState extends State<AttendanceReport> {
                                         Row(
                                           children: [
                                             Text(
-                                              parseDateTime(attendanceDateTime),
-                                              style: TextStyle(color: Colors.grey[600], fontWeight: FontWeight.bold, fontSize: 12.0),
+                                              parseDateTime(checkInTime),
+                                              style: TextStyle(
+                                                color: Colors.grey[600],
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 12.0,
+                                              ),
                                             ),
                                           ],
                                         )
@@ -224,7 +256,11 @@ class _AttendanceReportState extends State<AttendanceReport> {
                                           children: [
                                             Text(
                                               'In Time',
-                                              style: TextStyle(color: Colors.grey[600], fontWeight: FontWeight.bold, fontSize: 12.0),
+                                              style: TextStyle(
+                                                color: Colors.grey[600],
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 12.0,
+                                              ),
                                             ),
                                           ],
                                         ),
@@ -234,8 +270,12 @@ class _AttendanceReportState extends State<AttendanceReport> {
                                         Row(
                                           children: [
                                             Text(
-                                              formatTime(attendanceDateTime),
-                                              style: TextStyle(color: Colors.grey[600], fontWeight: FontWeight.bold, fontSize: 12.0),
+                                              formatTime(checkInTime),
+                                              style: TextStyle(
+                                                color: Colors.grey[600],
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 12.0,
+                                              ),
                                             ),
                                           ],
                                         )
@@ -250,7 +290,11 @@ class _AttendanceReportState extends State<AttendanceReport> {
                                           children: [
                                             Text(
                                               'Out Time',
-                                              style: TextStyle(color: Colors.grey[600], fontWeight: FontWeight.bold, fontSize: 12.0),
+                                              style: TextStyle(
+                                                color: Colors.grey[600],
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 12.0,
+                                              ),
                                             ),
                                           ],
                                         ),
@@ -261,7 +305,11 @@ class _AttendanceReportState extends State<AttendanceReport> {
                                           children: [
                                             Text(
                                               formatTime(checkOutTime) == null ? '-' : formatTime(checkOutTime),
-                                              style: TextStyle(color: Colors.grey[600], fontWeight: FontWeight.bold, fontSize: 12.0),
+                                              style: TextStyle(
+                                                color: Colors.grey[600],
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 12.0,
+                                              ),
                                             ),
                                           ],
                                         )
@@ -276,7 +324,11 @@ class _AttendanceReportState extends State<AttendanceReport> {
                                           children: [
                                             Text(
                                               'Total Hours',
-                                              style: TextStyle(color: Colors.grey[600], fontWeight: FontWeight.bold, fontSize: 12.0),
+                                              style: TextStyle(
+                                                color: Colors.grey[600],
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 12.0,
+                                              ),
                                             ),
                                           ],
                                         ),
@@ -288,7 +340,11 @@ class _AttendanceReportState extends State<AttendanceReport> {
                                           children: [
                                             Text(
                                               formatTime(checkOutTime) == null ? '-' : totalTime + ' Hrs ',
-                                              style: TextStyle(color: Colors.grey[600], fontWeight: FontWeight.bold, fontSize: 12.0),
+                                              style: TextStyle(
+                                                color: Colors.grey[600],
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 12.0,
+                                              ),
                                             ),
                                             formatTime(checkOutTime) == null
                                                 ? Text('')
