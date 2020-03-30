@@ -11,16 +11,8 @@ class AttendanceReport extends StatefulWidget {
 }
 
 class _AttendanceReportState extends State<AttendanceReport> {
-  static DateTime now = DateTime.now();
-  static DateTime firstDayOfMonth = new DateTime(now.year, now.month, 1);
-  String fromDate = parseDateTime(firstDayOfMonth);
-  String toDate = parseDateTime(now);
-
-  String parseFromDate;
-  String parseToDate;
-
-  String fromDateAttendance;
-  String toDateAttendance;
+  String attendanceFromDate;
+  String attendanceToDate;
 
   // Format DateTime -> String
   static String parseDateTime(DateTime dateTime) {
@@ -35,8 +27,10 @@ class _AttendanceReportState extends State<AttendanceReport> {
   @override
   void initState() {
     super.initState();
-    fromDateAttendance = fromDate;
-    toDateAttendance = toDate;
+    DateTime toDate = DateTime.now();
+    DateTime fromDate = new DateTime(toDate.year, toDate.month, 1);
+    attendanceFromDate = parseDateTime(fromDate);
+    attendanceToDate = parseDateTime(toDate);
   }
 
   @override
@@ -73,9 +67,9 @@ class _AttendanceReportState extends State<AttendanceReport> {
                               showTitleActions: true,
                               minTime: DateTime(2000, 01, 1),
                               maxTime: DateTime(2050, 12, 31), onConfirm: (date) {
-                            parseFromDate = parseDateTime(date);
+                            String parseFromDate = parseDateTime(date);
                             setState(() {
-                              fromDateAttendance = parseFromDate;
+                              attendanceFromDate = parseFromDate;
                             });
                           }, currentTime: DateTime.now(), locale: LocaleType.en);
                         },
@@ -96,7 +90,7 @@ class _AttendanceReportState extends State<AttendanceReport> {
                                           color: Colors.green[600],
                                         ),
                                         Text(
-                                          fromDateAttendance,
+                                          attendanceFromDate,
                                           style: TextStyle(color: Colors.green[600], fontWeight: FontWeight.bold, fontSize: 14.0),
                                         ),
                                       ],
@@ -130,9 +124,9 @@ class _AttendanceReportState extends State<AttendanceReport> {
                                     showTitleActions: true,
                                     minTime: DateTime(2000, 01, 1),
                                     maxTime: DateTime(2050, 12, 31), onConfirm: (date) {
-                                  parseToDate = parseDateTime(date);
+                                  String parseToDate = parseDateTime(date);
                                   setState(() {
-                                    toDateAttendance = parseToDate;
+                                    attendanceToDate = parseToDate;
                                   });
                                 }, currentTime: DateTime.now(), locale: LocaleType.en);
                               },
@@ -153,7 +147,7 @@ class _AttendanceReportState extends State<AttendanceReport> {
                                                 color: Colors.green[600],
                                               ),
                                               Text(
-                                                toDateAttendance,
+                                                attendanceToDate,
                                                 style: TextStyle(color: Colors.green[600], fontWeight: FontWeight.bold, fontSize: 14.0),
                                               ),
                                             ],
@@ -176,21 +170,18 @@ class _AttendanceReportState extends State<AttendanceReport> {
                 ],
               ),
               SizedBox(
-                height: 15,
+                height: 10,
               ),
               Container(
-                height: 400,
+                height: 380,
                 child: notifier.busy
                     ? Center(
                         child: CircularProgressIndicator(),
                       )
-                    : ListView.separated(
-                        separatorBuilder: (context, index) => Divider(
-                          color: Colors.grey[300],
-                        ),
+                    : ListView.builder(
                         itemCount: notifier.attendanceRecordList == null ? 0 : notifier.attendanceRecordList.length,
                         itemBuilder: (BuildContext context, int index) {
-                          String dateAttendance = parseDateTime(notifier.attendanceRecordList[index].checkInTime);
+                          String attendanceDate = parseDateTime(notifier.attendanceRecordList[index].checkInTime);
                           final convertCheckInTime = notifier.attendanceRecordList[index].checkInTime;
                           String inTime = DateFormat('kk:mm a').format(convertCheckInTime);
                           final checkOutTime = notifier.attendanceRecordList[index].checkOutTime;
@@ -200,108 +191,132 @@ class _AttendanceReportState extends State<AttendanceReport> {
                             outTime = DateFormat('kk:mm a').format(checkOutTime);
                             totalTime = "${convertCheckInTime.difference(checkOutTime).inHours}";
                           }
-                          final startDate = DateTime.parse(fromDateAttendance);
-                          final endDate = DateTime.parse(toDateAttendance);
-                          final rangeDate = DateTime.parse(dateAttendance);
-                          if (rangeDate.isBefore(endDate.add(new Duration(days: 1))) && rangeDate.isAfter(startDate.add(new Duration(days: -1)))) {
+                          final startDate = DateTime.parse(attendanceFromDate);
+                          final endDate = DateTime.parse(attendanceToDate);
+                          final rangeDate = DateTime.parse(attendanceDate);
+                          if (rangeDate.isBefore(endDate.add(new Duration(days: 1))) && rangeDate.isAfter(startDate.subtract(new Duration(days: 1)))) {
                             String rangeDates = parseDateTime(rangeDate);
                             print(rangeDates);
                             return Container(
                               height: 50,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                children: <Widget>[
-                                  Column(
-                                    children: <Widget>[
-                                      Row(
-                                        children: [
-                                          Text(
-                                            'Date',
-                                            style: TextStyle(color: Colors.grey[600], fontWeight: FontWeight.bold, fontSize: 12.0),
-                                          ),
-                                        ],
-                                      ),
-                                      SizedBox(
-                                        height: 5,
-                                      ),
-                                      Row(children: [
-                                        Text(
-                                          rangeDates,
-                                          style: TextStyle(color: Colors.grey[600], fontWeight: FontWeight.bold, fontSize: 12.0),
+                              child: Card(
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                  children: <Widget>[
+                                    Column(
+                                      children: <Widget>[
+                                        SizedBox(
+                                          height: 5,
                                         ),
-                                      ])
-                                    ],
-                                  ),
-                                  Column(
-                                    children: <Widget>[
-                                      Row(children: [
-                                        Text(
-                                          'In Time',
-                                          style: TextStyle(color: Colors.grey[600], fontWeight: FontWeight.bold, fontSize: 12.0),
+                                        Row(
+                                          children: [
+                                            Text(
+                                              'Date',
+                                              style: TextStyle(color: Colors.grey[600], fontWeight: FontWeight.bold, fontSize: 12.0),
+                                            ),
+                                          ],
                                         ),
-                                      ]),
-                                      SizedBox(
-                                        height: 5,
-                                      ),
-                                      Row(children: [
-                                        Text(
-                                          inTime,
-                                          style: TextStyle(color: Colors.grey[600], fontWeight: FontWeight.bold, fontSize: 12.0),
+                                        SizedBox(
+                                          height: 5,
                                         ),
-                                      ])
-                                    ],
-                                  ),
-                                  Column(
-                                    children: <Widget>[
-                                      Row(children: [
-                                        Text(
-                                          'Out Time',
-                                          style: TextStyle(color: Colors.grey[600], fontWeight: FontWeight.bold, fontSize: 12.0),
+                                        Row(
+                                          children: [
+                                            Text(
+                                              rangeDates,
+                                              style: TextStyle(color: Colors.grey[600], fontWeight: FontWeight.bold, fontSize: 12.0),
+                                            ),
+                                          ],
+                                        )
+                                      ],
+                                    ),
+                                    Column(
+                                      children: <Widget>[
+                                        SizedBox(
+                                          height: 5,
                                         ),
-                                      ]),
-                                      SizedBox(
-                                        height: 5,
-                                      ),
-                                      Row(children: [
-                                        Text(
-                                          outTime == null ? '-' : outTime,
-                                          style: TextStyle(color: Colors.grey[600], fontWeight: FontWeight.bold, fontSize: 12.0),
+                                        Row(
+                                          children: [
+                                            Text(
+                                              'In Time',
+                                              style: TextStyle(color: Colors.grey[600], fontWeight: FontWeight.bold, fontSize: 12.0),
+                                            ),
+                                          ],
                                         ),
-                                      ])
-                                    ],
-                                  ),
-                                  Column(
-                                    children: <Widget>[
-                                      Row(
-                                        children: [
-                                          Text(
-                                            'Total Hours',
-                                            style: TextStyle(color: Colors.grey[600], fontWeight: FontWeight.bold, fontSize: 12.0),
-                                          ),
-                                        ],
-                                      ),
-                                      SizedBox(
-                                        height: 5,
-                                      ),
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Text(
-                                            outTime == null ? '-' : totalTime + ' Hrs ',
-                                            style: TextStyle(color: Colors.grey[600], fontWeight: FontWeight.bold, fontSize: 12.0),
-                                          ),
-                                          outTime == null
-                                              ? Text('')
-                                              : Icon(
-                                                  Icons.access_time,
-                                                  color: Colors.green[600],
-                                                  size: 14,
-                                                ),
-                                        ],
-                                      )
-                                    ],
-                                  ),
-                                ],
+                                        SizedBox(
+                                          height: 5,
+                                        ),
+                                        Row(
+                                          children: [
+                                            Text(
+                                              inTime,
+                                              style: TextStyle(color: Colors.grey[600], fontWeight: FontWeight.bold, fontSize: 12.0),
+                                            ),
+                                          ],
+                                        )
+                                      ],
+                                    ),
+                                    Column(
+                                      children: <Widget>[
+                                        SizedBox(
+                                          height: 5,
+                                        ),
+                                        Row(
+                                          children: [
+                                            Text(
+                                              'Out Time',
+                                              style: TextStyle(color: Colors.grey[600], fontWeight: FontWeight.bold, fontSize: 12.0),
+                                            ),
+                                          ],
+                                        ),
+                                        SizedBox(
+                                          height: 5,
+                                        ),
+                                        Row(
+                                          children: [
+                                            Text(
+                                              outTime == null ? '-' : outTime,
+                                              style: TextStyle(color: Colors.grey[600], fontWeight: FontWeight.bold, fontSize: 12.0),
+                                            ),
+                                          ],
+                                        )
+                                      ],
+                                    ),
+                                    Column(
+                                      children: <Widget>[
+                                        SizedBox(
+                                          height: 5,
+                                        ),
+                                        Row(
+                                          children: [
+                                            Text(
+                                              'Total Hours',
+                                              style: TextStyle(color: Colors.grey[600], fontWeight: FontWeight.bold, fontSize: 12.0),
+                                            ),
+                                          ],
+                                        ),
+                                        SizedBox(
+                                          height: 5,
+                                        ),
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(
+                                              outTime == null ? '-' : totalTime + ' Hrs ',
+                                              style: TextStyle(color: Colors.grey[600], fontWeight: FontWeight.bold, fontSize: 12.0),
+                                            ),
+                                            outTime == null
+                                                ? Text('')
+                                                : Icon(
+                                                    Icons.access_time,
+                                                    color: Colors.green[600],
+                                                    size: 14,
+                                                  ),
+                                          ],
+                                        )
+                                      ],
+                                    ),
+                                  ],
+                                ),
                               ),
                             );
                           }
