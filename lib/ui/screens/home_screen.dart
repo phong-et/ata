@@ -77,11 +77,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         if (!isDialogCreated) {
           final prefs = await SharedPreferences.getInstance();
           if (prefs.containsKey('loginData')) {
-            bool isExpiredToken = await _authService.autoSignIn();
-            if (!isExpiredToken) {
+            bool isValidToken = await _authService.autoSignIn();
+            if (!isValidToken) {
               (await _fingerPrintService.authenticate()).fold(
                 (failure) async {
-                  // await showQrCodeSannerDialog();
+                  await showQrCodeSannerDialog();
                 },
                 (authenticated) async {
                   if (authenticated) {
