@@ -6,14 +6,14 @@ import 'package:provider/provider.dart';
 import 'package:qrscan/qrscan.dart' as scanner;
 
 String secretKey = 'aA123Bb321@8*iPg';
-String authDomain = 'localhost:51457';
+String authDomain = 'botest.inus.pw';
 
 class QrcodeScannerDialog extends StatefulWidget {
   @override
   QrcodeScannerDialogState createState() => QrcodeScannerDialogState();
 }
 
-class QrcodeScannerDialogState extends State<QrcodeScannerDialog> with WidgetsBindingObserver {
+class QrcodeScannerDialogState extends State<QrcodeScannerDialog> {
   String scanResult = '';
   AuthService _authService;
   final encrypter = encrypt.Encrypter(encrypt.AES(encrypt.Key.fromUtf8(secretKey), mode: encrypt.AESMode.cbc));
@@ -21,23 +21,24 @@ class QrcodeScannerDialogState extends State<QrcodeScannerDialog> with WidgetsBi
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addObserver(this);
     _authService = Provider.of<AuthService>(context, listen: false);
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-    WidgetsBinding.instance.removeObserver(this);
+  Future<void> _signOutToLoginScreen() async {
+    await _authService.signOut();
+    Navigator.of(context).pushReplacementNamed(LoginScreen.routeName);
   }
 
   Future scanQRCode() async {
     String cameraScanResult = await scanner.scan();
-    setState(() {
-      if (cameraScanResult != '') scanResult = decrypt(cameraScanResult);
-      if (isInvalidQrCode(scanResult)) 
-        Navigator.of(context).pop();
-    });
+    if (cameraScanResult != '') scanResult = decrypt(cameraScanResult);
+    if (isInvalidQrCode(scanResult)) {
+      String tokenError = await _authService.refeshToken();
+      if (tokenError != null) await _signOutToLoginScreen();
+      Navigator.of(context).pop();
+    } else {
+      setState(() {});
+    }
   }
 
   String decrypt(String qrCode) {
@@ -46,9 +47,8 @@ class QrcodeScannerDialogState extends State<QrcodeScannerDialog> with WidgetsBi
       try {
         decryptedCode = encrypter.decrypt64(qrCode, iv: encrypt.IV.fromUtf8(secretKey));
         decryptedCode = isInvalidQrCode(decryptedCode) ? decryptedCode : 'Error: Invalid QR code (1)';
-      } on Exception catch (e) {
+      } on Exception catch (_) {
         decryptedCode = 'Error: Invalid QR code (2)';
-        print(e);
       }
     return decryptedCode;
   }
@@ -70,7 +70,9 @@ class QrcodeScannerDialogState extends State<QrcodeScannerDialog> with WidgetsBi
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
                 RaisedButton.icon(
-                  onPressed: scanQRCode,
+                  onPressed: () async {
+                    await scanQRCode();
+                  },
                   icon: Icon(Icons.crop_free),
                   label: Text('Scan QR'),
                   color: Colors.green,
@@ -81,8 +83,7 @@ class QrcodeScannerDialogState extends State<QrcodeScannerDialog> with WidgetsBi
                   color: Colors.green,
                   textColor: Colors.white,
                   onPressed: () async {
-                    await _authService.signOut();
-                    Navigator.of(context).pushReplacementNamed(LoginScreen.routeName);
+                    await _signOutToLoginScreen();
                   },
                 ),
               ],

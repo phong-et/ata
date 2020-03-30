@@ -8,6 +8,7 @@ import 'package:ata/ui/screens/login_screen.dart';
 import 'package:ata/core/services/auth_service.dart';
 import 'package:ata/ui/screens/report_screen.dart';
 import 'package:ata/ui/screens/settings_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends StatefulWidget {
   static const routeName = '/home-screen';
@@ -73,20 +74,25 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       case AppLifecycleState.paused:
         break;
       case AppLifecycleState.resumed:
-        bool isExpiredToken = await _authService.autoSignIn();
-        if (!isExpiredToken) {
-          (await _fingerPrintService.authenticate()).fold(
-            (failure) async {
-              if (!isDialogCreated) await showQrCodeSannerDialog();
-            },
-            (authenticated) async {
-              if (authenticated) {
-                String newToken = await _authService.refeshToken();
-                if (newToken != null) Navigator.of(context).pushReplacementNamed(LoginScreen.routeName);
-              } else
-                await showQrCodeSannerDialog();
-            },
-          );
+        if (!isDialogCreated) {
+          final prefs = await SharedPreferences.getInstance();
+          if (prefs.containsKey('loginData')) {
+            bool isExpiredToken = await _authService.autoSignIn();
+            if (!isExpiredToken) {
+              (await _fingerPrintService.authenticate()).fold(
+                (failure) async {
+                  await showQrCodeSannerDialog();
+                },
+                (authenticated) async {
+                  if (authenticated) {
+                    String tokenError = await _authService.refeshToken();
+                    if (tokenError != null) await _signOutToLoginScreen();
+                  } else
+                    await showQrCodeSannerDialog();
+                },
+              );
+            }
+          }
         }
         break;
       case AppLifecycleState.inactive:
@@ -116,9 +122,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         isDialogCreated = true;
         return QrcodeScannerDialog();
       },
-    ).then((onValue) {
-      print(onValue);
-      if (onValue == null) isDialogCreated = false;
+    ).then((_) {
+      isDialogCreated = false;
     });
   }
 

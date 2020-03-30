@@ -98,8 +98,7 @@ class AtaMapState extends State<AtaMap> {
       final GoogleMapController controller = await _controller.future;
       controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(target: position, zoom: DEFAULT_ZOOM)));
       if (_markers.length == 0) _addMarker(LatLng(currentMarkedLat, currentMarkedLng));
-    } on MissingPluginException catch (e) {
-      print(e.toString());
+    } on MissingPluginException catch (_) {
     }
   }
 
@@ -160,8 +159,7 @@ class AtaMapState extends State<AtaMap> {
       return maps.SphericalUtil.computeDistanceBetween(
               maps.LatLng(currentMarkedLat, currentMarkedLng), maps.LatLng(currentLocationLat, currentLocationLng))
           .round();
-    } on Exception catch (e) {
-      print(e.toString());
+    } on Exception catch (_) {
       return 9999;
     }
   }

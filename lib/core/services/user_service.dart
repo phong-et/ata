@@ -53,7 +53,6 @@ class UserService {
   }
 
   String get urlRecordAttendance {
-    print(currentDateString);
     return "$_urlReports/$_localId/$currentDateString.json?auth=$_idToken";
   }
 
@@ -212,7 +211,6 @@ class UserService {
       }
       return attendanceRecordList;
     } catch (error) {
-      print(error);
       throw error;
     }
   }
