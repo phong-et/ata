@@ -120,7 +120,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       context: context,
       builder: (context) {
         isDialogCreated = true;
-        return QrcodeScannerDialog();
+        //* Prevent Dialog dismissed on Back button pressed
+        return WillPopScope(
+          onWillPop: () async => false,
+          child: QrcodeScannerDialog(),
+        );
       },
     ).then((_) {
       isDialogCreated = false;
