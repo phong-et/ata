@@ -35,18 +35,20 @@ List<SingleChildWidget> proxyServices = [
   ProxyProvider<OfficeService, IpInfoService>(
     update: (_, officeService, __) => IpInfoService(officeService),
   ),
-  ProxyProvider3<AuthService, LocationService, IpInfoService, UserService>(
+  ProxyProvider4<AuthService, LocationService, IpInfoService, OfficeService, UserService>(
     update: (
       _,
       authService,
       locationService,
       ipInfoService,
+      officeService,
       __,
     ) =>
         UserService(
       authService,
       locationService,
       ipInfoService,
+      officeService,
     ),
   ),
 ];

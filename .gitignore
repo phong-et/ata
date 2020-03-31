@@ -39,3 +39,19 @@ lib/generated_plugin_registrant.dart
 !/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
 
 pubspec.lock
+
+ataweb/ataweb/wwwroot/libs/ext-6.2.0/
+
+ataweb/ataweb/wwwroot/libs/font-awesome-5.13.0/
+
+ataweb/.vs/ataweb/
+
+ataweb/ataweb/.config/
+
+ataweb/ataweb/bin/
+
+ataweb/ataweb/obj/
+
+ataweb/ataweb/ataweb.csproj.user
+
+ataweb/ataweb/Properties/PublishProfiles/

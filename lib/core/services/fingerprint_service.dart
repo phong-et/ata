@@ -9,7 +9,7 @@ class FingerPrintService {
   Future<Either<Failure, bool>> authenticate() async {
     try {
       bool canCheckBiometrics = await auth.canCheckBiometrics;
-      if (!canCheckBiometrics) return Right(false);
+      if (!canCheckBiometrics) return Left(Failure('Fingerprint Scan is not available!'));
       bool authenticated = await auth.authenticateWithBiometrics(
         localizedReason: 'Scan your fingerprint to authenticate',
         useErrorDialogs: true,
