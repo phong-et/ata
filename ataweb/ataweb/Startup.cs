@@ -1,9 +1,10 @@
+using ataweb.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System;
+using Microsoft.EntityFrameworkCore;
 
 namespace ataweb
 {
@@ -26,6 +27,9 @@ namespace ataweb
             });
 
             services.AddHttpContextAccessor();
+            // Add Db Context
+            services.AddDbContext<ApplicationDbContext>(option => option.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
         }
 
