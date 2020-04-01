@@ -15,7 +15,7 @@ namespace ataweb.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     localId = table.Column<string>(nullable: false),
                     checkInTime = table.Column<DateTime>(nullable: false),
-                    checkOutTime = table.Column<DateTime>(nullable: false),
+                    checkOutTime = table.Column<DateTime>(nullable: true),
                     lateReason = table.Column<string>(nullable: true),
                     earlyReason = table.Column<string>(nullable: true)
                 },

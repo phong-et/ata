@@ -10,7 +10,7 @@ using ataweb.Models;
 namespace ataweb.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20200401074513_AddAttendanceRecordTodb")]
+    [Migration("20200401091804_AddAttendanceRecordTodb")]
     partial class AddAttendanceRecordTodb
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -31,7 +31,7 @@ namespace ataweb.Migrations
                     b.Property<DateTime>("checkInTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("checkOutTime")
+                    b.Property<DateTime?>("checkOutTime")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("earlyReason")

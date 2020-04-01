@@ -14,7 +14,7 @@ namespace ataweb.Models
         [Display(Name = "User Id")]
         public String localId { get; set; }
         public DateTime checkInTime { get; set; }
-        public DateTime checkOutTime { get; set; }
+        public DateTime? checkOutTime { get; set; }
         public String lateReason { get; set; }
         public String earlyReason { get; set; }
     }

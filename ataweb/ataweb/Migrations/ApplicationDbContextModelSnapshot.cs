@@ -29,7 +29,7 @@ namespace ataweb.Migrations
                     b.Property<DateTime>("checkInTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("checkOutTime")
+                    b.Property<DateTime?>("checkOutTime")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("earlyReason")
