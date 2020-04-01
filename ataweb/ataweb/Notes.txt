@@ -1,0 +1,16 @@
+﻿#update package sql server because of breaking change in dotnet 3.0
+Install-Package Microsoft.EntityFrameworkCore.SqlServer
+
+#update EntityFrameworkCore.Tools
+Install-Package Microsoft.EntityFrameworkCore.Tools -Version 3.1.3
+dotnet tool update --global dotnet-ef
+
+#Steps migration by Entity Frameworks(EF)
+1. create model class 
+	add properties: [Key], [Required], etc.
+2. create migration files 
+	Add-Migration <name model class>
+	Ex. Add-Migration AddAttendanceRecordTodb
+3. update to database 
+	Update-Database
+3.1 Remember db server and db name are ready
