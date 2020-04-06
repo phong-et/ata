@@ -10,5 +10,13 @@ namespace ataweb.Models
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options):base(options){}
         public DbSet<AttendanceRecord> AttendanceRecord { get; set; }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<AttendanceRecord>().HasData(
+                new AttendanceRecord {
+            });
+            //base.OnModelCreating(modelBuilder);
+        }
+
     }
 }
