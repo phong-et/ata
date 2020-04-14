@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
+using ataweb.Data;
 
 namespace ataweb
 {
@@ -28,7 +29,7 @@ namespace ataweb
 
             services.AddHttpContextAccessor();
             // Add Db Context
-            services.AddDbContext<ApplicationDbContext>(option => option.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddDbContext<AtaDbContext>(option => option.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
         }
