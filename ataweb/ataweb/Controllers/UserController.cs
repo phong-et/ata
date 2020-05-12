@@ -22,24 +22,29 @@ namespace ataweb.Controllers
             _context = context;
         }
 
-        [HttpGet("checkin")]
-        public async Task<string> test(string jsonCheckIn)
+        //[HttpPost("checkin")]
+        //[HttpPost]
+        public async Task<string> test1(
+            //AttendanceRecord clientRecord
+            string LateReason
+            
+            )
         {
-            string result, msg = "";
             try
             {
-                var record = new AttendanceRecord
+                var serverRecord = new AttendanceRecord
                 {
                     //Id = "asasas",
                     CheckInTime = DateTime.Now,
                     LocalId = "1234",
-                    LateReason = "Late Reason"
+                    LateReason = LateReason
+                    //LateReason = clientRecord.LateReason
                 };
                 if (ModelState.IsValid)
                 {
-                    _context.Add(record);
+                    _context.Add(serverRecord);
                     await _context.SaveChangesAsync();
-                    result = "{\"success\":true, \"msg\":\"\"}";
+                    return  "{\"success\":true, \"msg\":\"\"}";
                 }
             }
             catch (DbUpdateException ex)
@@ -47,15 +52,17 @@ namespace ataweb.Controllers
                 ModelState.AddModelError("", "Unable to save changes. " +
                     "Try again, and if the problem persists " +
                     "see your system administrator.");
-                msg = ex.ToString();
+                return $"{{\"success\":false, \"msg\":\"{ex.ToString()}\"}}";
             }
-            result = $"{{\"success\":false, \"msg\":\"{msg}\"}}";
-            return result;
+            return "{\"success\":false, \"msg\":\"unknown error\"}";
         }
-        [HttpGet("checkout")]
-        string test1()
-        {
-            return "{\"test1\":4321}";
-        }
+        //[HttpGet("checkout")]
+        //[HttpPost]
+        //public string test2()
+        //{
+        //    return "{\"test2\":2222}";
+        //}
+        [HttpGet]
+        public string test3() => "{\"test3\":3333}";
     }
 }
